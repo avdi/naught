@@ -6,5 +6,8 @@ module Naught
     def method_missing(*)
       # NOOP
     end
+    def respond_to?(*)
+      true
+    end
   end
 end
