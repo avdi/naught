@@ -1,4 +1,3 @@
-
 require "naught/version"
 
 module Naught
