@@ -79,5 +79,15 @@ module Naught
       null2 = null_class.instance
       expect(null1).to be(null2)
     end
+  
+    it 'can be cloned' do
+      null = null_class.instance
+      expect(null.clone).to be_nil
+    end
+    
+    it 'can be duplicated' do
+      null = null_class.instance
+      expect(null.dup).to be_nil
+    end
   end
 end
