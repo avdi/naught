@@ -23,4 +23,45 @@ module Naught
       expect(null).to respond_to(:to_s)
     end
   end
+  describe 'explicitly convertable null object' do
+    subject(:null) { null_class.new }
+    let(:null_class) { 
+      Naught.build do |b|
+        b.define_explicit_conversions
+      end
+    }
+  
+    it "defines common explicit conversions to return zero values" do
+      expect(null.to_s).to eq("")
+      expect(null.to_a).to eq([])
+      expect(null.to_i).to eq(0)
+      expect(null.to_f).to eq(0.0)
+      expect(null.to_c).to eq(Complex(0))
+      expect(null.to_r).to eq(Rational(0))
+      expect(null.to_h).to eq({})
+    end
+  end
+  describe 'implicit conversions' do
+    subject(:null) { null_class.new }
+    let(:null_class) {
+      Naught.build do |b|
+        b.define_implicit_conversions
+      end
+    }
+    it 'implicitly splats the same way an empty array does' do
+      a, b = null
+      expect(a).to be_nil
+      expect(b).to be_nil
+    end
+    it 'is implicitly convertable to String' do
+      expect(eval(null)).to be_nil
+    end
+    it 'implicitly converts to an empty array' do
+      expect(null.to_ary).to eq([])
+    end
+    it 'implicitly converts to an empty string' do
+      expect(null.to_str).to eq("")
+    end
+  
+  end
 end
