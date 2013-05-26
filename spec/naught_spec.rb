@@ -63,4 +63,21 @@ module Naught
     end
   
   end
+  describe 'singleton null object' do
+    subject(:null_class) { 
+      Naught.build do |b|
+        b.singleton
+      end
+    }
+  
+    it 'does not respond to .new' do
+      expect{ null_class.new }.to raise_error
+    end
+  
+    it 'has only one instance' do
+      null1 = null_class.instance
+      null2 = null_class.instance
+      expect(null1).to be(null2)
+    end
+  end
 end

@@ -37,5 +37,12 @@ module Naught
         def to_str; ''; end
       end
     end
+    def singleton
+      # no sense loading it until it's needed
+      require 'singleton'
+      @subject.module_eval do
+        include Singleton
+      end
+    end
   end
 end
