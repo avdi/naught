@@ -9,6 +9,11 @@ module Naught
       def respond_to?(*)
         true
       end
+      def inspect
+        "<null>"
+      end
+      klass = self
+      define_method(:class) { klass }
     end
     builder = NullClassBuilder.new(klass)
     yield(builder) if block_given?
@@ -42,6 +47,13 @@ module Naught
       require 'singleton'
       @subject.module_eval do
         include Singleton
+      end
+    end
+    def black_hole
+      @subject.module_eval do
+        def method_missing(*)
+          self
+        end
       end
     end
   end

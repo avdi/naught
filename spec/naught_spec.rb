@@ -21,6 +21,12 @@ module Naught
       expect(null).to respond_to(:foobaz)
       expect(null).to respond_to(:to_s)
     end
+    it 'can be inspected' do
+      expect(null.inspect).to eq("<null>")
+    end
+    it 'knows its own class' do
+      expect(null.class).to eq(null_class)
+    end
   end
   describe 'explicitly convertable null object' do
     subject(:null) { null_class.new }
@@ -40,7 +46,7 @@ module Naught
       expect(null.to_h).to eq({})
     end
   end
-  describe 'implicit conversions' do
+  describe 'implicitly convertable null object' do
     subject(:null) { null_class.new }
     let(:null_class) {
       Naught.build do |b|
@@ -88,6 +94,20 @@ module Naught
     it 'can be duplicated' do
       null = null_class.instance
       expect(null.dup).to be_nil
+    end
+  end
+  describe 'black hole null object' do
+    subject(:null) { null_class.new }
+    let(:null_class) {
+      Naught.build do |b|
+        b.black_hole
+      end
+    }
+    
+    it 'returns self from arbitray method calls' do
+      expect(null.info).to be(null)
+      expect(null.foobaz).to be(null)
+      expect(null << "bar").to be(null)
     end
   end
 end
