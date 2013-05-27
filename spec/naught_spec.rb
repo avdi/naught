@@ -110,4 +110,76 @@ module Naught
       expect(null << "bar").to be(null)
     end
   end
+  describe 'null object mimicking a class' do
+    class User
+      def login
+        "bob"
+      end
+    end
+  
+    module Authorizable
+      def authorized_for?(object)
+        true
+      end
+    end
+   
+    class LibraryPatron < User
+      include Authorizable
+  
+      def member?; true; end
+      def name; "Bob"; end
+      def notify_of_overdue_books(titles)
+        puts "Notifying Bob his books are overdue..."
+      end
+    end
+      
+    subject(:null) { mimic_class.new }
+    let(:mimic_class) { 
+      Naught.build do |b|
+        b.mimic LibraryPatron
+      end
+    }
+    it 'responds to all methods defined on the target class' do
+      expect(null.member?).to be_nil
+      expect(null.name).to be_nil
+      expect(null.notify_of_overdue_books(['The Grapes of Wrath'])).to be_nil
+    end
+      
+    it 'does not respond to methods not defined on the target class' do
+      expect{null.foobar}.to raise_error(NoMethodError)
+    end
+    
+    it 'reports which messages it does and does not respond to' do
+      expect(null).to respond_to(:member?)
+      expect(null).to respond_to(:name)
+      expect(null).to respond_to(:notify_of_overdue_books)
+      expect(null).not_to respond_to(:foobar)
+    end
+    it 'has an informative inspect string' do
+      expect(null.inspect).to eq("<null:Naught::LibraryPatron>")
+    end
+    
+    it 'excludes Object methods from being mimicked' do
+      expect(null.object_id).not_to be_nil
+      expect(null.hash).not_to be_nil
+    end
+  
+    it 'includes inherited methods' do
+      expect(null.authorized_for?('something')).to be_nil
+      expect(null.login).to be_nil
+    end
+  
+    describe 'with include_super: false' do
+      let(:mimic_class) { 
+        Naught.build do |b|
+          b.mimic LibraryPatron, include_super: false
+        end
+      }
+      
+      it 'excludes inherited methods' do
+        expect(null).to_not respond_to(:authorized_for?)
+        expect(null).to_not respond_to(:login)
+      end
+    end
+  end
 end
