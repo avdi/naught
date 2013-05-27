@@ -15,6 +15,7 @@ module Naught
       @operations        = []
       @base_class        = BasicObject
       @inspect_proc      = ->{ "<null>" }
+      define_basic_methods
     end
   
     def interface_defined?
@@ -110,6 +111,24 @@ module Naught
         klass = self
         define_method(:class) { klass }
       end
+    end
+    def define_basic_methods
+      defer do |subject|
+        # make local variable to be accessible to Class.new block
+        inspect_proc = @inspect_proc 
+        subject.module_eval do
+          define_method(:inspect, &inspect_proc)
+          klass = self
+          define_method(:class) { klass }
+        end
+      end
+    end
+    def generate_class
+      null_class = Class.new(@base_class)
+      @operations.each do |operation|
+        operation.call(null_class)
+      end
+      null_class
     end
     def mimic(class_to_mimic, options={})
       include_super = options.fetch(:include_super) { true }
