@@ -94,19 +94,6 @@ module Naught
       end
     end
     def generate_class
-      # make local variable to be accessible to Class.new block
-      inspect_proc = @inspect_proc 
-      null_class = Class.new(@base_class) do
-        define_method(:inspect, &inspect_proc)
-        klass = self
-        define_method(:class) { klass }
-      end
-      @operations.each do |operation|
-        operation.call(null_class)
-      end
-      null_class
-    end
-    def generate_class
       null_class = Class.new(@base_class)
       define_basic_methods(null_class)
       @operations.each do |operation|
