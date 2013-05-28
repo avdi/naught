@@ -133,6 +133,19 @@ module Naught
       mimic(class_to_impersonate, options)
       @base_class = class_to_impersonate
     end
+    def traceable
+      defer do |subject|
+        subject.module_eval do
+          attr_reader :__file__, :__line__
+    
+          def initialize(options={})
+            backtrace = options.fetch(:caller) { Kernel.caller(4) }
+            @__file__, line, _ = backtrace[0].split(':')
+            @__line__ = line.to_i
+          end
+         end
+      end
+    end
   end
   def self.build
     builder = NullClassBuilder.new

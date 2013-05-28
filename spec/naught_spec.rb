@@ -243,4 +243,35 @@ module Naught
       expect{null.foo}.to raise_error(NoMethodError)
     end
   end
+  describe 'traceable null object' do
+    subject(:trace_null) {
+      null_object_and_line.first
+    }
+    let(:null_object_and_line) {
+      obj = trace_null_class.new; line = __LINE__;
+      [obj, line]
+    }
+    let(:instantiation_line) { null_object_and_line.last }
+    let(:trace_null_class) {
+      Naught.build do |b|
+        b.traceable
+      end
+    }
+    
+    it 'remembers the file it was instantiated from' do
+      expect(trace_null.__file__).to eq(__FILE__)    
+    end
+  
+    it 'remembers the line it was instantiated from' do
+      expect(trace_null.__line__).to eq(instantiation_line)
+    end
+    def make_null
+      trace_null_class.new(caller: caller(1))
+    end
+    
+    it 'can accept custom backtrace info' do
+      obj = make_null; line = __LINE__
+      expect(obj.__line__).to eq(line)
+    end
+  end
 end
