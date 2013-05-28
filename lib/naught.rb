@@ -4,7 +4,6 @@ module Naught
   class NullClassBuilder
     def initialize
       @interface_defined = false
-      @operations        = []
       @base_class        = BasicObject
       @inspect_proc      = ->{ "<null>" }
       @stub_strategy     = :stub_method_returning_nil
@@ -124,15 +123,18 @@ module Naught
     def customization_module
       @customization_module ||= Module.new
     end
+    def class_operations
+      @class_operations ||= []
+    end
+    def operations
+      @operations ||= []
+    end
     def defer(options={}, &deferred_operation)
       if options[:class]
         class_operations << deferred_operation
       else
-        @operations << deferred_operation
+        operations << deferred_operation
       end
-    end
-    def class_operations
-      @class_operations ||= []
     end
     def singleton
       defer(class: true) do |subject|
