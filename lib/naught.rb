@@ -1,4 +1,5 @@
 require "naught/version"
+require 'naught/null_class_builder/commands/define_explicit_conversions'
 
 module Naught
   class NullClassBuilder
@@ -14,19 +15,6 @@ module Naught
       @interface_defined
     end
   
-    def define_explicit_conversions
-      defer do |subject|
-        subject.module_eval do
-          def to_s; ""; end
-          def to_i; 0; end
-          def to_f; 0.0; end
-          def to_c; 0.to_c; end
-          def to_r; 0.to_r; end
-          def to_a; []; end
-          def to_h; {}; end
-        end
-      end
-    end
     def define_implicit_conversions
       defer do |subject|
         subject.module_eval do
@@ -232,6 +220,30 @@ module Naught
         operation.call(null_class)
       end
       null_class
+    end
+    # make sure this module exists
+    module Commands
+    end
+    
+    def method_missing(method_name, *args, &block)
+      command_name = command_name_for_method(method_name)
+      if Commands.const_defined?(command_name)
+        command_class = Commands.const_get(command_name)
+        command_class.new(self, *args, &block).call
+      else
+        super
+      end
+    end
+    
+    def respond_to_missing?(method_name, *args)
+      command_name = command_name_for_method(method_name)
+      Commands.const_defined?(command_name) || super
+    end
+    
+    def command_name_for_method(method_name)
+      command_name = method_name.to_s.
+        gsub(/_(\w)/){ $1.upcase }.
+        gsub(/\A(\w)/){ $1.upcase }
     end
   end
   def self.build(&customization_block)
