@@ -182,7 +182,7 @@ module Naught
       end
     end
   end
-  describe 'with black_hole' do
+  describe 'using mimic with black_hole' do
     require 'logger'
     subject(:null) { mimic_class.new }
     let(:mimic_class) {
@@ -215,6 +215,32 @@ module Naught
       }
   
       it_behaves_like_a_black_hole_mimic
+    end
+  end
+  describe 'null object impersonating another type' do
+    class Point
+      def x; 23; end
+      def y; 42; end
+    end
+  
+    subject(:null) { impersonation_class.new }
+    let(:impersonation_class) {
+      Naught.build do |b|
+        b.impersonate Point
+      end
+    }
+  
+    it 'matches the impersonated type' do
+      expect(Point).to be === null
+    end
+  
+    it 'responds to methods from the impersonated type' do
+      expect(null.x).to be_nil
+      expect(null.y).to be_nil
+    end
+  
+    it 'does not respond to unknown methods' do
+      expect{null.foo}.to raise_error(NoMethodError)
     end
   end
 end

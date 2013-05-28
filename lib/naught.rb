@@ -129,6 +129,10 @@ module Naught
       end
       @interface_defined = true
     end
+    def impersonate(class_to_impersonate, options={})
+      mimic(class_to_impersonate, options)
+      @base_class = class_to_impersonate
+    end
   end
   def self.build
     builder = NullClassBuilder.new
