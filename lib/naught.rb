@@ -39,31 +39,11 @@ module Naught
         end
       end
     end
-    def singleton
-      defer do |subject|
-        # no sense loading it until it's needed
-        require 'singleton'
-        subject.module_eval do
-          include Singleton
-        end
-      end
-    end  
     def root_class_of(klass)
       if klass.ancestors.include?(Object)
         Object
       else
         BasicObject
-      end
-    end
-    def define_basic_methods
-      defer do |subject|
-        # make local variable to be accessible to Class.new block
-        inspect_proc = @inspect_proc 
-        subject.module_eval do
-          define_method(:inspect, &inspect_proc)
-          klass = self
-          define_method(:class) { klass }
-        end
       end
     end
     def generate_class
@@ -144,6 +124,32 @@ module Naught
             @__line__ = line.to_i
           end
          end
+      end
+    end
+    def singleton
+      defer do |subject|
+        # no sense loading it until it's needed
+        require 'singleton'
+        subject.module_eval do
+          include Singleton
+          def self.get(*)
+            instance
+          end
+        end
+      end
+    end  
+    def define_basic_methods
+      defer do |subject|
+        # make local variable to be accessible to Class.new block
+        inspect_proc = @inspect_proc 
+        subject.module_eval do
+          define_method(:inspect, &inspect_proc)
+          klass = self
+          define_method(:class) { klass }
+          class << self
+            alias get new
+          end
+        end
       end
     end
   end

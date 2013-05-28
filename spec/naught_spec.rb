@@ -27,6 +27,9 @@ module Naught
     it 'knows its own class' do
       expect(null.class).to eq(null_class)
     end
+    it 'aliases .new to .get' do
+      expect(null_class.get.class).to be(null_class)
+    end  
   end
   describe 'explicitly convertable null object' do
     subject(:null) { null_class.new }
@@ -94,6 +97,12 @@ module Naught
     it 'can be duplicated' do
       null = null_class.instance
       expect(null.dup).to be_nil
+    end
+    it 'aliases .instance to .get' do
+      expect(null_class.get).to be null_class.instance
+    end
+    it 'permits arbitrary arguments to be passed to .get' do
+      null_class.get(42, foo: "bar")
     end
   end
   describe 'black hole null object' do
@@ -266,7 +275,7 @@ module Naught
       expect(trace_null.__line__).to eq(instantiation_line)
     end
     def make_null
-      trace_null_class.new(caller: caller(1))
+      trace_null_class.get(caller: caller(1))
     end
     
     it 'can accept custom backtrace info' do
