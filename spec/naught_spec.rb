@@ -283,4 +283,26 @@ module Naught
       expect(obj.__line__).to eq(line)
     end
   end
+  describe 'customized null object' do
+    subject(:custom_null) { custom_null_class.new }
+    let(:custom_null_class) {
+      Naught.build do |b|
+        b.define_explicit_conversions
+        def to_path
+          "/dev/null"
+        end
+        def to_s
+          "NOTHING TO SEE HERE"
+        end
+      end
+    }
+    
+    it 'responds to custom-defined methods' do
+      expect(custom_null.to_path).to eq("/dev/null")
+    end
+  
+    it 'allows generated methods to be overridden' do
+      expect(custom_null.to_s).to eq("NOTHING TO SEE HERE")
+    end
+  end
 end
