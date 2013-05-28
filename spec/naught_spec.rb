@@ -182,4 +182,39 @@ module Naught
       end
     end
   end
+  describe 'with black_hole' do
+    require 'logger'
+    subject(:null) { mimic_class.new }
+    let(:mimic_class) {
+      Naught.build do |b|
+        b.mimic Logger
+        b.black_hole
+      end
+    }
+  
+    def self.it_behaves_like_a_black_hole_mimic
+      it 'returns self from mimicked methods' do
+        expect(null.info).to equal(null)
+        expect(null.error).to equal(null)
+        expect(null << "test").to equal(null)
+      end
+  
+      it 'does not respond to methods not defined on the target class' do
+        expect{null.foobar}.to raise_error(NoMethodError)
+      end
+    end
+  
+    it_behaves_like_a_black_hole_mimic
+  
+    describe '(reverse order)' do
+      let(:mimic_class) {
+        Naught.build do |b|
+          b.black_hole
+          b.mimic Logger
+        end
+      }
+  
+      it_behaves_like_a_black_hole_mimic
+    end
+  end
 end
