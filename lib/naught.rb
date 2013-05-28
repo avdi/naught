@@ -124,21 +124,6 @@ module Naught
     def customization_module
       @customization_module ||= Module.new
     end
-    def generate_class
-      generation_mod    = Module.new
-      customization_mod = customization_module # get a local binding  
-      @operations.each do |operation|
-        operation.call(generation_mod)
-      end
-      null_class = Class.new(@base_class) do
-        include generation_mod
-        include customization_mod
-      end
-      class_operations.each do |operation|
-        operation.call(null_class)
-      end
-      null_class
-    end
     def defer(options={}, &deferred_operation)
       if options[:class]
         class_operations << deferred_operation
@@ -177,6 +162,24 @@ module Naught
           define_method(:class) { klass }
         end
       end
+    end
+    def generate_class
+      generation_mod    = Module.new
+      customization_mod = customization_module # get a local binding  
+      @operations.each do |operation|
+        operation.call(generation_mod)
+      end
+      null_class = Class.new(@base_class) do
+        const_set :GeneratedMethods, generation_mod
+        const_set :Customizations, customization_mod
+    
+        include generation_mod
+        include customization_mod
+      end
+      class_operations.each do |operation|
+        operation.call(null_class)
+      end
+      null_class
     end
   end
   def self.build(&customization_block)

@@ -305,4 +305,15 @@ module Naught
       expect(custom_null.to_s).to eq("NOTHING TO SEE HERE")
     end
   end
+  TestNull = Naught.build
+  
+  describe 'a named null object class' do
+    it 'has named ancestor modules' do
+      expect(TestNull.ancestors[0..2].map(&:name)).to eq([
+          'Naught::TestNull', 
+          'Naught::TestNull::Customizations', 
+          'Naught::TestNull::GeneratedMethods'
+        ])
+    end
+  end
 end
