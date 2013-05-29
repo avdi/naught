@@ -74,6 +74,7 @@ module Naught
     end
 
     def generate_class
+      respond_to_any_message unless interface_defined?
       generation_mod    = Module.new
       customization_mod = customization_module # get a local binding
       builder           = self
