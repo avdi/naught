@@ -327,6 +327,10 @@ be included into your classes.
   Actual { 42 }                   # => 42
 #+END_SRC
 
+* Installation
+  
+  : gem install naught
+
 * Requirements
 
   - Ruby 1.9
