@@ -327,7 +327,7 @@ Null(42) rescue $!              # => #<ArgumentError: 42 is not null!>
 Null(nil)                       # => <null>
 Null(NullObject.get)            # => <null>
 
-# Convert nulls back to nils. Everything else passes throuhgh. Useful
+# Convert nulls back to nils. Everything else passes through. Useful
 # for preventing null objects from "leaking" into public API return
 # values.
 Actual(42)                      # => 42
