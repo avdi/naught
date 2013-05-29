@@ -8,7 +8,7 @@ module Naught
         end
 
         def call
-          @builder.defer do |subject|
+          defer do |subject|
             subject.module_eval do
               def to_s; ""; end
               def to_i; 0; end
@@ -19,6 +19,10 @@ module Naught
               def to_h; {}; end
             end
           end
+        end
+
+        def defer(&block)
+          @builder.defer(&block)
         end
       end
     end
