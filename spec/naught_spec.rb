@@ -12,7 +12,7 @@ module Naught
       expect(null.foobaz).to be_nil
       expect(null.to_s).to be_nil
     end
-    
+
     it 'accepts any arguments for any messages' do
       null.foobaz(1,2,3)
     end
@@ -29,16 +29,16 @@ module Naught
     end
     it 'aliases .new to .get' do
       expect(null_class.get.class).to be(null_class)
-    end  
+    end
   end
   describe 'explicitly convertable null object' do
     subject(:null) { null_class.new }
-    let(:null_class) { 
+    let(:null_class) {
       Naught.build do |b|
         b.define_explicit_conversions
       end
     }
-  
+
     it "defines common explicit conversions to return zero values" do
       expect(null.to_s).to eq("")
       expect(null.to_a).to eq([])
@@ -70,30 +70,30 @@ module Naught
     it 'implicitly converts to an empty string' do
       expect(null.to_str).to eq("")
     end
-  
+
   end
   describe 'singleton null object' do
-    subject(:null_class) { 
+    subject(:null_class) {
       Naught.build do |b|
         b.singleton
       end
     }
-  
+
     it 'does not respond to .new' do
       expect{ null_class.new }.to raise_error
     end
-  
+
     it 'has only one instance' do
       null1 = null_class.instance
       null2 = null_class.instance
       expect(null1).to be(null2)
     end
-  
+
     it 'can be cloned' do
       null = null_class.instance
       expect(null.clone).to be_nil
     end
-    
+
     it 'can be duplicated' do
       null = null_class.instance
       expect(null.dup).to be_nil
@@ -112,7 +112,7 @@ module Naught
         b.black_hole
       end
     }
-    
+
     it 'returns self from arbitray method calls' do
       expect(null.info).to be(null)
       expect(null.foobaz).to be(null)
@@ -125,25 +125,25 @@ module Naught
         "bob"
       end
     end
-  
+
     module Authorizable
       def authorized_for?(object)
         true
       end
     end
-   
+
     class LibraryPatron < User
       include Authorizable
-  
+
       def member?; true; end
       def name; "Bob"; end
       def notify_of_overdue_books(titles)
         puts "Notifying Bob his books are overdue..."
       end
     end
-      
+
     subject(:null) { mimic_class.new }
-    let(:mimic_class) { 
+    let(:mimic_class) {
       Naught.build do |b|
         b.mimic LibraryPatron
       end
@@ -153,11 +153,11 @@ module Naught
       expect(null.name).to be_nil
       expect(null.notify_of_overdue_books(['The Grapes of Wrath'])).to be_nil
     end
-      
+
     it 'does not respond to methods not defined on the target class' do
       expect{null.foobar}.to raise_error(NoMethodError)
     end
-    
+
     it 'reports which messages it does and does not respond to' do
       expect(null).to respond_to(:member?)
       expect(null).to respond_to(:name)
@@ -167,24 +167,24 @@ module Naught
     it 'has an informative inspect string' do
       expect(null.inspect).to eq("<null:Naught::LibraryPatron>")
     end
-    
+
     it 'excludes Object methods from being mimicked' do
       expect(null.object_id).not_to be_nil
       expect(null.hash).not_to be_nil
     end
-  
+
     it 'includes inherited methods' do
       expect(null.authorized_for?('something')).to be_nil
       expect(null.login).to be_nil
     end
-  
+
     describe 'with include_super: false' do
-      let(:mimic_class) { 
+      let(:mimic_class) {
         Naught.build do |b|
           b.mimic LibraryPatron, include_super: false
         end
       }
-      
+
       it 'excludes inherited methods' do
         expect(null).to_not respond_to(:authorized_for?)
         expect(null).to_not respond_to(:login)
@@ -200,21 +200,21 @@ module Naught
         b.black_hole
       end
     }
-  
+
     def self.it_behaves_like_a_black_hole_mimic
       it 'returns self from mimicked methods' do
         expect(null.info).to equal(null)
         expect(null.error).to equal(null)
         expect(null << "test").to equal(null)
       end
-  
+
       it 'does not respond to methods not defined on the target class' do
         expect{null.foobar}.to raise_error(NoMethodError)
       end
     end
-  
+
     it_behaves_like_a_black_hole_mimic
-  
+
     describe '(reverse order)' do
       let(:mimic_class) {
         Naught.build do |b|
@@ -222,7 +222,7 @@ module Naught
           b.mimic Logger
         end
       }
-  
+
       it_behaves_like_a_black_hole_mimic
     end
   end
@@ -231,23 +231,23 @@ module Naught
       def x; 23; end
       def y; 42; end
     end
-  
+
     subject(:null) { impersonation_class.new }
     let(:impersonation_class) {
       Naught.build do |b|
         b.impersonate Point
       end
     }
-  
+
     it 'matches the impersonated type' do
       expect(Point).to be === null
     end
-  
+
     it 'responds to methods from the impersonated type' do
       expect(null.x).to be_nil
       expect(null.y).to be_nil
     end
-  
+
     it 'does not respond to unknown methods' do
       expect{null.foo}.to raise_error(NoMethodError)
     end
@@ -266,18 +266,18 @@ module Naught
         b.traceable
       end
     }
-    
+
     it 'remembers the file it was instantiated from' do
-      expect(trace_null.__file__).to eq(__FILE__)    
+      expect(trace_null.__file__).to eq(__FILE__)
     end
-  
+
     it 'remembers the line it was instantiated from' do
       expect(trace_null.__line__).to eq(instantiation_line)
     end
     def make_null
       trace_null_class.get(caller: caller(1))
     end
-    
+
     it 'can accept custom backtrace info' do
       obj = make_null; line = __LINE__
       expect(obj.__line__).to eq(line)
@@ -296,22 +296,22 @@ module Naught
         end
       end
     }
-    
+
     it 'responds to custom-defined methods' do
       expect(custom_null.to_path).to eq("/dev/null")
     end
-  
+
     it 'allows generated methods to be overridden' do
       expect(custom_null.to_s).to eq("NOTHING TO SEE HERE")
     end
   end
   TestNull = Naught.build
-  
+
   describe 'a named null object class' do
     it 'has named ancestor modules' do
       expect(TestNull.ancestors[0..2].map(&:name)).to eq([
-          'Naught::TestNull', 
-          'Naught::TestNull::Customizations', 
+          'Naught::TestNull',
+          'Naught::TestNull::Customizations',
           'Naught::TestNull::GeneratedMethods'
         ])
     end
@@ -320,67 +320,67 @@ module Naught
     b.null_equivalents << ""
     b.traceable
   end
-  
+
   describe 'Null()' do
     include ConvertableNull::Conversions
-  
+
     specify 'given no input, returns a null object' do
       expect(Null().class).to be(ConvertableNull)
     end
-  
+
     specify 'given nil, returns a null object' do
       expect(Null(nil).class).to be(ConvertableNull)
     end
-  
+
     specify 'given a null object, returns the same null object' do
       null = ConvertableNull.get
       expect(Null(null)).to be(null)
     end
-  
+
     specify 'given anything in null_equivalents, return a null object' do
       expect(Null("").class).to be(ConvertableNull)
     end
-  
+
     specify 'given anything else, raises an ArgumentError' do
       expect{Null(false)}.to raise_error(ArgumentError)
       expect{Null("hello")}.to raise_error(ArgumentError)
     end
-  
+
     it 'generates null objects with useful trace info' do
       null = Null(); line = __LINE__
       expect(null.__line__).to eq(line)
       expect(null.__file__).to eq(__FILE__)
     end
-  
+
   end
   describe 'Maybe()' do
     include ConvertableNull::Conversions
-  
+
     specify 'given nil, returns a null object' do
       expect(Maybe(nil).class).to be(ConvertableNull)
     end
-  
+
     specify 'given a null object, returns the same null object' do
       null = ConvertableNull.get
       expect(Maybe(null)).to be(null)
     end
-  
+
     specify 'given anything in null_equivalents, return a null object' do
       expect(Maybe("").class).to be(ConvertableNull)
     end
-  
+
     specify 'given anything else, returns the input unchanged' do
       expect(Maybe(false)).to be(false)
       str = "hello"
       expect(Maybe(str)).to be(str)
     end
-  
+
     it 'generates null objects with useful trace info' do
       null = Maybe(); line = __LINE__
       expect(null.__line__).to eq(line)
       expect(null.__file__).to eq(__FILE__)
-    end  
-   
+    end
+
     it 'also works with blocks' do
       expect(Maybe{nil}.class).to eq(ConvertableNull)
       expect(Maybe{"foo"}).to eq("foo")
@@ -388,19 +388,19 @@ module Naught
   end
   describe 'Just()' do
     include ConvertableNull::Conversions
-  
+
     specify 'passes non-nullish values through' do
       expect(Just(false)).to be(false)
       str = "hello"
       expect(Just(str)).to be(str)
     end
-  
+
     specify 'rejects nullish values' do
       expect{Just(nil)}.to raise_error(ArgumentError)
       expect{Just("")}.to raise_error(ArgumentError)
       expect{Just(ConvertableNull.get)}.to raise_error(ArgumentError)
     end
-  
+
     it 'also works with blocks' do
       expect{Just{nil}.class}.to raise_error(ArgumentError)
       expect(Just{"foo"}).to eq("foo")
@@ -408,19 +408,19 @@ module Naught
   end
   describe 'Actual()' do
     include ConvertableNull::Conversions
-  
+
     specify 'given a null object, returns nil' do
       null = ConvertableNull.get
       expect(Actual(null)).to be_nil
     end
-  
+
     specify 'given anything else, returns the input unchanged' do
       expect(Actual(false)).to be(false)
       str = "hello"
       expect(Actual(str)).to be(str)
       expect(Actual(nil)).to be_nil
     end
-  
+
     it 'also works with blocks' do
       expect(Actual{ConvertableNull.new}).to be_nil
       expect(Actual{"foo"}).to eq("foo")
