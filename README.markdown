@@ -1,3 +1,6 @@
+[![Build Status](https://travis-ci.org/avdi/naught.png?branch=master)](https://travis-ci.org/avdi/naught)
+[![Code Climate](https://codeclimate.com/github/avdi/naught.png)](https://codeclimate.com/github/avdi/naught)
+
 A quick intro to Naught
 -------------------------
 
