@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.email         = ["avdi@avdi.org"]
   spec.description   = %q{Naught is a toolkit for building Null Objects}
   spec.summary       = %q{Naught is a toolkit for building Null Objects}
-  spec.homepage      = "http://github/avdi/naught"
+  spec.homepage      = "https://github.com/avdi/naught"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files`.split($/)
