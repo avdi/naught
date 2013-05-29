@@ -338,3 +338,10 @@ be included into your classes.
 * Who's responsible
 
   Naught is by [[http://devblog.avdi.org/][Avdi Grimm]].
+* Further reading
+  
+  - [[http://www.two-sdg.demon.co.uk/curbralan/papers/europlop/NullObject.pdf][Null Object: Something for Nothing]] (PDF) by Kevlin Henny
+  - [[http://www.cs.oberlin.edu/~jwalker/refs/woolf.ps][The Null Object Pattern]] (PS) by Bobby Woolf
+  - [[http://www.c2.com/cgi/wiki?NullObject][NullObject]] on WikiWiki
+  - [[http://en.wikipedia.org/wiki/Null_Object_pattern][Null Object pattern]] on Wikipedia
+  - [[http://devblog.avdi.org/2011/05/30/null-objects-and-falsiness/][Null Objects and Falsiness]], by Avdi Grimm
