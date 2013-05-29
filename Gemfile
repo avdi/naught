@@ -5,4 +5,5 @@ gemspec
 
 group :test do
   gem "libnotify"
+  gem 'coveralls', require: false
 end
