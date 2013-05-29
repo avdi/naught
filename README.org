@@ -156,7 +156,7 @@ Gotcha covered.
   z                               # => nil
 #+END_SRC
 
-*How about a null object that only stubs out the methods from a specific class*
+*How about a null object that only stubs out the methods from a specific class?*
 
 That's what =mimic= is for.
 
