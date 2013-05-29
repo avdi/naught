@@ -359,6 +359,14 @@ Who's responsible
 
 Naught is by [Avdi Grimm](http://devblog.avdi.org/).
 
+Prior Art
+---------
+
+This isn't the first Ruby Null Object library. Others to check out include:
+
+ - [NullAndVoid](https://github.com/jfelchner/null_and_void)
+
+
 Further reading
 -----------------
 
