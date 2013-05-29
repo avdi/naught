@@ -8,9 +8,9 @@ Gem::Specification.new do |spec|
   spec.version       = Naught::VERSION
   spec.authors       = ["Avdi Grimm"]
   spec.email         = ["avdi@avdi.org"]
-  spec.description   = %q{TODO: Write a gem description}
-  spec.summary       = %q{TODO: Write a gem summary}
-  spec.homepage      = ""
+  spec.description   = %q{Naught is a toolkit for building Null Objects}
+  spec.summary       = %q{Naught is a toolkit for building Null Objects}
+  spec.homepage      = "http://github/avdi/naught"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files`.split($/)
