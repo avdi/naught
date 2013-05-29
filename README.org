@@ -337,4 +337,4 @@ be included into your classes.
 
 * Who's responsible
 
-  Naught is by [[http://devblog.avdi.org][Avdi Grimm]].
+  Naught is by [[http://devblog.avdi.org/][Avdi Grimm]].
