@@ -124,22 +124,6 @@ module Naught
       end
     end
 
-    def mimic(class_to_mimic, options={})
-      include_super = options.fetch(:include_super) { true }
-      @base_class   = root_class_of(class_to_mimic)
-      @inspect_proc = -> { "<null:#{class_to_mimic}>" }
-      defer do |subject|
-        subject.module_eval do
-          methods = class_to_mimic.instance_methods(include_super) -
-            Object.instance_methods
-          methods.each do |method_name|
-            define_method(method_name) {|*| nil}
-          end
-        end
-      end
-      @interface_defined = true
-    end
-
     def black_hole
       @stub_strategy = :stub_method_returning_self
     end
