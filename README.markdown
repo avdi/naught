@@ -1,13 +1,3 @@
-Table of Contents
------------------
-
--   [A quick intro to Naught](#sec-1)
--   [Installation](#sec-2)
--   [Requirements](#sec-3)
--   [Contributing](#sec-4)
--   [Who's responsible](#sec-5)
--   [Further reading](#sec-6)
-
 A quick intro to Naught
 -------------------------
 
