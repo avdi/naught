@@ -372,7 +372,7 @@ Further reading
 
 -   [Null Object: Something for
     Nothing](http://www.two-sdg.demon.co.uk/curbralan/papers/europlop/NullObject.pdf)
-    (PDF) by Kevlin Henny
+    (PDF) by Kevlin Henney
 -   [The Null Object
     Pattern](http://www.cs.oberlin.edu/~jwalker/refs/woolf.ps) (PS) by
     Bobby Woolf
