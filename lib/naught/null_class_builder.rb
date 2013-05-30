@@ -160,6 +160,10 @@ module Naught
       @base_class = class_to_impersonate
     end
 
+    def base_class(base_object, options={})
+      @base_class = base_object
+    end
+
     def traceable
       defer do |subject|
         subject.module_eval do
@@ -190,6 +194,13 @@ module Naught
           def self.get(*)
             instance
           end
+
+          %w(dup clone).each do |method_name|
+            define_method method_name do
+              instance
+            end
+          end
+
         end
       end
     end
