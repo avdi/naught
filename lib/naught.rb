@@ -1,6 +1,6 @@
 require "naught/version"
 require 'naught/null_class_builder'
-require 'naught/null_class_builder/commands/define_explicit_conversions'
+require 'naught/null_class_builder/commands'
 
 module Naught
   def self.build(&customization_block)
