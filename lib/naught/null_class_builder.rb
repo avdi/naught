@@ -6,6 +6,8 @@ module Naught
     module Commands
     end
 
+    attr_accessor :base_class
+
     def initialize
       @interface_defined = false
       @base_class        = BasicObject
@@ -144,6 +146,13 @@ module Naught
           def self.get(*)
             instance
           end
+
+          %w(dup clone).each do |method_name|
+            define_method method_name do
+              instance
+            end
+          end
+
         end
       end
     end
