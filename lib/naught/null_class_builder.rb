@@ -78,14 +78,6 @@ module Naught
     #
     # See also the contents of lib/naught/null_class_builder/commands
     ############################################################################
-    def define_implicit_conversions
-      defer do |subject|
-        subject.module_eval do
-          def to_ary; []; end
-          def to_str; ''; end
-        end
-      end
-    end
 
     def black_hole
       @stub_strategy = :stub_method_returning_self

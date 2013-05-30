@@ -1,11 +1,9 @@
+require 'naught/null_class_builder/command'
 
 module Naught
   class NullClassBuilder
     module Commands
-      class DefineExplicitConversions
-        def initialize(builder)
-          @builder = builder
-        end
+      class DefineExplicitConversions < ::Naught::NullClassBuilder::Command
 
         def call
           defer do |subject|
@@ -21,9 +19,6 @@ module Naught
           end
         end
 
-        def defer(&block)
-          @builder.defer(&block)
-        end
       end
     end
   end
