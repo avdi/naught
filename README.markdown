@@ -112,7 +112,7 @@ null << "hello" << "world"         # => <null>
 
 That's what you use to customize the generated class to your
 liking. Internally, Naught uses the [Builder
-Pattern](http://en.wikipedia.org/wiki/Builder_pattern) to make this work.
+Pattern](http://en.wikipedia.org/wiki/Builder_pattern) to make this work..
 
 **Whatever. What if I want a null object that has conversions to
 Integer, String, etc. using sensible conversions to "zero values"?**
@@ -365,6 +365,7 @@ Prior Art
 This isn't the first Ruby Null Object library. Others to check out include:
 
  - [NullAndVoid](https://github.com/jfelchner/null_and_void)
+ - [BlankSlate](https://github.com/saturnflyer/blank_slate)
 
 
 Further reading
