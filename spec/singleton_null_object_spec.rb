@@ -19,12 +19,12 @@ describe 'singleton null object' do
 
   it 'can be cloned' do
     null = null_class.instance
-    expect(null.clone).to be_nil
+    expect(null.clone).to be(null)
   end
 
   it 'can be duplicated' do
     null = null_class.instance
-    expect(null.dup).to be_nil
+    expect(null.dup).to be(null)
   end
   it 'aliases .instance to .get' do
     expect(null_class.get).to be null_class.instance
