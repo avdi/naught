@@ -29,11 +29,11 @@ describe 'null object base class could be configured' do
     end
 
     it 'can be cloned' do
-      expect(null_instance.clone).to be_nil
+      expect(null_instance.clone).to be(null_instance)
     end
 
     it 'can be duplicated' do
-      expect(null_instance.dup).to be_nil
+      expect(null_instance.dup).to be(null_instance)
     end
   end
 end

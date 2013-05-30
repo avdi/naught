@@ -197,7 +197,7 @@ module Naught
 
           %w(dup clone).each do |method_name|
             define_method method_name do
-              instance
+              self
             end
           end
 
