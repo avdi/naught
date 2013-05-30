@@ -98,8 +98,8 @@ OK.
 ```ruby
 require 'naught'
 
-BlackHole = Naught.build do |b|
-  b.black_hole
+BlackHole = Naught.build do |config|
+  config.black_hole
 end
 
 null = BlackHole.new
@@ -108,11 +108,11 @@ null.foo.bar.baz                   # => <null>
 null << "hello" << "world"         # => <null>
 ```
 
-**What's that "b" thing?**
+**What's that "config" thing?**
 
-That stands for "builder". Naught uses the [Builder
-Pattern](http://en.wikipedia.org/wiki/Builder_pattern) for rolling
-custom null object classes.
+That's what you use to customize the generated class to your
+liking. Internally, Naught uses the [Builder
+Pattern](http://en.wikipedia.org/wiki/Builder_pattern) to make this work.
 
 **Whatever. What if I want a null object that has conversions to
 Integer, String, etc. using sensible conversions to "zero values"?**
@@ -122,8 +122,8 @@ We can do that.
 ```ruby
 require 'naught'
 
-NullObject = Naught.build do |b|
-  b.define_explicit_conversions
+NullObject = Naught.build do |config|
+  config.define_explicit_conversions
 end
 
 null = NullObject.new
@@ -146,8 +146,8 @@ Gotcha covered.
 ```ruby
 require 'naught'
 
-NullObject = Naught.build do |b|
-  b.define_implicit_conversions
+NullObject = Naught.build do |config|
+  config.define_implicit_conversions
 end
 
 null = NullObject.new
@@ -173,8 +173,8 @@ That's what `mimic` is for.
 ```ruby
 require 'naught'
 
-NullIO = Naught.build do |b|
-  b.mimic IO
+NullIO = Naught.build do |config|
+  config.mimic IO
 end
 
 null_io = NullIO.new
@@ -193,8 +193,8 @@ is handy when refitting legacy code that contains type checks.
 ```ruby
 require 'naught'
 
-NullIO = Naught.build do |b|
-  b.impersonate IO
+NullIO = Naught.build do |config|
+  config.impersonate IO
 end
 
 null_io = NullIO.new
@@ -217,8 +217,8 @@ Not a problem, just define them in the `.build` block.
 ```ruby
 require 'naught'
 
-NullObject = Naught.build do |b|
-  b.define_explicit_conversions
+NullObject = Naught.build do |config|
+  config.define_explicit_conversions
   def to_path
     "/dev/null"
   end
@@ -242,8 +242,8 @@ generally have no state.
 ```ruby
 require 'naught'
 
-NullObject = Naught.build do |b|
-  b.singleton
+NullObject = Naught.build do |config|
+  config.singleton
 end
 
 null = NullObject.instance
@@ -262,8 +262,8 @@ handy for playing "where'd that null come from?!" Try doing *that* with
 ```ruby
 require 'naught'
 
-NullObject = Naught.build do |b|
-  b.traceable
+NullObject = Naught.build do |config|
+  config.traceable
 end
 
 null = NullObject.new           # line 7
@@ -279,11 +279,11 @@ global variable (set with the `-d` option to ruby) to choose which one.
 ```ruby
 require 'naught'
 
-NullObject = Naught.build do |b|
+NullObject = Naught.build do |config|
   if $DEBUG
-    b.traceable
+    config.traceable
   else
-    b.singleton
+    config.singleton
   end
 end  
 ```
