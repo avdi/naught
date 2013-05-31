@@ -137,7 +137,7 @@ null.to_c                          # => (0+0i)
 null.to_r                          # => (0/1)
 ```
 
-**Ah, but what about implicit conversions such as \#to~str~? Like what
+**Ah, but what about implicit conversions such as `#to_str`? Like what
 if I want a null object that implicitly splats the same way as an empty
 array?**
 
