@@ -3,15 +3,11 @@ require 'logger'
 
 describe 'null object mimicking a class' do
   class User
-    def login
-      "bob"
-    end
+    def login; "bob"; end
   end
 
   module Authorizable
-    def authorized_for?(object)
-      true
-    end
+    def authorized_for?(object); true; end
   end
 
   class LibraryPatron < User
@@ -19,9 +15,7 @@ describe 'null object mimicking a class' do
 
     def member?; true; end
     def name; "Bob"; end
-    def notify_of_overdue_books(titles)
-      puts "Notifying Bob his books are overdue..."
-    end
+    def notify_of_overdue_books(titles); puts 'Notifying...'; end
   end
 
   subject(:null) { mimic_class.new }
@@ -106,5 +100,23 @@ describe 'using mimic with black_hole' do
     }
 
     it_behaves_like_a_black_hole_mimic
+  end
+
+end
+
+describe 'mimicking a non-Object-derived class' do
+  class MinimalClass < BasicObject
+  end
+
+  subject(:null) { mimic_class.new }
+  let(:mimic_class) {
+    Naught.build do |b|
+      b.mimic MinimalClass
+    end
+  }
+
+  it 'generates a BasicObject-derived null class' do
+    expect(BasicObject).to be === null
+    expect(Object).not_to be === null
   end
 end

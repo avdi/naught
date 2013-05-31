@@ -70,9 +70,11 @@ module Naught
       end
     end
 
-    def respond_to_missing?(method_name, *args)
+    def respond_to_missing?(method_name, include_private=false)
       command_name = command_name_for_method(method_name)
       Commands.const_defined?(command_name) || super
+    rescue NameError
+      super
     end
 
     ############################################################################
@@ -206,9 +208,7 @@ module Naught
     end
 
     def command_name_for_method(method_name)
-      command_name = method_name.to_s.
-        gsub(/_(\w)/){ $1.upcase }.
-        gsub(/\A(\w)/){ $1.upcase }
+      command_name = method_name.to_s.gsub(/(?:^|_)([a-z])/) { $1.upcase }
     end
 
     def root_class_of(klass)
