@@ -86,7 +86,7 @@ module Naught
     end
 
     def respond_to_any_message
-      defer do |subject|
+      defer(prepend: true) do |subject|
         subject.module_eval do
           def respond_to?(*)
             true
@@ -131,10 +131,11 @@ module Naught
     end
 
     def defer(options={}, &deferred_operation)
-      if options[:class]
-        class_operations << deferred_operation
+      list = options[:class] ? class_operations : operations
+      if options[:prepend]
+        list.unshift(deferred_operation)
       else
-        operations << deferred_operation
+        list << deferred_operation
       end
     end
 
