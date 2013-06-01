@@ -162,9 +162,7 @@ module Naught
 
     def define_basic_methods
       defer do |subject|
-        # make local variable to be accessible to Class.new block
-        inspect_proc = @inspect_proc
-        subject.module_eval do
+        subject.module_exec(@inspect_proc) do |inspect_proc|
           define_method(:inspect, &inspect_proc)
           def initialize(*)
           end
