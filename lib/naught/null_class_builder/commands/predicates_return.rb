@@ -19,8 +19,7 @@ module Naught
         private
 
         def define_method_missing(subject)
-          return_value = @predicate_return_value
-          subject.module_eval do
+          subject.module_exec(@predicate_return_value) do |return_value|
             if subject.method_defined?(:method_missing)
               original_method_missing = instance_method(:method_missing)
               define_method(:method_missing) do
@@ -36,8 +35,7 @@ module Naught
         end
 
         def define_predicate_methods(subject)
-          return_value = @predicate_return_value
-          subject.module_eval do
+          subject.module_exec(@predicate_return_value) do |return_value|
             instance_methods.each do |method_name|
               if method_name.to_s.end_with?('?')
                 define_method(method_name) do |*|
