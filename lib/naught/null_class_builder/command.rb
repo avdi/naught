@@ -7,7 +7,7 @@ module Naught
 
       def call
         raise NotImplementedError,
-              "Method #call should be overriden in child classes"
+              "Method #call should be overridden in child classes"
       end
 
       def defer(&block)

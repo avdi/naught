@@ -15,6 +15,7 @@ module Naught
               def to_r; 0.to_r; end
               def to_a; []; end
               def to_h; {}; end
+              def to_json; 'null'; end if defined?(JSON);
             end
           end
         end

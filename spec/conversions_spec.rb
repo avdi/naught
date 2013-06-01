@@ -16,5 +16,19 @@ describe 'explicitly convertable null object' do
     expect(null.to_c).to eq(Complex(0))
     expect(null.to_r).to eq(Rational(0))
     expect(null.to_h).to eq({})
+    expect(null.to_json).to eq(nil)
+  end
+
+  context "Conversions added based on environment" do
+    let(:null_class) {
+      Naught.build do |b|
+        require 'json'
+        b.define_explicit_conversions
+      end
+    }
+
+    subject(:null) { null_class.new }
+
+    specify { expect(null.to_json).to eq('null') }
   end
 end
