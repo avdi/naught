@@ -42,9 +42,9 @@ module Naught
       generation_mod    = Module.new
       customization_mod = customization_module # get a local binding
       builder           = self
-      @operations.each do |operation|
-        operation.call(generation_mod)
-      end
+
+      apply_operations(@operations, generation_mod)
+
       null_class = Class.new(@base_class) do
         const_set :GeneratedMethods, generation_mod
         const_set :Customizations, customization_mod
@@ -54,9 +54,9 @@ module Naught
         include generation_mod
         include customization_mod
       end
-      class_operations.each do |operation|
-        operation.call(null_class)
-      end
+
+      apply_operations(class_operations, null_class)
+
       null_class
     end
 
@@ -166,6 +166,12 @@ module Naught
     end
 
     private
+
+    def apply_operations(operations, module_or_class)
+      operations.each do |operation|
+        operation.call(module_or_class)
+      end
+    end
 
     def define_basic_instance_methods
       defer do |subject|
