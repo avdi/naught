@@ -161,6 +161,13 @@ module Naught
     end
 
     def define_basic_methods
+      define_basic_instance_methods
+      define_basic_class_methods
+    end
+
+    private
+
+    def define_basic_instance_methods
       defer do |subject|
         subject.module_exec(@inspect_proc) do |inspect_proc|
           define_method(:inspect, &inspect_proc)
@@ -168,6 +175,9 @@ module Naught
           end
         end
       end
+    end
+
+    def define_basic_class_methods
       defer(class: true) do |subject|
         subject.module_eval do
           class << self
@@ -178,8 +188,6 @@ module Naught
         end
       end
     end
-
-    private
 
     def class_operations
       @class_operations ||= []
