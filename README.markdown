@@ -6,12 +6,12 @@
 A quick intro to Naught
 -------------------------
 
-**What's all this now then?**
+#### What's all this now then?
 
 Naught is a toolkit for building [Null
 Objects](http://en.wikipedia.org/wiki/Null_Object_pattern) in Ruby.
 
-**What's that supposed to mean?**
+#### What's that supposed to mean?
 
 Null Objects can make your code more
 [confident](http://confidentruby.com).
@@ -53,11 +53,11 @@ By providing a `NullLogger` which implements [some of] the `Logger`
 interface as no-op methods, we've gotten rid of those unsightly `&&`
 operators.
 
-**That was simple enough. Why do I need a library for it?**
+#### That was simple enough. Why do I need a library for it?
 
 You don't! The Null Object pattern is a very simple one at its core.
 
-**And yet here we are…**
+#### And yet here we are…
 
 Yes. While you don't *need* a Null Object library, this one offers some
 conveniences you probably won't find elsewhere.
@@ -65,11 +65,11 @@ conveniences you probably won't find elsewhere.
 But there's an even more important reason I wrote this library. In the
 immortal last words of James T. Kirk: "It was… *fun!*"
 
-**OK, so how do I use this thing?**
+#### OK, so how do I use this thing?
 
 Well, what would you like to do?
 
-**I dunno, gimme an object that responds to any message with nil**
+#### I dunno, gimme an object that responds to any message with nil
 
 Sure thing!
 
@@ -83,15 +83,14 @@ null.foo                        # => nil
 null.bar                        # => nil
 ```
 
-**That was… weird. What's with this "build" business?**
+#### That was… weird. What's with this "build" business?
 
 Naught is a *toolkit* for building null object classes. It is not a
 one-size-fits-all solution.
 
 What else can I make for you?
 
-**How about a "black hole" null object that supports infinite chaining
-of methods?**
+#### How about a "black hole" null object that supports infinite chaining of methods?
 
 OK.
 
@@ -108,14 +107,13 @@ null.foo.bar.baz                   # => <null>
 null << "hello" << "world"         # => <null>
 ```
 
-**What's that "config" thing?**
+### What's that "config" thing?
 
 That's what you use to customize the generated class to your
 liking. Internally, Naught uses the [Builder
 Pattern](http://en.wikipedia.org/wiki/Builder_pattern) to make this work..
 
-**Whatever. What if I want a null object that has conversions to
-Integer, String, etc. using sensible conversions to "zero values"?**
+#### Whatever. What if I want a null object that has conversions to Integer, String, etc. using sensible conversions to "zero values"?
 
 We can do that.
 
@@ -137,9 +135,7 @@ null.to_c                          # => (0+0i)
 null.to_r                          # => (0/1)
 ```
 
-**Ah, but what about implicit conversions such as `#to_str`? Like what
-if I want a null object that implicitly splats the same way as an empty
-array?**
+#### Ah, but what about implicit conversions such as `#to_str`? Like what if I want a null object that implicitly splats the same way as an empty array?
 
 Gotcha covered.
 
@@ -165,8 +161,7 @@ y                               # => nil
 z                               # => nil
 ```
 
-**How about a null object that only stubs out the methods from a
-specific class?**
+#### How about a null object that only stubs out the methods from a specific class?
 
 That's what `mimic` is for.
 
@@ -210,7 +205,7 @@ end
 # >> Yep, checks out!
 ```
 
-**Alright smartypants. What if I want to add my own methods?**
+#### Alright smartypants. What if I want to add my own methods?
 
 Not a problem, just define them in the `.build` block.
 
@@ -234,7 +229,7 @@ null.to_s                       # => "NOTHING TO SEE HERE MOVE ALONG"
 null.to_path                    # => "/dev/null"
 ```
 
-**Got anything else up your sleeve?**
+#### Got anything else up your sleeve?
 
 Well, we can make the null class a singleton, since null objects
 generally have no state.
@@ -298,7 +293,7 @@ singleton or not.
 NullObject.get                  # => <null>
 ```
 
-**Are you done yet?**
+#### Are you done yet?
 
 Just one more thing. For maximum convenience, Naught-generated null
 classes also come with a full suite of conversion functions which can be
