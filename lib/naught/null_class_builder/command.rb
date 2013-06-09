@@ -10,8 +10,8 @@ module Naught
               "Method #call should be overriden in child classes"
       end
 
-      def defer(&block)
-        @builder.defer(&block)
+      def defer(options={}, &block)
+        @builder.defer(options, &block)
       end
     end
   end
