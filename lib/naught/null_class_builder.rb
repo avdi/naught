@@ -220,7 +220,7 @@ module Naught
     end
 
     def command_name_for_method(method_name)
-      command_name = method_name.to_s.gsub(/(?:^|_)([a-z])/) { $1.upcase }
+      method_name.to_s.gsub(/(?:^|_)([a-z])/) { $1.upcase }
     end
 
     def root_class_of(klass)
