@@ -15,7 +15,7 @@ module Naught
     end
 
     it 'translates method calls into command invocations including arguments' do
-      test_command = stub
+      test_command = double
       NullClassBuilder::Commands::TestCommand.should_receive(:new).
         with(builder, "foo", 42).
         and_return(test_command)
