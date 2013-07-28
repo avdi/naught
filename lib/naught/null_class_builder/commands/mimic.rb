@@ -4,6 +4,8 @@ module Naught
   class NullClassBuilder
     module Commands
       class Mimic < Naught::NullClassBuilder::Command
+        attr_reader :class_to_mimic, :include_super
+
         def initialize(builder, class_to_mimic, options={})
           super(builder)
 
@@ -17,10 +19,8 @@ module Naught
 
         def call
           defer do |subject|
-            methods = @class_to_mimic.instance_methods(@include_super) -
-              Object.instance_methods
-            methods.each do |method_name|
-              @builder.stub_method(subject, method_name)
+            methods_to_stub.each do |method_name|
+              builder.stub_method(subject, method_name)
             end
           end
         end
@@ -33,6 +33,10 @@ module Naught
           else
             BasicObject
           end
+        end
+
+        def methods_to_stub
+          class_to_mimic.instance_methods(include_super) - Object.instance_methods
         end
       end
     end

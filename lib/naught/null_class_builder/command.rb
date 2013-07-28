@@ -1,6 +1,8 @@
 module Naught
   class NullClassBuilder
     class Command
+      attr_reader :builder
+
       def initialize(builder)
         @builder = builder
       end
