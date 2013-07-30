@@ -293,6 +293,38 @@ singleton or not.
 NullObject.get                  # => <null>
 ```
 
+#### And if I want to know legacy code better?
+
+Naught can make a null object behave as a pebble object.
+
+```ruby
+require 'naught'
+
+NullObject = Naught.build do |config|
+  if $DEBUG
+    config.pebble
+  else
+    config.black_hole
+  end
+end
+```
+
+Now you can pass the pebble object to your code and see which messages are sent to the pebble.
+
+```ruby
+null = NullObject.new
+
+class MyConsumer < Struct.new(:producer)
+  def consume
+    producer.produce
+  end
+end
+
+MyConsumer.new(null).consume
+# >> produce() from consume
+# => <null>
+```
+
 #### Are you done yet?
 
 Just one more thing. For maximum convenience, Naught-generated null
