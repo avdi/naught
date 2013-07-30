@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'stringio'
 
 describe 'pebble null object' do
   class Caller
@@ -9,27 +10,26 @@ describe 'pebble null object' do
 
   subject(:null) { null_class.new }
   let(:null_class) {
+    output = test_output # getting local binding
     Naught.build do |b|
-      b.pebble
+      b.pebble output
     end
   }
 
-  before do
-    allow(Kernel).to receive(:p)
-  end
+  let(:test_output) { StringIO.new }
 
   it 'prints the name of the method called' do
-    expect(Kernel).to receive(:p).with(/^info\(\)/)
+    expect(test_output).to receive(:puts).with(/^info\(\)/)
     null.info
   end
 
   it 'prints the arguments received' do
-    expect(Kernel).to receive(:p).with(/^info\(\'foo\', 5, \:sym\)/)
+    expect(test_output).to receive(:puts).with(/^info\(\'foo\', 5, \:sym\)/)
     null.info("foo", 5, :sym)
   end
 
   it 'prints the name of the caller' do
-    expect(Kernel).to receive(:p).with(/from call_method$/)
+    expect(test_output).to receive(:puts).with(/from call_method$/)
     Caller.new.call_method(null)
   end
 

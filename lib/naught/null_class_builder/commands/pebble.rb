@@ -5,12 +5,18 @@ module Naught
     module Commands
       class Pebble < ::Naught::NullClassBuilder::Command
 
+        def initialize(builder, output=$stdout)
+          @builder = builder
+          @output = output
+        end
+
         def call
           defer do |subject|
-            subject.module_eval do
-              def method_missing(name, *args)
+            subject.module_exec(@output) do |output|
+
+              define_method(:method_missing) do |method_name, *args, &block|
                 pretty_args = args.map(&:inspect).join(", ").gsub("\"", "'")
-                Kernel.p "#{name}(#{pretty_args}) from #{parse_caller}"
+                output.puts "#{method_name}(#{pretty_args}) from #{parse_caller}"
                 self
               end
 
@@ -18,7 +24,7 @@ module Naught
 
               def parse_caller
                 caller = Kernel.caller(2).first
-                method_name = caller.match(/\`(\w+)/)
+                method_name = caller.match(/\`([\w\s]+)/)
                 method_name ? method_name[1] : caller
               end
             end
