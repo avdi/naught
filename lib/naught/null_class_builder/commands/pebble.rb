@@ -24,7 +24,7 @@ module Naught
 
               def parse_caller
                 caller = Kernel.caller(2).first
-                method_name = caller.match(/\`([\w\s]+)/)
+                method_name = caller.match(/\`([\w\s]+(\(\d+\s\w+\))?[\w\s]*)/)
                 method_name ? method_name[1] : caller
               end
             end
