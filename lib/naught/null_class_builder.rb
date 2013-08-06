@@ -43,7 +43,7 @@ module Naught
       customization_mod = customization_module # get a local binding
       builder           = self
 
-      apply_operations(@operations, generation_mod)
+      apply_operations(operations, generation_mod)
 
       null_class = Class.new(@base_class) do
         const_set :GeneratedMethods, generation_mod
