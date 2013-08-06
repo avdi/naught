@@ -6,7 +6,7 @@ module Naught
     module Commands
     end
 
-    attr_accessor :base_class
+    attr_accessor :base_class, :inspect_proc, :interface_defined
 
     def initialize
       @interface_defined = false
@@ -99,39 +99,6 @@ module Naught
       @interface_defined = true
     end
 
-    def mimic(class_to_mimic, options={})
-      include_super = options.fetch(:include_super) { true }
-      @base_class   = root_class_of(class_to_mimic)
-      @inspect_proc = -> { "<null:#{class_to_mimic}>" }
-      defer do |subject|
-        methods = class_to_mimic.instance_methods(include_super) -
-          Object.instance_methods
-        methods.each do |method_name|
-          stub_method(subject, method_name)
-        end
-      end
-      @interface_defined = true
-    end
-
-    def impersonate(class_to_impersonate, options={})
-      mimic(class_to_impersonate, options)
-      @base_class = class_to_impersonate
-    end
-
-    def traceable
-      defer do |subject|
-        subject.module_eval do
-          attr_reader :__file__, :__line__
-
-          def initialize(options={})
-            backtrace = options.fetch(:caller) { Kernel.caller(4) }
-            @__file__, line, _ = backtrace[0].split(':')
-            @__line__ = line.to_i
-          end
-         end
-      end
-    end
-
     def defer(options={}, &deferred_operation)
       list = options[:class] ? class_operations : operations
       if options[:prepend]
@@ -141,31 +108,16 @@ module Naught
       end
     end
 
-    def singleton
-      defer(class: true) do |subject|
-        require 'singleton'
-        subject.module_eval do
-          include Singleton
-          def self.get(*)
-            instance
-          end
-
-          %w(dup clone).each do |method_name|
-            define_method method_name do
-              self
-            end
-          end
-
-        end
-      end
+    def stub_method(subject, name)
+      send(@stub_strategy, subject, name)
     end
+
+    private
 
     def define_basic_methods
       define_basic_instance_methods
       define_basic_class_methods
     end
-
-    private
 
     def apply_operations(operations, module_or_class)
       operations.each do |operation|
@@ -203,10 +155,6 @@ module Naught
       @operations ||= []
     end
 
-    def stub_method(subject, name)
-      send(@stub_strategy, subject, name)
-    end
-
     def stub_method_returning_nil(subject, name)
       subject.module_eval do
         define_method(name) {|*| nil }
@@ -222,14 +170,5 @@ module Naught
     def command_name_for_method(method_name)
       method_name.to_s.gsub(/(?:^|_)([a-z])/) { $1.upcase }
     end
-
-    def root_class_of(klass)
-      if klass.ancestors.include?(Object)
-        Object
-      else
-        BasicObject
-      end
-    end
-
   end
 end
