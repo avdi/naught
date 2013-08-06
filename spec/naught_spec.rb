@@ -26,6 +26,7 @@ describe 'null object impersonating another type' do
     expect{null.foo}.to raise_error(NoMethodError)
   end
 end
+
 describe 'traceable null object' do
   subject(:trace_null) {
     null_object_and_line.first
@@ -48,6 +49,7 @@ describe 'traceable null object' do
   it 'remembers the line it was instantiated from' do
     expect(trace_null.__line__).to eq(instantiation_line)
   end
+
   def make_null
     trace_null_class.get(caller: caller(1))
   end
@@ -57,6 +59,7 @@ describe 'traceable null object' do
     expect(obj.__line__).to eq(line)
   end
 end
+
 describe 'customized null object' do
   subject(:custom_null) { custom_null_class.new }
   let(:custom_null_class) {
