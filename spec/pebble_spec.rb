@@ -46,29 +46,17 @@ describe 'pebble null object' do
   end
 
   context "when is called from a block" do
-    it "prints the indication of a block" do
-      expect(test_output).to receive(:puts).twice.
-        with(/from block/)
-      Caller.new.call_method_inside_block(null)
-    end
-
     it "prints the name of the method that has the block" do
       expect(test_output).to receive(:puts).twice.
-        with(/in call_method_inside_block$/)
+        with(/call_method_inside_block$/)
       Caller.new.call_method_inside_block(null)
     end
   end
 
   context "when is called from many levels blocks" do
-    it "prints the indication of blocks and its levels" do
-      expect(test_output).to receive(:puts).exactly(4).times.
-        with(/from block \(2 levels\)/)
-      Caller.new.call_method_inside_nested_block(null)
-    end
-
     it "prints the name of the method that has the block" do
       expect(test_output).to receive(:puts).exactly(4).times.
-        with(/in call_method_inside_nested_block$/)
+        with(/call_method_inside_nested_block$/)
       Caller.new.call_method_inside_nested_block(null)
     end
   end
