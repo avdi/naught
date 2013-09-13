@@ -3,6 +3,7 @@ module RubyEngine
   def self.engine_mappings
     {
       'ruby' => MRI,
+      'rbx' => RBX,
       'jruby' => JRuby,
     }
   end
@@ -20,6 +21,12 @@ module RubyEngine
   module MRI
     def self.backtrace_initialization_offset
       4
+    end
+  end
+
+  module RBX
+    def self.backtrace_initialization_offset
+      3
     end
   end
 
