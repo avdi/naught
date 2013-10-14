@@ -21,9 +21,9 @@ Here's a method that's not very sure of itself.
 ```ruby
 class Geordi
   def make_it_so(logger=nil)
-    logger && logger.info "Reversing the flux phase capacitance!"
-    logger && logger.info "Bounding a tachyon particle beam off of Data's cat!"
-    logger && logger.warn "Warning, bogon levels are rising!"
+    logger && logger.info("Reversing the flux phase capacitance!")
+    logger && logger.info("Bounding a tachyon particle beam off of Data's cat!")
+    logger && logger.warn("Warning, bogon levels are rising!")
   end
 end
 ```
