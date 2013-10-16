@@ -10,7 +10,7 @@ module Naught
 
     def initialize
       @interface_defined = false
-      @base_class        = BasicObject
+      @base_class        = Object
       @inspect_proc      = ->{ "<null>" }
       @stub_strategy     = :stub_method_returning_nil
       define_basic_methods

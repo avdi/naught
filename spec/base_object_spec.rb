@@ -23,7 +23,7 @@ describe 'null object with a custom base class' do
     Naught.build do |b|
       default_base_class = b.base_class
     end
-    expect(default_base_class).to eq(BasicObject)
+    expect(default_base_class).to eq(Object)
   end
 
   describe 'singleton null object' do
