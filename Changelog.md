@@ -2,5 +2,5 @@
 
 Features:
 
-  - New "pebble" mode
+  - New "pebble" mode (Guilherme Carvalho)
       
