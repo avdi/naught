@@ -88,7 +88,7 @@ module Naught
     end
 
     def respond_to_any_message
-      defer(prepend: true) do |subject|
+      defer(:prepend => true) do |subject|
         subject.module_eval do
           def respond_to?(*)
             true
@@ -136,7 +136,7 @@ module Naught
     end
 
     def define_basic_class_methods
-      defer(class: true) do |subject|
+      defer(:class => true) do |subject|
         subject.module_eval do
           class << self
             alias get new

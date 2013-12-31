@@ -51,7 +51,7 @@ describe 'traceable null object' do
   end
 
   def make_null
-    trace_null_class.get(caller: caller(1))
+    trace_null_class.get(:caller => caller(1))
   end
 
   it 'can accept custom backtrace info' do

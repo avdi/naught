@@ -57,7 +57,7 @@ describe 'null object mimicking a class' do
   describe 'with include_super: false' do
     let(:mimic_class) {
       Naught.build do |b|
-        b.mimic LibraryPatron, include_super: false
+        b.mimic LibraryPatron, :include_super => false
       end
     }
 

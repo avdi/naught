@@ -18,7 +18,7 @@ module Naught
       case object
       when NullObjectTag then object
       when :nothing_passed, *null_equivs
-        null_class.get(caller: caller(1))
+        null_class.get(:caller => caller(1))
       else raise ArgumentError, "#{object.inspect} is not null!"
       end
     end
@@ -28,7 +28,7 @@ module Naught
       case object
       when NullObjectTag then object
       when *null_equivs
-        null_class.get(caller: caller(1))
+        null_class.get(:caller => caller(1))
       else
         object
       end
