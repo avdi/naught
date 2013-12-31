@@ -11,7 +11,7 @@ module Naught::NullClassBuilder::Commands
       @include_super = options.fetch(:include_super) { true }
 
       builder.base_class   = root_class_of(class_to_mimic)
-      builder.inspect_proc = -> { "<null:#{class_to_mimic}>" }
+      builder.inspect_proc = lambda { "<null:#{class_to_mimic}>" }
       builder.interface_defined = true
     end
 
