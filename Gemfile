@@ -17,3 +17,9 @@ group :test do
   gem 'mime-types', '~> 1.25', :platforms => [:jruby, :ruby_18]
   gem 'rspec', '~> 2.14'
 end
+
+platforms :rbx do
+  gem 'json'
+  gem 'rubinius-coverage', '~> 2.0'
+  gem 'rubysl', '~> 2.0'
+end
