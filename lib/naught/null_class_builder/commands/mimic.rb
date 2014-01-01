@@ -1,3 +1,4 @@
+require 'naught/basic_object'
 require 'naught/null_class_builder/command'
 
 module Naught::NullClassBuilder::Commands
@@ -29,7 +30,7 @@ module Naught::NullClassBuilder::Commands
       if klass.ancestors.include?(Object)
         Object
       else
-        BasicObject
+        Naught::BasicObject
       end
     end
 

@@ -103,20 +103,3 @@ describe 'using mimic with black_hole' do
   end
 
 end
-
-describe 'mimicking a non-Object-derived class' do
-  class MinimalClass < BasicObject
-  end
-
-  subject(:null) { mimic_class.new }
-  let(:mimic_class) {
-    Naught.build do |b|
-      b.mimic MinimalClass
-    end
-  }
-
-  it 'generates a BasicObject-derived null class' do
-    expect(BasicObject).to be === null
-    expect(Object).not_to be === null
-  end
-end

@@ -1,3 +1,4 @@
+require 'naught/basic_object'
 require 'naught/null_class_builder/conversions_module'
 
 module Naught
@@ -10,7 +11,7 @@ module Naught
 
     def initialize
       @interface_defined = false
-      @base_class        = BasicObject
+      @base_class        = Naught::BasicObject
       @inspect_proc      = lambda { "<null>" }
       @stub_strategy     = :stub_method_returning_nil
       define_basic_methods
