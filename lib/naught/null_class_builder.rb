@@ -71,11 +71,20 @@ module Naught
       end
     end
 
-    def respond_to_missing?(method_name, include_private=false)
-      command_name = command_name_for_method(method_name)
-      Commands.const_defined?(command_name) || super
-    rescue NameError
-      super
+    if RUBY_VERSION >= '1.9'
+      def respond_to_missing?(method_name, include_private=false)
+        command_name = command_name_for_method(method_name)
+        Commands.const_defined?(command_name) || super
+      rescue NameError
+        super
+      end
+    else
+      def respond_to?(method_name, include_private=false)
+        command_name = command_name_for_method(method_name)
+        Commands.const_defined?(command_name) || super
+      rescue NameError
+        super
+      end
     end
 
     ############################################################################
