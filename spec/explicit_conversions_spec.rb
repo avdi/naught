@@ -8,13 +8,10 @@ describe 'explicitly convertable null object' do
   }
   subject(:null) { null_class.new }
 
-  it "defines common explicit conversions to return zero values" do
-    expect(null.to_s).to eq("")
-    expect(null.to_a).to eq([])
-    expect(null.to_i).to eq(0)
-    expect(null.to_f).to eq(0.0)
-    expect(null.to_c).to eq(Complex(0))
-    expect(null.to_r).to eq(Rational(0))
-    expect(null.to_h).to eq({})
+  NIL_CONVERSION_METHODS.each do |conversion_method|
+    it "##{conversion_method} responds like nil" do
+      # We need to call inspect to compare Enumerators
+      expect(null.__send__(conversion_method).inspect).to eq(nil.send(conversion_method).inspect)
+    end
   end
 end
