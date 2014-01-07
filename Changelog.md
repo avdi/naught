@@ -3,4 +3,4 @@
 Features:
 
   - New "pebble" mode (Guilherme Carvalho)
-      
+

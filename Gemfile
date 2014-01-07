@@ -7,12 +7,14 @@ gem 'rake'
 
 group :development do
   gem 'guard'
-  gem 'guard-rspec'
   gem 'guard-bundler'
+  gem 'guard-rspec'
+  gem 'pry'
+  gem 'pry-rescue'
 end
 
 group :test do
-  gem "libnotify"
   gem 'coveralls', require: false
+  gem 'libnotify'
   gem 'rspec', '~> 2.14'
 end

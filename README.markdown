@@ -133,6 +133,7 @@ null.to_a                          # => []
 null.to_h                          # => {}
 null.to_c                          # => (0+0i)
 null.to_r                          # => (0/1)
+null.to_enum                       # => #<Enumerator: nil:each>
 ```
 
 #### Ah, but what about implicit conversions such as `#to_str`? Like what if I want a null object that implicitly splats the same way as an empty array?
@@ -176,8 +177,8 @@ null_io = NullIO.new
 
 null_io << "foo"                # => nil
 null_io.readline                # => nil
-null_io.foobar                  # => 
-# ~> -:11:in `<main>': undefined method `foobar' for 
+null_io.foobar                  # =>
+# ~> -:11:in `<main>': undefined method `foobar' for
 #  <null:IO>:NullIO (NoMethodError)
 ```
 
@@ -245,8 +246,8 @@ null = NullObject.instance
 
 null.__id__                     # => 17844080
 NullObject.instance.__id__      # => 17844080
-NullObject.new                  # => 
-# ~> -:11:in `<main>': private method `new' called for 
+NullObject.new                  # =>
+# ~> -:11:in `<main>': private method `new' called for
 #  NullObject:Class (NoMethodError)
 ```
 
@@ -280,7 +281,7 @@ NullObject = Naught.build do |config|
   else
     config.singleton
   end
-end  
+end
 ```
 
 The only caveat is that when swapping between singleton and
