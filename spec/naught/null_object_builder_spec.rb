@@ -16,10 +16,10 @@ module Naught
 
     it 'translates method calls into command invocations including arguments' do
       test_command = double
-      NullClassBuilder::Commands::TestCommand.should_receive(:new).
+      expect(NullClassBuilder::Commands::TestCommand).to receive(:new).
         with(builder, "foo", 42).
         and_return(test_command)
-      test_command.should_receive(:call).and_return("COMMAND RESULT")
+      expect(test_command).to receive(:call).and_return("COMMAND RESULT")
       expect(builder.test_command("foo", 42)).to eq("COMMAND RESULT")
     end
 
