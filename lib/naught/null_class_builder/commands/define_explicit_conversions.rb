@@ -7,7 +7,7 @@ module Naught::NullClassBuilder::Commands
       defer do |subject|
         subject.module_eval do
           extend Forwardable
-          def_delegators :nil, :to_a, :to_c, :to_f, :to_h, :to_i, :to_r, :to_s
+          def_delegators :nil, :to_a, :to_c, :to_enum, :to_f, :to_h, :to_i, :to_r, :to_s
         end
       end
     end
