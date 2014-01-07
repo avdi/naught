@@ -177,8 +177,8 @@ null_io = NullIO.new
 
 null_io << "foo"                # => nil
 null_io.readline                # => nil
-null_io.foobar                  # => 
-# ~> -:11:in `<main>': undefined method `foobar' for 
+null_io.foobar                  # =>
+# ~> -:11:in `<main>': undefined method `foobar' for
 #  <null:IO>:NullIO (NoMethodError)
 ```
 
@@ -246,8 +246,8 @@ null = NullObject.instance
 
 null.__id__                     # => 17844080
 NullObject.instance.__id__      # => 17844080
-NullObject.new                  # => 
-# ~> -:11:in `<main>': private method `new' called for 
+NullObject.new                  # =>
+# ~> -:11:in `<main>': private method `new' called for
 #  NullObject:Class (NoMethodError)
 ```
 
@@ -281,7 +281,7 @@ NullObject = Naught.build do |config|
   else
     config.singleton
   end
-end  
+end
 ```
 
 The only caveat is that when swapping between singleton and
