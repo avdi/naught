@@ -13,8 +13,12 @@ describe 'explicitly convertable null object' do
     expect(null.to_a).to eq([])
     expect(null.to_i).to eq(0)
     expect(null.to_f).to eq(0.0)
-    expect(null.to_c).to eq(Complex(0))
-    expect(null.to_r).to eq(Rational(0))
-    expect(null.to_h).to eq({})
+    if RUBY_VERSION >= '1.9'
+      expect(null.to_c).to eq(Complex(0))
+      expect(null.to_r).to eq(Rational(0))
+    end
+    if RUBY_VERSION >= '2.0'
+      expect(null.to_h).to eq({})
+    end
   end
 end
