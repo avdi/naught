@@ -9,12 +9,20 @@ module Naught
       mod          = self
       super() do
         %w[Null Maybe Just Actual].each do |method_name|
-          define_method(method_name, &mod.method(method_name))
+          # This is required to support Ruby 1.8 and earlier, which doesn't
+          # allow define_method to take a block that takes a block argument.
+          # See http://coderrr.wordpress.com/2008/10/29/using-define_method-with-blocks-in-ruby-18/
+          define_method("__real__#{method_name}", &mod.method(method_name))
+          class_eval <<-EOM
+            def #{method_name}(*args, &block)
+              __real__#{method_name}(block, *args)
+            end
+          EOM
         end
       end
     end
 
-    def Null(object=:nothing_passed)
+    def Null(block, object=:nothing_passed)
       case object
       when NullObjectTag then object
       when :nothing_passed, *null_equivs
@@ -23,7 +31,7 @@ module Naught
       end
     end
 
-    def Maybe(object=nil, &block)
+    def Maybe(block, object=nil)
       object = block ? block.call : object
       case object
       when NullObjectTag then object
@@ -34,7 +42,7 @@ module Naught
       end
     end
 
-    def Just(object=nil, &block)
+    def Just(block, object=nil)
       object = block ? block.call : object
       case object
       when NullObjectTag, *null_equivs
@@ -44,7 +52,7 @@ module Naught
       end
     end
 
-    def Actual(object=nil, &block)
+    def Actual(block, object=nil)
       object = block ? block.call : object
       case object
       when NullObjectTag then nil

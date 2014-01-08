@@ -24,8 +24,8 @@ describe 'Maybe()' do
 
   it 'generates null objects with useful trace info' do
     null = Maybe(); line = __LINE__
-    expect(null.__line__).to eq(line)
     expect(null.__file__).to eq(__FILE__)
+    expect(null.__line__).to eq(line)
   end
 
   it 'also works with blocks' do
