@@ -107,7 +107,7 @@ null.foo.bar.baz                   # => <null>
 null << "hello" << "world"         # => <null>
 ```
 
-### What's that "config" thing?
+#### What's that "config" thing?
 
 That's what you use to customize the generated class to your
 liking. Internally, Naught uses the [Builder
