@@ -205,6 +205,23 @@ end
 # >> Yep, checks out!
 ```
 
+#### What about predicate methods? You know, the ones that end with question marks? Shouldn't they return `false` instead of `nil`?
+
+Sure, if you'd like.
+
+```ruby
+require 'naught'
+
+NullObject = Naught.build do |config|
+  config.predicates_return false
+end
+
+null = NullObject.new
+null.foo                        # => nil
+null.bar?                       # => false
+null.nil?                       # => false
+```
+
 #### Alright smartypants. What if I want to add my own methods?
 
 Not a problem, just define them in the `.build` block.
@@ -214,6 +231,7 @@ require 'naught'
 
 NullObject = Naught.build do |config|
   config.define_explicit_conversions
+  config.predicates_return false
   def to_path
     "/dev/null"
   end
@@ -222,11 +240,16 @@ NullObject = Naught.build do |config|
   def to_s
     "NOTHING TO SEE HERE MOVE ALONG"
   end
+
+  def nil?
+    true
+  end
 end
 
 null = NullObject.new
-null.to_s                       # => "NOTHING TO SEE HERE MOVE ALONG"
 null.to_path                    # => "/dev/null"
+null.to_s                       # => "NOTHING TO SEE HERE MOVE ALONG"
+null.nil?                       # => true
 ```
 
 #### Got anything else up your sleeve?
