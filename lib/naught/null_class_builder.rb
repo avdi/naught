@@ -1,4 +1,5 @@
-require 'naught/null_class_builder/conversions_module'
+require 'naught/basic_object'
+require 'naught/conversions'
 
 module Naught
   class NullClassBuilder
@@ -10,8 +11,8 @@ module Naught
 
     def initialize
       @interface_defined = false
-      @base_class        = BasicObject
-      @inspect_proc      = ->{ "<null>" }
+      @base_class        = Naught::BasicObject
+      @inspect_proc      = lambda { "<null>" }
       @stub_strategy     = :stub_method_returning_nil
       define_basic_methods
     end
@@ -33,10 +34,6 @@ module Naught
       @null_equivalents ||= [nil]
     end
 
-    def generate_conversions_module(null_class)
-      ConversionsModule.new(null_class, null_equivalents)
-    end
-
     def generate_class
       respond_to_any_message unless interface_defined?
       generation_mod    = Module.new
@@ -48,7 +45,13 @@ module Naught
       null_class = Class.new(@base_class) do
         const_set :GeneratedMethods, generation_mod
         const_set :Customizations, customization_mod
-        const_set :Conversions, builder.generate_conversions_module(self)
+        const_set :NULL_EQUIVS, builder.null_equivalents
+        include Conversions
+        remove_const :NULL_EQUIVS
+        Conversions.instance_methods.each do |instance_method|
+          undef_method(instance_method)
+        end
+        const_set :Conversions, Conversions
 
         include NullObjectTag
         include generation_mod
@@ -70,11 +73,20 @@ module Naught
       end
     end
 
-    def respond_to_missing?(method_name, include_private=false)
-      command_name = command_name_for_method(method_name)
-      Commands.const_defined?(command_name) || super
-    rescue NameError
-      super
+    if RUBY_VERSION >= '1.9'
+      def respond_to_missing?(method_name, include_private=false)
+        command_name = command_name_for_method(method_name)
+        Commands.const_defined?(command_name) || super
+      rescue NameError
+        super
+      end
+    else
+      def respond_to?(method_name, include_private=false)
+        command_name = command_name_for_method(method_name)
+        Commands.const_defined?(command_name) || super
+      rescue NameError
+        super
+      end
     end
 
     ############################################################################
@@ -88,7 +100,7 @@ module Naught
     end
 
     def respond_to_any_message
-      defer(prepend: true) do |subject|
+      defer(:prepend => true) do |subject|
         subject.module_eval do
           def respond_to?(*)
             true
@@ -136,7 +148,7 @@ module Naught
     end
 
     def define_basic_class_methods
-      defer(class: true) do |subject|
+      defer(:class => true) do |subject|
         subject.module_eval do
           class << self
             alias get new

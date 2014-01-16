@@ -27,8 +27,8 @@ describe 'Null()' do
 
   it 'generates null objects with useful trace info' do
     null = Null(); line = __LINE__
-    expect(null.__line__).to eq(line)
     expect(null.__file__).to eq(__FILE__)
+    expect(null.__line__).to eq(line)
   end
 
 end

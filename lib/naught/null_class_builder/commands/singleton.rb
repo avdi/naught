@@ -3,7 +3,7 @@ require 'naught/null_class_builder/command'
 module Naught::NullClassBuilder::Commands
   class Singleton < Naught::NullClassBuilder::Command
     def call
-      defer(class: true) do |subject|
+      defer(:class => true) do |subject|
         require 'singleton'
         subject.module_eval do
           include ::Singleton

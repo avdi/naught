@@ -51,7 +51,7 @@ describe 'traceable null object' do
   end
 
   def make_null
-    trace_null_class.get(caller: caller(1))
+    trace_null_class.get(:caller => caller(1))
   end
 
   it 'can accept custom backtrace info' do
@@ -85,7 +85,7 @@ end
 TestNull = Naught.build
 
 describe 'a named null object class' do
-  it 'has named ancestor modules' do
+  it 'has named ancestor modules', :pending => rubinius? do
     expect(TestNull.ancestors[0..2].map(&:name)).to eq([
         'TestNull',
         'TestNull::Customizations',

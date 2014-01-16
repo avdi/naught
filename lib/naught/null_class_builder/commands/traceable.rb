@@ -8,7 +8,11 @@ module Naught::NullClassBuilder::Commands
           attr_reader :__file__, :__line__
 
           def initialize(options={})
-            backtrace = options.fetch(:caller) { Kernel.caller(4) }
+            backtrace = if RUBY_VERSION.to_f == 1.9 && RUBY_PLATFORM != 'java'
+              options.fetch(:caller) { Kernel.caller(4) }
+            else
+              options.fetch(:caller) { Kernel.caller(3) }
+            end
             @__file__, line, _ = backtrace[0].split(':')
             @__line__ = line.to_i
           end

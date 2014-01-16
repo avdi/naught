@@ -1,3 +1,4 @@
+require 'naught/basic_object'
 require 'naught/null_class_builder/command'
 
 module Naught::NullClassBuilder::Commands
@@ -11,7 +12,7 @@ module Naught::NullClassBuilder::Commands
       @include_super = options.fetch(:include_super) { true }
 
       builder.base_class   = root_class_of(class_to_mimic)
-      builder.inspect_proc = -> { "<null:#{class_to_mimic}>" }
+      builder.inspect_proc = lambda { "<null:#{class_to_mimic}>" }
       builder.interface_defined = true
     end
 
@@ -29,7 +30,7 @@ module Naught::NullClassBuilder::Commands
       if klass.ancestors.include?(Object)
         Object
       else
-        BasicObject
+        Naught::BasicObject
       end
     end
 

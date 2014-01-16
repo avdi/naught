@@ -57,7 +57,7 @@ describe 'null object mimicking a class' do
   describe 'with include_super: false' do
     let(:mimic_class) {
       Naught.build do |b|
-        b.mimic LibraryPatron, include_super: false
+        b.mimic LibraryPatron, :include_super => false
       end
     }
 
@@ -102,21 +102,4 @@ describe 'using mimic with black_hole' do
     it_behaves_like_a_black_hole_mimic
   end
 
-end
-
-describe 'mimicking a non-Object-derived class' do
-  class MinimalClass < BasicObject
-  end
-
-  subject(:null) { mimic_class.new }
-  let(:mimic_class) {
-    Naught.build do |b|
-      b.mimic MinimalClass
-    end
-  }
-
-  it 'generates a BasicObject-derived null class' do
-    expect(BasicObject).to be === null
-    expect(Object).not_to be === null
-  end
 end
