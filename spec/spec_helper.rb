@@ -1,7 +1,7 @@
-GEM_ROOT = File.expand_path("../../", __FILE__)
-$:.unshift File.join(GEM_ROOT, "lib")
+GEM_ROOT = File.expand_path('../../', __FILE__)
+$LOAD_PATH.unshift File.join(GEM_ROOT, 'lib')
 
-if ENV["TRAVIS"]
+if ENV['TRAVIS']
   require 'coveralls'
   Coveralls.wear!
 else
@@ -10,4 +10,4 @@ else
 end
 
 require 'naught'
-Dir[File.join(GEM_ROOT, "spec", "support", "**/*.rb")].each { |f| require f }
+Dir[File.join(GEM_ROOT, 'spec', 'support', '**/*.rb')].each { |f| require f }

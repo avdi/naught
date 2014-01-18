@@ -7,7 +7,7 @@ module Naught::NullClassBuilder::Commands
         subject.module_eval do
           attr_reader :__file__, :__line__
 
-          def initialize(options={})
+          def initialize(options = {})
             backtrace = if RUBY_VERSION.to_f == 1.9 && RUBY_PLATFORM != 'java'
               options.fetch(:caller) { Kernel.caller(4) }
             else

@@ -12,13 +12,13 @@ module Naught
     def initialize
       @interface_defined = false
       @base_class        = Naught::BasicObject
-      @inspect_proc      = lambda { "<null>" }
+      @inspect_proc      = lambda { '<null>' }
       @stub_strategy     = :stub_method_returning_nil
       define_basic_methods
     end
 
     def interface_defined?
-      @interface_defined
+      !!@interface_defined
     end
 
     def customize(&customization_block)
@@ -74,14 +74,14 @@ module Naught
     end
 
     if RUBY_VERSION >= '1.9'
-      def respond_to_missing?(method_name, include_private=false)
+      def respond_to_missing?(method_name, include_private = false)
         command_name = command_name_for_method(method_name)
         Commands.const_defined?(command_name) || super
       rescue NameError
         super
       end
     else
-      def respond_to?(method_name, include_private=false)
+      def respond_to?(method_name, include_private = false)
         command_name = command_name_for_method(method_name)
         Commands.const_defined?(command_name) || super
       rescue NameError
@@ -111,7 +111,7 @@ module Naught
       @interface_defined = true
     end
 
-    def defer(options={}, &deferred_operation)
+    def defer(options = {}, &deferred_operation)
       list = options[:class] ? class_operations : operations
       if options[:prepend]
         list.unshift(deferred_operation)
@@ -151,7 +151,7 @@ module Naught
       defer(:class => true) do |subject|
         subject.module_eval do
           class << self
-            alias get new
+            alias_method :get, :new
           end
           klass = self
           define_method(:class) { klass }
@@ -169,18 +169,18 @@ module Naught
 
     def stub_method_returning_nil(subject, name)
       subject.module_eval do
-        define_method(name) {|*| nil }
+        define_method(name) { |*| nil }
       end
     end
 
     def stub_method_returning_self(subject, name)
       subject.module_eval do
-        define_method(name) {|*| self }
+        define_method(name) { |*| self }
       end
     end
 
     def command_name_for_method(method_name)
-      method_name.to_s.gsub(/(?:^|_)([a-z])/) { $1.upcase }
+      method_name.to_s.gsub(/(?:^|_)([a-z])/) { Regexp.last_match[1].upcase }
     end
   end
 end

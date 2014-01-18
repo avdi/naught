@@ -17,16 +17,16 @@ describe 'Null()' do
   end
 
   specify 'given anything in null_equivalents, return a null object' do
-    expect(Null("").class).to be(ConvertableNull)
+    expect(Null('').class).to be(ConvertableNull)
   end
 
   specify 'given anything else, raises an ArgumentError' do
-    expect{Null(false)}.to raise_error(ArgumentError)
-    expect{Null("hello")}.to raise_error(ArgumentError)
+    expect { Null(false) }.to raise_error(ArgumentError)
+    expect { Null('hello') }.to raise_error(ArgumentError)
   end
 
   it 'generates null objects with useful trace info' do
-    null = Null(); line = __LINE__
+    null, line = Null(), __LINE__
     expect(null.__file__).to eq(__FILE__)
     expect(null.__line__).to eq(line)
   end

@@ -8,11 +8,11 @@ module Naught
       end
 
       def call
-        raise NotImplementedError,
-              "Method #call should be overriden in child classes"
+        fail NotImplementedError,
+             'Method #call should be overriden in child classes'
       end
 
-      def defer(options={}, &block)
+      def defer(options = {}, &block)
         @builder.defer(options, &block)
       end
     end

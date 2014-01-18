@@ -4,7 +4,7 @@ module Naught
   describe NullClassBuilder::Command do
     it 'is abstract' do
       command = NullClassBuilder::Command.new(nil)
-      expect{command.call}.to raise_error(NotImplementedError)
+      expect { command.call }.to raise_error(NotImplementedError)
     end
   end
 end

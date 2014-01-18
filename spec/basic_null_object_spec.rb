@@ -11,7 +11,7 @@ describe 'basic null object' do
   end
 
   it 'accepts any arguments for any messages' do
-    null.foobaz(1,2,3)
+    null.foobaz(1, 2, 3)
   end
 
   it 'reports that it responds to any message' do
@@ -21,7 +21,7 @@ describe 'basic null object' do
   end
 
   it 'can be inspected' do
-    expect(null.inspect).to eq("<null>")
+    expect(null.inspect).to eq('<null>')
   end
 
   it 'knows its own class' do

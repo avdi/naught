@@ -17,15 +17,15 @@ module Naught
     it 'translates method calls into command invocations including arguments' do
       test_command = double
       expect(NullClassBuilder::Commands::TestCommand).to receive(:new).
-        with(builder, "foo", 42).
+        with(builder, 'foo', 42).
         and_return(test_command)
-      expect(test_command).to receive(:call).and_return("COMMAND RESULT")
-      expect(builder.test_command("foo", 42)).to eq("COMMAND RESULT")
+      expect(test_command).to receive(:call).and_return('COMMAND RESULT')
+      expect(builder.test_command('foo', 42)).to eq('COMMAND RESULT')
     end
 
     it 'handles missing non-command missing methods normally' do
       expect(builder).not_to respond_to(:nonexistant_method)
-      expect{builder.nonexistent_method}.to raise_error(NoMethodError)
+      expect { builder.nonexistent_method }.to raise_error(NoMethodError)
     end
   end
 end

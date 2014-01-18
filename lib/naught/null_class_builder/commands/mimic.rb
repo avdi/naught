@@ -5,7 +5,7 @@ module Naught::NullClassBuilder::Commands
   class Mimic < Naught::NullClassBuilder::Command
     attr_reader :class_to_mimic, :include_super
 
-    def initialize(builder, class_to_mimic, options={})
+    def initialize(builder, class_to_mimic, options = {})
       super(builder)
 
       @class_to_mimic = class_to_mimic

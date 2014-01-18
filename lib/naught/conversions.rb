@@ -1,6 +1,5 @@
 module Naught
   module Conversions
-
     def self.included(null_class)
       unless class_variable_defined?(:@@included) && @@included
         @@null_class = null_class
@@ -10,18 +9,18 @@ module Naught
       super
     end
 
-    def Null(object=:nothing_passed)
+    def Null(object = :nothing_passed)
       case object
       when NullObjectTag
         object
       when :nothing_passed, *@@null_equivs
         @@null_class.get(:caller => caller(1))
       else
-        raise ArgumentError, "#{object.inspect} is not null!"
+        fail ArgumentError, "#{object.inspect} is not null!"
       end
     end
 
-    def Maybe(object=nil)
+    def Maybe(object = nil)
       object = yield if block_given?
       case object
       when NullObjectTag
@@ -33,17 +32,17 @@ module Naught
       end
     end
 
-    def Just(object=nil)
+    def Just(object = nil)
       object = yield if block_given?
       case object
       when NullObjectTag, *@@null_equivs
-        raise ArgumentError, "Null value: #{object.inspect}"
+        fail ArgumentError, "Null value: #{object.inspect}"
       else
         object
       end
     end
 
-    def Actual(object=nil)
+    def Actual(object = nil)
       object = yield if block_given?
       case object
       when NullObjectTag
@@ -52,6 +51,5 @@ module Naught
         object
       end
     end
-
   end
 end

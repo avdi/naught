@@ -11,7 +11,7 @@ describe 'null object with a custom base class' do
   end
 
   it 'respond to base class methods' do
-    expect(null.methods).to be_a_kind_of(Array)
+    expect(null.methods).to be_an Array
   end
 
   it 'respond to unknown methods' do

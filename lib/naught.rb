@@ -1,4 +1,4 @@
-require "naught/version"
+require 'naught/version'
 require 'naught/null_class_builder'
 require 'naught/null_class_builder/commands'
 

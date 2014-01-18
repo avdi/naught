@@ -1,14 +1,14 @@
 require 'spec_helper'
 
 describe 'singleton null object' do
-  subject(:null_class) {
+  subject(:null_class) do
     Naught.build do |b|
       b.singleton
     end
-  }
+  end
 
   it 'does not respond to .new' do
-    expect{ null_class.new }.to raise_error
+    expect { null_class.new }.to raise_error
   end
 
   it 'has only one instance' do
@@ -30,6 +30,6 @@ describe 'singleton null object' do
     expect(null_class.get).to be null_class.instance
   end
   it 'permits arbitrary arguments to be passed to .get' do
-    null_class.get(42, :foo => "bar")
+    null_class.get(42, :foo => 'bar')
   end
 end

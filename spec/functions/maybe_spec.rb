@@ -13,23 +13,23 @@ describe 'Maybe()' do
   end
 
   specify 'given anything in null_equivalents, return a null object' do
-    expect(Maybe("").class).to be(ConvertableNull)
+    expect(Maybe('').class).to be(ConvertableNull)
   end
 
   specify 'given anything else, returns the input unchanged' do
     expect(Maybe(false)).to be(false)
-    str = "hello"
+    str = 'hello'
     expect(Maybe(str)).to be(str)
   end
 
   it 'generates null objects with useful trace info' do
-    null = Maybe(); line = __LINE__
+    null, line = Maybe(), __LINE__
     expect(null.__file__).to eq(__FILE__)
     expect(null.__line__).to eq(line)
   end
 
   it 'also works with blocks' do
-    expect(Maybe{nil}.class).to eq(ConvertableNull)
-    expect(Maybe{"foo"}).to eq("foo")
+    expect(Maybe { nil }.class).to eq(ConvertableNull)
+    expect(Maybe { 'foo' }).to eq('foo')
   end
 end

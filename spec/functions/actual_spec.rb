@@ -10,13 +10,13 @@ describe 'Actual()' do
 
   specify 'given anything else, returns the input unchanged' do
     expect(Actual(false)).to be(false)
-    str = "hello"
+    str = 'hello'
     expect(Actual(str)).to be(str)
     expect(Actual(nil)).to be_nil
   end
 
   it 'also works with blocks' do
-    expect(Actual{ConvertableNull.new}).to be_nil
-    expect(Actual{"foo"}).to eq("foo")
+    expect(Actual { ConvertableNull.new }).to be_nil
+    expect(Actual { 'foo' }).to eq('foo')
   end
 end
