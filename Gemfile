@@ -6,9 +6,11 @@ gemspec
 gem 'rake'
 
 group :development do
-  gem 'guard'
-  gem 'guard-bundler'
-  gem 'guard-rspec'
+  platforms :ruby_19, :ruby_20, :ruby_21 do
+    gem 'guard'
+    gem 'guard-bundler'
+    gem 'guard-rspec'
+  end
   gem 'pry'
   gem 'pry-rescue'
 end
