@@ -397,7 +397,7 @@ gem install naught
 Requirements
 --------------
 
--   Ruby 1.9
+-   Ruby
 
 Contributing
 --------------
