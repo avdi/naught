@@ -27,11 +27,7 @@ module Naught::NullClassBuilder::Commands
     private
 
     def root_class_of(klass)
-      if klass.ancestors.include?(Object)
-        Object
-      else
-        Naught::BasicObject
-      end
+      klass.ancestors.include?(Object) ? Object : Naught::BasicObject
     end
 
     def methods_to_stub
