@@ -16,7 +16,7 @@ describe 'Null()' do
     expect(Null(null)).to be(null)
   end
 
-  specify 'given anything in null_equivalents, return a null object' do
+  specify 'given anything in null_equivalents, returns a null object' do
     expect(Null('').class).to be(ConvertableNull)
   end
 

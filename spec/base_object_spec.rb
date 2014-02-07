@@ -10,11 +10,11 @@ describe 'null object with a custom base class' do
     end
   end
 
-  it 'respond to base class methods' do
+  it 'responds to base class methods' do
     expect(null.methods).to be_an Array
   end
 
-  it 'respond to unknown methods' do
+  it 'responds to unknown methods' do
     expect(null.foo).to be_nil
   end
 
