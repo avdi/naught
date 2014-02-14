@@ -10,7 +10,7 @@ ParameterLists:
   CountKeywordArgs: true
 
 ClassLength:
-  Max: 144 # TODO: Lower to 100
+  Max: 150 # TODO: Lower to 100
 
 MethodLength:
   CountComments: false
@@ -51,6 +51,10 @@ DotPosition:
 # Don't require magic comment at the top of every file
 Encoding:
   Enabled: false
+
+# Enforce outdenting of access modifiers (i.e. public, private, protected)
+AccessModifierIndentation:
+  EnforcedStyle: outdent
 
 EmptyLinesAroundAccessModifier:
   Enabled: true

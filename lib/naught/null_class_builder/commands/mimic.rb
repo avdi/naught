@@ -24,7 +24,7 @@ module Naught::NullClassBuilder::Commands
       end
     end
 
-    private
+  private
 
     def root_class_of(klass)
       klass.ancestors.include?(Object) ? Object : Naught::BasicObject

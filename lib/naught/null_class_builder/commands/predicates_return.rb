@@ -14,7 +14,7 @@ module Naught::NullClassBuilder::Commands
       end
     end
 
-    private
+  private
 
     def define_method_missing(subject)
       subject.module_exec(@predicate_return_value) do |return_value|
