@@ -63,32 +63,6 @@ module Naught
       null_class
     end
 
-    def method_missing(method_name, *args, &block)
-      command_name = command_name_for_method(method_name)
-      if Commands.const_defined?(command_name)
-        command_class = Commands.const_get(command_name)
-        command_class.new(self, *args, &block).call
-      else
-        super
-      end
-    end
-
-    if RUBY_VERSION >= '1.9'
-      def respond_to_missing?(method_name, include_private = false)
-        command_name = command_name_for_method(method_name)
-        Commands.const_defined?(command_name) || super
-      rescue NameError
-        super
-      end
-    else
-      def respond_to?(method_name, include_private = false)
-        command_name = command_name_for_method(method_name)
-        Commands.const_defined?(command_name) || super
-      rescue NameError
-        super
-      end
-    end
-
     ############################################################################
     # Builder API
     #
@@ -124,7 +98,38 @@ module Naught
       send(@stub_strategy, subject, name)
     end
 
-    private
+    def method_missing(method_name, *args, &block)
+      command_name = command_name_for_method(method_name)
+      if Commands.const_defined?(command_name)
+        command_class = Commands.const_get(command_name)
+        command_class.new(self, *args, &block).call
+      else
+        super
+      end
+    end
+
+    if RUBY_VERSION >= '1.9'
+      def respond_to_missing?(method_name, include_private = false)
+        respond_to_definition(method_name, include_private, :respond_to_missing?)
+      end
+    else
+      def respond_to?(method_name, include_private = false)
+        respond_to_definition(method_name, include_private, :respond_to?)
+      end
+    end
+
+  private
+
+    def respond_to_definition(method_name, include_private, respond_to_method_name)
+      command_name = command_name_for_method(method_name)
+      Commands.const_defined?(command_name) || super_duper(respond_to_method_name, method_name, include_private)
+    rescue NameError
+      super_duper(respond_to_method_name, method_name, include_private)
+    end
+
+    def super_duper(method_name, *args)
+      self.class.superclass.send(method_name, *args)
+    end
 
     def define_basic_methods
       define_basic_instance_methods
