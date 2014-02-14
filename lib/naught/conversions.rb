@@ -16,7 +16,7 @@ module Naught
       when :nothing_passed, *@@null_equivs
         @@null_class.get(:caller => caller(1))
       else
-        fail ArgumentError, "#{object.inspect} is not null!"
+        fail(ArgumentError.new("#{object.inspect} is not null!"))
       end
     end
 
@@ -36,7 +36,7 @@ module Naught
       object = yield if block_given?
       case object
       when NullObjectTag, *@@null_equivs
-        fail ArgumentError, "Null value: #{object.inspect}"
+        fail(ArgumentError.new("Null value: #{object.inspect}"))
       else
         object
       end

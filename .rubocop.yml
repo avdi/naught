@@ -71,6 +71,12 @@ CaseIndentation:
 Lambda:
   Enabled: false
 
+RaiseArgs:
+  EnforcedStyle: compact
+
+TrailingComma:
+  Enabled: false
+
 MethodName:
   Enabled: false
 
