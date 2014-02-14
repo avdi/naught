@@ -12,7 +12,6 @@ group :development do
     gem 'guard-rspec'
   end
   gem 'pry'
-  gem 'pry-rescue'
 end
 
 group :test do
