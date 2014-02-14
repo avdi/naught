@@ -12,6 +12,9 @@ ParameterLists:
 ClassLength:
   Max: 150 # TODO: Lower to 100
 
+LineLength:
+  Max: 90  # TODO: Lower to 80
+
 MethodLength:
   CountComments: false
   Max: 21  # TODO: Lower to 15
@@ -27,10 +30,6 @@ CollectionMethods:
     reduce:   'inject'
     find:     'detect'
     find_all: 'select'
-
-# Limit line length
-LineLength:
-  Enabled: false
 
 # Disable documentation checking until a class needs to be documented once
 Documentation:

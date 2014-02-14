@@ -122,7 +122,8 @@ module Naught
 
     def respond_to_definition(method_name, include_private, respond_to_method_name)
       command_name = command_name_for_method(method_name)
-      Commands.const_defined?(command_name) || super_duper(respond_to_method_name, method_name, include_private)
+      Commands.const_defined?(command_name) ||
+        super_duper(respond_to_method_name, method_name, include_private)
     rescue NameError
       super_duper(respond_to_method_name, method_name, include_private)
     end
