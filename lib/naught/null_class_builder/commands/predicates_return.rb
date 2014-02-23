@@ -18,14 +18,13 @@ module Naught::NullClassBuilder::Commands
 
     def define_method_missing(subject)
       subject.module_exec(@predicate_return_value) do |return_value|
-        if subject.method_defined?(:method_missing)
-          original_method_missing = instance_method(:method_missing)
-          define_method(:method_missing) do |method_name, *args, &block|
-            if method_name.to_s.end_with?('?')
-              return_value
-            else
-              original_method_missing.bind(self).call(method_name, *args, &block)
-            end
+        next unless subject.method_defined?(:method_missing)
+        original_method_missing = instance_method(:method_missing)
+        define_method(:method_missing) do |method_name, *args, &block|
+          if method_name.to_s.end_with?('?')
+            return_value
+          else
+            original_method_missing.bind(self).call(method_name, *args, &block)
           end
         end
       end
