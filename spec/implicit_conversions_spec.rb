@@ -7,19 +7,26 @@ describe 'implicitly convertable null object' do
       b.define_implicit_conversions
     end
   end
-  it 'implicitly splats the same way an empty array does' do
-    a, b = null
-    expect(a).to be_nil
-    expect(b).to be_nil
-  end
-  it 'is implicitly convertable to String' do
-    expect(instance_eval(null)).to be_nil
-  end
-  it 'implicitly converts to an empty array' do
-    expect(null.to_ary).to eq([])
-  end
-  it 'implicitly converts to an empty string' do
-    expect(null.to_str).to eq('')
+
+  context 'to_ary' do
+    it 'returns empty array' do
+      expect(null.to_ary).to eq([])
+    end
+
+    it 'makes splats possible' do
+      a, b = null
+      expect(a).to be_nil
+      expect(b).to be_nil
+    end
   end
 
+  context 'to_str' do
+    it 'returns empty string for to_str' do
+      expect(null.to_str).to eq('')
+    end
+
+    it 'makes instance_eval possible' do
+      expect(instance_eval(null)).to be_nil
+    end
+  end
 end
