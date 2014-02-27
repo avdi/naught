@@ -32,4 +32,15 @@ describe 'basic null object' do
     expect(null_class.get.class).to be(null_class)
   end
 
+  describe 'a named class' do
+    TestNull = Naught.build
+
+    it 'has named ancestor modules', :pending => rubinius? do
+      expect(TestNull.ancestors[0..2].collect(&:name)).to eq([
+          'TestNull',
+          'TestNull::Customizations',
+          'TestNull::GeneratedMethods'
+        ])
+    end
+  end
 end
