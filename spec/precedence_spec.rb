@@ -47,7 +47,6 @@ describe 'configuration precedence of a null object' do
     include_examples 'black_hole and predicates_return behavior'
   end
 
-
   context 'black_hole, mimic' do
     let(:null_class) do
       Naught.build do |b|
