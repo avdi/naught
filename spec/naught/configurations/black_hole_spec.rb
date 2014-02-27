@@ -13,4 +13,10 @@ describe 'black hole null object' do
     expect(null.foobaz).to be(null)
     expect(null << 'bar').to be(null)
   end
+
+  it 'supports chaining of methodcalls' do
+    expect(null.foo).to be(null)
+    expect(null.foo.bar.baz).to be(null)
+    expect(null << "hello" << "world").to be(null)
+  end
 end

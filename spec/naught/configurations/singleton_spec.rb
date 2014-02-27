@@ -26,10 +26,8 @@ describe 'singleton null object' do
     null = null_class.instance
     expect(null.dup).to be(null)
   end
+
   it 'aliases .instance to .get' do
     expect(null_class.get).to be null_class.instance
-  end
-  it 'permits arbitrary arguments to be passed to .get' do
-    null_class.get(42, :foo => 'bar')
   end
 end
