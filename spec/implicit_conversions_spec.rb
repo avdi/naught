@@ -8,8 +8,8 @@ describe 'implicitly convertable null object' do
     end
   end
 
-  context 'to_ary' do
-    it 'returns empty array' do
+  describe 'array implicit conversions' do
+    it 'returns empty array for to_ary' do
       expect(null.to_ary).to eq([])
     end
 
@@ -20,7 +20,7 @@ describe 'implicitly convertable null object' do
     end
   end
 
-  context 'to_str' do
+  describe 'string implicit conversions' do
     it 'returns empty string for to_str' do
       expect(null.to_str).to eq('')
     end
