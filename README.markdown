@@ -2,6 +2,7 @@
 [![Code Climate](https://codeclimate.com/github/avdi/naught.png)](https://codeclimate.com/github/avdi/naught)
 [![Coverage Status](https://coveralls.io/repos/avdi/naught/badge.png?branch=master)](https://coveralls.io/r/avdi/naught?branch=master)
 [![Gem Version](https://badge.fury.io/rb/naught.png)](http://badge.fury.io/rb/naught)
+[![Inline docs](http://inch-pages.github.io/github/avdi/naught.png)](http://inch-pages.github.io/github/avdi/naught)
 
 A quick intro to Naught
 -------------------------
