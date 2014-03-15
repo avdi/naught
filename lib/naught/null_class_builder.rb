@@ -18,7 +18,7 @@ module Naught
     end
 
     def interface_defined?
-      !!@interface_defined
+      @interface_defined
     end
 
     def customize(&customization_block)
