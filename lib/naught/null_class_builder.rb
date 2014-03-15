@@ -8,6 +8,7 @@ module Naught
     end
 
     attr_accessor :base_class, :inspect_proc, :interface_defined
+    alias_method :interface_defined?, :interface_defined
 
     def initialize
       @interface_defined = false
@@ -15,10 +16,6 @@ module Naught
       @inspect_proc      = lambda { '<null>' }
       @stub_strategy     = :stub_method_returning_nil
       define_basic_methods
-    end
-
-    def interface_defined?
-      @interface_defined
     end
 
     def customize(&customization_block)
