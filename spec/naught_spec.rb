@@ -93,9 +93,9 @@ TestNull = Naught.build
 describe 'a named null object class' do
   it 'has named ancestor modules', :pending => rubinius? do
     expect(TestNull.ancestors[0..2].collect(&:name)).to eq([
-        'TestNull',
-        'TestNull::Customizations',
-        'TestNull::GeneratedMethods'
-      ])
+      'TestNull',
+      'TestNull::Customizations',
+      'TestNull::GeneratedMethods'
+    ])
   end
 end
