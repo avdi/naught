@@ -81,3 +81,15 @@ MethodName:
 
 ClassVars:
   Enabled: false
+
+PercentLiteralDelimiters:
+  PreferredDelimiters:
+    '%':  ()
+    '%i': ()
+    '%q': ()
+    '%Q': ()
+    '%r': '{}'
+    '%s': ()
+    '%w': '[]'
+    '%W': '[]'
+    '%x': ()
