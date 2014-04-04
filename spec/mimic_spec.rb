@@ -78,6 +78,20 @@ describe 'null object mimicking a class' do
       expect(null).to_not respond_to(:login)
     end
   end
+
+  describe 'with an instance as example' do
+
+    let(:mimic_class) do
+      Naught.build do |b|
+        b.mimic User, :example => LibraryPatron.new
+      end
+    end
+
+    it 'responds to method defined on the example instance' do
+      expect(null).to respond_to(:member?)
+    end
+  end
+
 end
 
 describe 'using mimic with black_hole' do
