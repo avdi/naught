@@ -182,6 +182,25 @@ null_io.foobar                  # =>
 #  <null:IO>:NullIO (NoMethodError)
 ```
 
+It is also possible to give `mimic` the `example` option to stub methods of a specific instance.
+It can be useful when the instance define its own methods.
+
+```ruby
+require "naught"
+require "logging"
+
+log = Logging.logger["test"]
+log.info
+
+NullLog = Naught.build do |config|
+  config.mimic log.class, example: log
+end
+
+null_log = NullLog.new
+null_log.info                  # => nil
+
+```
+
 There is also `impersonate` which takes `mimic` one step further. The
 generated null class will be derived from the impersonated class. This
 is handy when refitting legacy code that contains type checks.
