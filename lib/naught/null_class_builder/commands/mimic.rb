@@ -5,16 +5,26 @@ module Naught
   class NullClassBuilder
     module Commands
       class Mimic < Naught::NullClassBuilder::Command
-        attr_reader :class_to_mimic, :include_super, :instance_to_mimic
+        NULL_SINGLETON_CLASS = (class << Object.new; self; end)
 
-        def initialize(builder, class_to_mimic, options = {})
+        attr_reader :class_to_mimic, :include_super, :singleton_class
+
+        def initialize(builder, class_to_mimic_or_options, options = {})
           super(builder)
 
-          @class_to_mimic = class_to_mimic
-          @include_super = options.fetch(:include_super) { true }
-          @instance_to_mimic = options.fetch(:example) { nil }
+          if Hash === class_to_mimic_or_options
+            options          = class_to_mimic_or_options.merge(options)
+            instance         = options.fetch(:example)
+            @singleton_class = (class << instance; self; end)
+            @class_to_mimic  = instance.class
+          else
+            @singleton_class = NULL_SINGLETON_CLASS
+            @class_to_mimic  = class_to_mimic_or_options
+          end
+          @include_super     = options.fetch(:include_super) { true }
 
-          builder.base_class   = root_class_of(class_to_mimic)
+          builder.base_class   = root_class_of(@class_to_mimic)
+          class_to_mimic       = @class_to_mimic
           builder.inspect_proc = lambda { "<null:#{class_to_mimic}>" }
           builder.interface_defined = true
         end
@@ -34,12 +44,9 @@ module Naught
         end
 
         def methods_to_stub
-          methods_to_mimic = if instance_to_mimic
-            instance_to_mimic.public_methods(include_super)
-          else
-            class_to_mimic.instance_methods(include_super)
-          end
-
+          methods_to_mimic =
+            class_to_mimic.instance_methods(include_super) |
+            singleton_class.instance_methods(false)
           methods_to_mimic - Object.instance_methods
         end
       end

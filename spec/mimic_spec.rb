@@ -80,14 +80,21 @@ describe 'null object mimicking a class' do
   end
 
   describe 'with an instance as example' do
-
     let(:mimic_class) do
+      milton = LibraryPatron.new
+      def milton.stapler
+        "red swingline"
+      end
       Naught.build do |b|
-        b.mimic User, :example => LibraryPatron.new
+        b.mimic :example => milton
       end
     end
 
-    it 'responds to method defined on the example instance' do
+    it 'responds to method defined only on the example instance' do
+      expect(null).to respond_to(:stapler)
+    end
+
+    it 'responds to method defined on the class of the instance' do
       expect(null).to respond_to(:member?)
     end
   end
