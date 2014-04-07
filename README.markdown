@@ -182,25 +182,6 @@ null_io.foobar                  # =>
 #  <null:IO>:NullIO (NoMethodError)
 ```
 
-It is also possible to give `mimic` the `example` option to stub methods of a specific instance.
-It can be useful when the instance define its own methods.
-
-```ruby
-require "naught"
-require "logging"
-
-log = Logging.logger["test"]
-log.info
-
-NullLog = Naught.build do |config|
-  config.mimic log.class, example: log
-end
-
-null_log = NullLog.new
-null_log.info                  # => nil
-
-```
-
 There is also `impersonate` which takes `mimic` one step further. The
 generated null class will be derived from the impersonated class. This
 is handy when refitting legacy code that contains type checks.
@@ -223,6 +204,25 @@ else
   raise "Hey, I expected an IO!"
 end
 # >> Yep, checks out!
+```
+
+#### My objects are unique and special snowflakes, with new methods added to them at runtime. How are you gonna mimic *that*, hotshot?
+
+So long as you can create an object to serve as an example, Naught can copy the interface of that object (both the methods defined by its class, and its singleton methods).
+
+```ruby
+require "naught"
+require "logging"
+
+log = Logging.logger["test"]
+log.info
+
+NullLog = Naught.build do |config|
+  config.mimic example: log
+end
+
+null_log = NullLog.new
+null_log.info                  # => nil
 ```
 
 #### What about predicate methods? You know, the ones that end with question marks? Shouldn't they return `false` instead of `nil`?
