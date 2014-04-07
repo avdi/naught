@@ -83,7 +83,7 @@ describe 'null object mimicking a class' do
     let(:mimic_class) do
       milton = LibraryPatron.new
       def milton.stapler
-        "red swingline"
+        'red swingline'
       end
       Naught.build do |b|
         b.mimic :example => milton
