@@ -437,6 +437,10 @@ This isn't the first Ruby Null Object library. Others to check out include:
  - [NullAndVoid](https://github.com/jfelchner/null_and_void)
  - [BlankSlate](https://github.com/saturnflyer/blank_slate)
 
+The Book
+--------
+
+If you've read this far, you might be interested in the short ebook, [*Much Ado About Naught*](https://shiprise.dpdcart.com/cart/add?product_id=64334&method_id=66165), I (Avdi) wrote as I developed this library. It's a fun exploration of Ruby metaprogramming techniques as applied to writing a Ruby gem. You can [read the introduction here](http://devblog.avdi.org/introduction-to-much-ado-about-naught/).
 
 Further reading
 -----------------
