@@ -35,10 +35,9 @@ module Naught
         def define_predicate_methods(subject)
           subject.module_exec(@predicate_return_value) do |return_value|
             instance_methods.each do |method_name|
-              if method_name.to_s.end_with?('?')
-                define_method(method_name) do |*|
-                  return_value
-                end
+              next unless method_name.to_s.end_with?('?')
+              define_method(method_name) do |*|
+                return_value
               end
             end
           end
