@@ -9,7 +9,7 @@ describe 'null object mimicking a class' do
   end
 
   module Authorizable
-    def authorized_for?(object)
+    def authorized_for?(_)
       true
     end
   end
@@ -25,7 +25,7 @@ describe 'null object mimicking a class' do
       'Bob'
     end
 
-    def notify_of_overdue_books(titles)
+    def notify_of_overdue_books(_)
       puts 'Notifying...'
     end
   end

@@ -13,7 +13,7 @@ module Naught
           defer do |subject|
             subject.module_exec(@output) do |output|
 
-              define_method(:method_missing) do |method_name, *args, &block|
+              define_method(:method_missing) do |method_name, *args|
                 pretty_args = args.collect(&:inspect).join(', ').gsub("\"", "'")
                 output.puts "#{method_name}(#{pretty_args}) from #{parse_caller}"
                 self
