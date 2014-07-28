@@ -458,3 +458,8 @@ Further reading
 -   [Null Objects and
     Falsiness](http://devblog.avdi.org/2011/05/30/null-objects-and-falsiness/),
     by Avdi Grimm
+
+Libraries Using Naught
+-----------------------
+
+-   [ActiveNull](https://github.com/Originate/active_null) Null Model support for ActiveRecord.
