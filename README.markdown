@@ -463,3 +463,4 @@ Libraries Using Naught
 -----------------------
 
 -   [ActiveNull](https://github.com/Originate/active_null) Null Model support for ActiveRecord.
+-   [Twitter](https://github.com/sferik/twitter) A Ruby interface to the Twitter API.
