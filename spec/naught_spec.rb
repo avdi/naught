@@ -95,7 +95,7 @@ describe 'a named null object class' do
     expect(TestNull.ancestors[0..2].collect(&:name)).to eq([
       'TestNull',
       'TestNull::Customizations',
-      'TestNull::GeneratedMethods'
+      'TestNull::GeneratedMethods',
     ])
   end
 end

@@ -12,7 +12,7 @@ module Naught
         def initialize(builder, class_to_mimic_or_options, options = {})
           super(builder)
 
-          if Hash === class_to_mimic_or_options
+          if class_to_mimic_or_options.is_a?(Hash)
             options          = class_to_mimic_or_options.merge(options)
             instance         = options.fetch(:example)
             @singleton_class = (class << instance; self; end)

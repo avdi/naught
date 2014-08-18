@@ -14,7 +14,7 @@ module Naught
                 instance
               end
 
-              %w[dup clone].each do |method_name|
+              %w(dup clone).each do |method_name|
                 define_method method_name do
                   self
                 end

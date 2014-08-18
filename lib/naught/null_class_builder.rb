@@ -2,7 +2,7 @@ require 'naught/basic_object'
 require 'naught/conversions'
 
 module Naught
-  class NullClassBuilder
+  class NullClassBuilder # rubocop:disable ClassLength
     # make sure this module exists
     module Commands
     end
