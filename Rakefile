@@ -13,3 +13,23 @@ rescue LoadError
 end
 
 task :default => [:spec, :rubocop]
+
+task :mutant => :spec do
+  require 'mutant'
+
+  ignores = [
+    # Mutation with infinite runtime
+    'Naught::NullClassBuilder::Commands::Pebble#call'
+  ]
+
+  arguments = []
+  arguments << '--include' << 'lib'
+  arguments << '--require' << 'naught'
+  arguments << '--use'     << 'rspec'
+  arguments << '--score'   << '87.02'
+  arguments << 'Naught*'
+  ignores.each do |ignore|
+    arguments << '--ignore-subject' << ignore
+  end
+  fail unless Mutant::CLI.run(arguments)
+end

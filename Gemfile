@@ -10,6 +10,8 @@ group :development do
     gem 'guard'
     gem 'guard-bundler'
     gem 'guard-rspec'
+    gem 'mutant',       '~> 0.5.10'
+    gem 'mutant-rspec', '~> 0.5.10'
   end
   gem 'pry'
 end
