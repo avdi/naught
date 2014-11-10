@@ -3,31 +3,20 @@ require 'logger'
 
 describe 'null object mimicking a class' do
   class User
-    def login
-      'bob'
-    end
+    attr_reader :login
   end
 
   module Authorizable
-    def authorized_for?(_)
-      true
-    end
+    def authorized_for?(_); end
   end
 
   class LibraryPatron < User
     include Authorizable
+    attr_reader :name
 
-    def member?
-      true
-    end
+    def member?; end
 
-    def name
-      'Bob'
-    end
-
-    def notify_of_overdue_books(_)
-      puts 'Notifying...'
-    end
+    def notify_of_overdue_books(_); end
   end
 
   subject(:null) { mimic_class.new }
@@ -82,9 +71,7 @@ describe 'null object mimicking a class' do
   describe 'with an instance as example' do
     let(:mimic_class) do
       milton = LibraryPatron.new
-      def milton.stapler
-        'red swingline'
-      end
+      def milton.stapler; end
       Naught.build do |b|
         b.mimic :example => milton
       end
@@ -110,7 +97,7 @@ describe 'using mimic with black_hole' do
     end
   end
 
-  def self.it_behaves_like_a_black_hole_mimic
+  shared_examples_for 'a black hole mimic' do
     it 'returns self from mimicked methods' do
       expect(null.info).to equal(null)
       expect(null.error).to equal(null)
@@ -122,7 +109,7 @@ describe 'using mimic with black_hole' do
     end
   end
 
-  it_behaves_like_a_black_hole_mimic
+  it_should_behave_like 'a black hole mimic'
 
   describe '(reverse order)' do
     let(:mimic_class) do
@@ -132,7 +119,7 @@ describe 'using mimic with black_hole' do
       end
     end
 
-    it_behaves_like_a_black_hole_mimic
+    it_should_behave_like 'a black hole mimic'
   end
 
 end

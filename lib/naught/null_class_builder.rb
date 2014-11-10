@@ -31,7 +31,7 @@ module Naught
       @null_equivalents ||= [nil]
     end
 
-    def generate_class
+    def generate_class # rubocop:disable AbcSize
       respond_to_any_message unless interface_defined?
       generation_mod    = Module.new
       customization_mod = customization_module # get a local binding

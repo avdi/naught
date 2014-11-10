@@ -2,13 +2,7 @@ require 'spec_helper'
 
 describe 'null object impersonating another type' do
   class Point
-    def x
-      23
-    end
-
-    def y
-      42
-    end
+    attr_reader :x, :y
   end
 
   subject(:null) { impersonation_class.new }

@@ -51,13 +51,8 @@ describe 'a null object with predicates_return(false)' do
   end
 
   class Coffee
-    def black?
-      true
-    end
-
-    def origin
-      'Ethiopia'
-    end
+    attr_reader :origin
+    def black?; end
   end
 
   describe '(mimic)' do

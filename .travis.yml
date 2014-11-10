@@ -6,12 +6,14 @@ rvm:
   - 2.0.0
   - 2.1
   - jruby
-  - jruby-head
   - rbx-2
   - ruby-head
 matrix:
   allow_failures:
     - rvm: jruby-head
     - rvm: ruby-head
+  include:
+    - rvm: jruby-head
+      env: JRUBY_OPTS="$JRUBY_OPTS --debug"
   fast_finish: true
 sudo: false

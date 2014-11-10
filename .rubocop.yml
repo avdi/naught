@@ -3,7 +3,7 @@ Metrics/BlockNesting:
 
 Metrics/LineLength:
   AllowURI: true
-  Max: 90 # TODO: Lower to 80
+  Max: 93 # TODO: Lower to 80
 
 Metrics/MethodLength:
   CountComments: false
