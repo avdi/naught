@@ -2,9 +2,7 @@ require 'spec_helper.rb'
 
 describe 'explicitly convertable null object' do
   let(:null_class) do
-    Naught.build do |b|
-      b.define_explicit_conversions
-    end
+    Naught.build(&:define_explicit_conversions)
   end
   subject(:null) { null_class.new }
 

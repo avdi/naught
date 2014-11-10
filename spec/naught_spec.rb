@@ -42,9 +42,7 @@ describe 'traceable null object' do
   end
   let(:instantiation_line) { null_object_and_line.last }
   let(:trace_null_class) do
-    Naught.build do |b|
-      b.traceable
-    end
+    Naught.build(&:traceable)
   end
 
   it 'remembers the file it was instantiated from' do

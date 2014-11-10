@@ -3,9 +3,7 @@ require 'spec_helper'
 describe 'black hole null object' do
   subject(:null) { null_class.new }
   let(:null_class) do
-    Naught.build do |b|
-      b.black_hole
-    end
+    Naught.build(&:black_hole)
   end
 
   it 'returns self from arbitray method calls' do

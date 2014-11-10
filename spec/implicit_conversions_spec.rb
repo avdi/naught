@@ -3,9 +3,7 @@ require 'spec_helper'
 describe 'implicitly convertable null object' do
   subject(:null) { null_class.new }
   let(:null_class) do
-    Naught.build do |b|
-      b.define_implicit_conversions
-    end
+    Naught.build(&:define_implicit_conversions)
   end
   it 'implicitly splats the same way an empty array does' do
     a, b = null

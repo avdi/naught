@@ -2,9 +2,7 @@ require 'spec_helper'
 
 describe 'singleton null object' do
   subject(:null_class) do
-    Naught.build do |b|
-      b.singleton
-    end
+    Naught.build(&:singleton)
   end
 
   it 'does not respond to .new' do
