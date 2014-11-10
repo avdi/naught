@@ -9,11 +9,11 @@ describe 'a null object with predicates_return(false)' do
   end
 
   it 'responds to predicate-style methods with false' do
-    expect(null.too_much_coffee?).to eq(false)
+    expect(null.too_much_coffee?).to be(false)
   end
 
   it 'responds to other methods with nil' do
-    expect(null.foobar).to eq(nil)
+    expect(null.foobar).to be(nil)
   end
 
   describe '(black hole)' do
@@ -25,7 +25,7 @@ describe 'a null object with predicates_return(false)' do
     end
 
     it 'responds to predicate-style methods with false' do
-      expect(null.too_much_coffee?).to eq(false)
+      expect(null.too_much_coffee?).to be(false)
     end
 
     it 'responds to other methods with self' do
@@ -42,7 +42,7 @@ describe 'a null object with predicates_return(false)' do
     end
 
     it 'responds to predicate-style methods with false' do
-      expect(null.too_much_coffee?).to eq(false)
+      expect(null.too_much_coffee?).to be(false)
     end
 
     it 'responds to other methods with self' do
@@ -69,7 +69,7 @@ describe 'a null object with predicates_return(false)' do
     end
 
     it 'responds to predicate-style methods with false' do
-      expect(null.black?).to eq(false)
+      expect(null.black?).to be(false)
     end
 
     it 'responds to other methods with nil' do
