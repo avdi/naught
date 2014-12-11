@@ -1,7 +1,6 @@
 require 'spec_helper'
 
 describe 'null object with a custom base class' do
-
   subject(:null) { custom_base_null_class.new }
 
   let(:custom_base_null_class) do

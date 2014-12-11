@@ -85,7 +85,6 @@ describe 'null object mimicking a class' do
       expect(null).to respond_to(:member?)
     end
   end
-
 end
 
 describe 'using mimic with black_hole' do
@@ -121,5 +120,4 @@ describe 'using mimic with black_hole' do
 
     it_should_behave_like 'a black hole mimic'
   end
-
 end

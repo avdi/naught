@@ -30,5 +30,4 @@ describe 'Null()' do
     expect(null.__file__).to eq(__FILE__)
     expect(null.__line__).to eq(line)
   end
-
 end

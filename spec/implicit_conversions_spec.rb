@@ -19,5 +19,4 @@ describe 'implicitly convertable null object' do
   it 'implicitly converts to an empty string' do
     expect(null.to_str).to eq('')
   end
-
 end

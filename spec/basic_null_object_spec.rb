@@ -31,5 +31,4 @@ describe 'basic null object' do
   it 'aliases .new to .get' do
     expect(null_class.get.class).to be(null_class)
   end
-
 end
