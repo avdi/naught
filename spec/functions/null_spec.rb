@@ -26,7 +26,7 @@ describe 'Null()' do
   end
 
   it 'generates null objects with useful trace info' do
-    null, line = Null(), __LINE__
+    null, line = Null(), __LINE__ # rubocop:disable ParallelAssignment
     expect(null.__file__).to eq(__FILE__)
     expect(null.__line__).to eq(line)
   end

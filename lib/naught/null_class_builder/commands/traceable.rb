@@ -12,7 +12,7 @@ module Naught
               def initialize(options = {})
                 range = (RUBY_VERSION.to_f == 1.9 && RUBY_PLATFORM != 'java') ? 4 : 3
                 backtrace = options.fetch(:caller) { Kernel.caller(range) }
-                @__file__, line, _ = backtrace[0].split(':')
+                @__file__, line = backtrace[0].split(':')
                 @__line__ = line.to_i
               end
             end

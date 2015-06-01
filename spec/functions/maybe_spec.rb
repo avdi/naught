@@ -23,7 +23,7 @@ describe 'Maybe()' do
   end
 
   it 'generates null objects with useful trace info' do
-    null, line = Maybe(), __LINE__
+    null, line = Maybe(), __LINE__ # rubocop:disable ParallelAssignment
     expect(null.__file__).to eq(__FILE__)
     expect(null.__line__).to eq(line)
   end

@@ -31,7 +31,7 @@ describe 'traceable null object' do
     null_object_and_line.first
   end
   let(:null_object_and_line) do
-    obj, line = trace_null_class.new, __LINE__
+    obj, line = trace_null_class.new, __LINE__ # rubocop:disable ParallelAssignment
     [obj, line]
   end
   let(:instantiation_line) { null_object_and_line.last }
@@ -52,7 +52,7 @@ describe 'traceable null object' do
   end
 
   it 'can accept custom backtrace info' do
-    obj, line = make_null, __LINE__
+    obj, line = make_null, __LINE__ # rubocop:disable ParallelAssignment
     expect(obj.__line__).to eq(line)
   end
 end
