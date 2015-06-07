@@ -11,6 +11,10 @@ module Naught
                 []
               end
 
+              def to_hash
+                {}
+              end
+
               def to_str
                 ''
               end
