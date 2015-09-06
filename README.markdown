@@ -1,8 +1,16 @@
-[![Build Status](https://travis-ci.org/avdi/naught.png?branch=master)](https://travis-ci.org/avdi/naught)
-[![Code Climate](https://codeclimate.com/github/avdi/naught.png)](https://codeclimate.com/github/avdi/naught)
-[![Coverage Status](https://coveralls.io/repos/avdi/naught/badge.png?branch=master)](https://coveralls.io/r/avdi/naught?branch=master)
-[![Gem Version](https://badge.fury.io/rb/naught.png)](http://badge.fury.io/rb/naught)
-[![Inline docs](http://inch-ci.org/github/avdi/naught.png)](http://inch-ci.org/github/avdi/naught)
+[![Gem Version](https://badge.fury.io/rb/naught.svg)][gem]
+[![Build Status](https://travis-ci.org/avdi/naught.svg?branch=master)][travis]
+[![Dependency Status](https://gemnasium.com/avdi/naught.svg)][gemnasium]
+[![Code Climate](https://codeclimate.com/github/avdi/naught/badges/gpa.svg)][codeclimate]
+[![Coverage Status](https://coveralls.io/repos/avdi/naught/badge.svg?branch=master&service=github)][coveralls]
+[![Inline docs](http://inch-ci.org/github/avdi/naught.svg?branch=master)][docs]
+
+[gem]: https://rubygems.org/gems/naught
+[travis]: https://travis-ci.org/avdi/naught
+[gemnasium]: https://gemnasium.com/avdi/naught
+[codeclimate]: https://codeclimate.com/github/avdi/naught
+[coveralls]: https://coveralls.io/github/avdi/naught?branch=master
+[docs]: http://inch-ci.org/github/avdi/naught
 
 A quick intro to Naught
 -------------------------
