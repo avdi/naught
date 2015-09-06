@@ -6,7 +6,7 @@ describe 'singleton null object' do
   end
 
   it 'does not respond to .new' do
-    expect { null_class.new }.to raise_error
+    expect { null_class.new }.to raise_error(NoMethodError)
   end
 
   it 'has only one instance' do
