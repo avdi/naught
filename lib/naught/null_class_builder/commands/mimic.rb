@@ -21,7 +21,7 @@ module Naught
             @singleton_class = NULL_SINGLETON_CLASS
             @class_to_mimic  = class_to_mimic_or_options
           end
-          @include_super     = options.fetch(:include_super) { true }
+          @include_super = options.fetch(:include_super) { true }
 
           builder.base_class   = root_class_of(@class_to_mimic)
           class_to_mimic       = @class_to_mimic
