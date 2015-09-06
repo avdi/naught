@@ -19,6 +19,9 @@ describe 'implicitly convertable null object' do
   it 'implicitly converts to an empty hash' do
     expect(null.to_hash).to eq({})
   end
+  it 'implicitly converts to zero' do
+    expect(null.to_int).to eq(0)
+  end
   it 'implicitly converts to an empty string' do
     expect(null.to_str).to eq('')
   end

@@ -15,6 +15,10 @@ module Naught
                 {}
               end
 
+              def to_int
+                0
+              end
+
               def to_str
                 ''
               end
