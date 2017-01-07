@@ -12,6 +12,9 @@
 [coveralls]: https://coveralls.io/github/avdi/naught?branch=master
 [docs]: http://inch-ci.org/github/avdi/naught
 
+## Version
+You are reading the documentation for the next release of Naught (0.0.3). The current stable release is [0.0.2](https://github.com/avdi/naught/blob/v0.0.2/README.org)
+
 A quick intro to Naught
 -------------------------
 
