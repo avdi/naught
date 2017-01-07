@@ -179,6 +179,7 @@ module Naught
     def stub_method_returning_self(subject, name)
       subject.module_eval do
         define_method(name) { |*| self }
+        define_method(:to_int) { 0 }
       end
     end
 
