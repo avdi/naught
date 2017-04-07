@@ -1,3 +1,6 @@
+AllCops:
+  DisplayCopNames: true
+
 Lint/NestedMethodDefinition:
   Enabled: false
 
