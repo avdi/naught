@@ -91,3 +91,46 @@ class PredicateMimicTest < Minitest::Test
     assert_raises(NoMethodError) { @null.leaf_variety }
   end
 end
+
+# Test for GitHub issue #60: predicates_return(false) breaks NullObject coercion
+# https://github.com/avdi/naught/issues/60
+CoercibleNull = Naught.build do |config|
+  config.predicates_return false
+end
+CoercibleNull.class_eval do
+  define_method(:coerce) { |other| [other, 1] }
+end
+
+class PredicateCoercionTest < Minitest::Test
+  def setup
+    @null = CoercibleNull.new
+  end
+
+  def test_coerce_method_works_with_predicates_return
+    assert_equal [5, 1], @null.coerce(5)
+  end
+
+  def test_responds_to_coerce
+    assert_respond_to @null, :coerce
+  end
+
+  def test_division_coercion_works
+    assert_equal 1, 1 / @null
+  end
+
+  def test_multiplication_coercion_works
+    assert_equal 5, 5 * @null
+  end
+
+  def test_addition_coercion_works
+    assert_equal 4, 3 + @null
+  end
+
+  def test_subtraction_coercion_works
+    assert_equal 6, 7 - @null
+  end
+
+  def test_predicates_still_return_false
+    refute_predicate @null, :valid?
+  end
+end
