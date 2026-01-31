@@ -34,4 +34,10 @@ module Naught
   # @api public
   module NullObjectTag
   end
+
+  # Marker module for null-safe proxy wrappers
+  #
+  # @api public
+  module NullSafeProxyTag
+  end
 end

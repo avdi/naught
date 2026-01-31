@@ -11,6 +11,10 @@ module Naught
   module NullObjectTag
   end
 
+  # Marker module for null-safe proxy wrappers
+  module NullSafeProxyTag
+  end
+
   # BasicObject subclass used as a minimal base for null objects
   class BasicObject < ::BasicObject
   end
@@ -159,6 +163,10 @@ module Naught
       end
 
       class Traceable < Naught::NullClassBuilder::Command
+        def call: () -> void
+      end
+
+      class NullSafeProxy < Naught::NullClassBuilder::Command
         def call: () -> void
       end
     end
