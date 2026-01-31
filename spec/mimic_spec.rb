@@ -92,6 +92,24 @@ describe 'null object mimicking a class' do
   end
 end
 
+describe 'null object mimicking a BasicObject subclass' do
+  class BasicWidget < BasicObject
+    def widget_method
+    end
+  end
+
+  subject(:null) { mimic_class.new }
+  let(:mimic_class) do
+    Naught.build do |b|
+      b.mimic BasicWidget
+    end
+  end
+
+  it 'uses BasicObject as the base class and responds to mimicked methods' do
+    expect(null.widget_method).to be_nil
+  end
+end
+
 describe 'using mimic with black_hole' do
   subject(:null) { mimic_class.new }
   let(:mimic_class) do
