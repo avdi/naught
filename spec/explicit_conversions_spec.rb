@@ -1,4 +1,4 @@
-require 'spec_helper.rb'
+require 'spec_helper'
 
 describe 'explicitly convertable null object' do
   let(:null_class) do

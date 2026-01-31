@@ -32,7 +32,7 @@ describe 'pebble null object' do
   end
 
   it 'prints the arguments received' do
-    expect(test_output).to receive(:puts).with(/^info\(\'foo\', 5, \:sym\)/)
+    expect(test_output).to receive(:puts).with(/^info\('foo', 5, :sym\)/)
     null.info('foo', 5, :sym)
   end
 
@@ -45,32 +45,30 @@ describe 'pebble null object' do
     expect(null.info).to be(null)
   end
 
-  context 'when is called from a block' do
-    it 'prints the indication of a block',
-       :pending => jruby? || rubinius? || ruby_18? do
-      expect(test_output).to receive(:puts).twice.
-        with(/from block/)
+  context 'when is called from a block', skip: jruby? do
+    it 'prints the indication of a block' do
+      expect(test_output).to receive(:puts).twice
+                                           .with(/from block/)
       Caller.new.call_method_inside_block(null)
     end
 
     it 'prints the name of the method that has the block' do
-      expect(test_output).to receive(:puts).twice.
-        with(/call_method_inside_block$/)
+      expect(test_output).to receive(:puts).twice
+                                           .with(/call_method_inside_block$/)
       Caller.new.call_method_inside_block(null)
     end
   end
 
-  context 'when is called from many levels blocks' do
-    it 'prints the indication of blocks and its levels',
-       :pending => jruby? || rubinius? || ruby_18? do
-      expect(test_output).to receive(:puts).exactly(4).times.
-        with(/from block \(2 levels\)/)
+  context 'when is called from many levels blocks', skip: jruby? do
+    it 'prints the indication of blocks and its levels' do
+      expect(test_output).to receive(:puts).exactly(4).times
+                                           .with(/from block \(2 levels\)/)
       Caller.new.call_method_inside_nested_block(null)
     end
 
     it 'prints the name of the method that has the block' do
-      expect(test_output).to receive(:puts).exactly(4).times.
-        with(/call_method_inside_nested_block$/)
+      expect(test_output).to receive(:puts).exactly(4).times
+                                           .with(/call_method_inside_nested_block$/)
       Caller.new.call_method_inside_nested_block(null)
     end
   end

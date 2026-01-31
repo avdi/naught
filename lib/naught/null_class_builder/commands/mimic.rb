@@ -25,7 +25,7 @@ module Naught
 
           builder.base_class   = root_class_of(@class_to_mimic)
           class_to_mimic       = @class_to_mimic
-          builder.inspect_proc = lambda { "<null:#{class_to_mimic}>" }
+          builder.inspect_proc = -> { "<null:#{class_to_mimic}>" }
           builder.interface_defined = true
         end
 
@@ -37,7 +37,7 @@ module Naught
           end
         end
 
-      private
+        private
 
         def root_class_of(klass)
           klass.ancestors.include?(Object) ? Object : Naught::BasicObject

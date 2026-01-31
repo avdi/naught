@@ -13,7 +13,7 @@ describe 'a null object with predicates_return(false)' do
   end
 
   it 'responds to other methods with nil' do
-    expect(null.foobar).to be(nil)
+    expect(null.foobar).to be_nil
   end
 
   describe '(black hole)' do
@@ -52,7 +52,9 @@ describe 'a null object with predicates_return(false)' do
 
   class Coffee
     attr_reader :origin
-    def black?; end
+
+    def black?
+    end
   end
 
   describe '(mimic)' do
@@ -68,7 +70,7 @@ describe 'a null object with predicates_return(false)' do
     end
 
     it 'responds to other methods with nil' do
-      expect(null.origin).to be(nil)
+      expect(null.origin).to be_nil
     end
 
     it 'does not respond to undefined methods' do

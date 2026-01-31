@@ -5,7 +5,7 @@ module Naught
     module Commands
       class Singleton < Naught::NullClassBuilder::Command
         def call
-          defer(:class => true) do |subject|
+          defer(class: true) do |subject|
             require 'singleton'
             subject.module_eval do
               include ::Singleton
@@ -14,7 +14,7 @@ module Naught
                 instance
               end
 
-              %w(dup clone).each do |method_name|
+              %w[dup clone].each do |method_name|
                 define_method method_name do
                   self
                 end

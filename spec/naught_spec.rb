@@ -31,7 +31,7 @@ describe 'traceable null object' do
     null_object_and_line.first
   end
   let(:null_object_and_line) do
-    obj, line = trace_null_class.new, __LINE__ # rubocop:disable ParallelAssignment
+    obj, line = trace_null_class.new, __LINE__ # rubocop:disable Style/ParallelAssignment
     [obj, line]
   end
   let(:instantiation_line) { null_object_and_line.last }
@@ -48,11 +48,11 @@ describe 'traceable null object' do
   end
 
   def make_null
-    trace_null_class.get(:caller => caller(1))
+    trace_null_class.get(caller: caller(1))
   end
 
   it 'can accept custom backtrace info' do
-    obj, line = make_null, __LINE__ # rubocop:disable ParallelAssignment
+    obj, line = make_null, __LINE__ # rubocop:disable Style/ParallelAssignment
     expect(obj.__line__).to eq(line)
   end
 end
@@ -63,7 +63,7 @@ describe 'customized null object' do
     Naught.build do |b|
       b.define_explicit_conversions
       def to_path
-        '/dev/null'
+        File::NULL
       end
 
       def to_s
@@ -73,21 +73,22 @@ describe 'customized null object' do
   end
 
   it 'responds to custom-defined methods' do
-    expect(custom_null.to_path).to eq('/dev/null')
+    expect(custom_null.to_path).to eq(File::NULL)
   end
 
   it 'allows generated methods to be overridden' do
     expect(custom_null.to_s).to eq('NOTHING TO SEE HERE')
   end
 end
+
 TestNull = Naught.build
 
 describe 'a named null object class' do
   it 'has named ancestor modules' do
     expect(TestNull.ancestors[0..2].collect(&:name)).to eq([
-      'TestNull',
-      'TestNull::Customizations',
-      'TestNull::GeneratedMethods',
-    ])
+                                                             'TestNull',
+                                                             'TestNull::Customizations',
+                                                             'TestNull::GeneratedMethods',
+                                                           ])
   end
 end

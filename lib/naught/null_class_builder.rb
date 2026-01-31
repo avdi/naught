@@ -2,24 +2,25 @@ require 'naught/basic_object'
 require 'naught/conversions'
 
 module Naught
-  class NullClassBuilder # rubocop:disable ClassLength
+  class NullClassBuilder
     # make sure this module exists
     module Commands
     end
 
     attr_accessor :base_class, :inspect_proc, :interface_defined
-    alias_method :interface_defined?, :interface_defined
+    alias interface_defined? interface_defined
 
     def initialize
       @interface_defined = false
       @base_class        = Naught::BasicObject
-      @inspect_proc      = lambda { '<null>' }
+      @inspect_proc      = -> { '<null>' }
       @stub_strategy     = :stub_method_returning_nil
       define_basic_methods
     end
 
     def customize(&customization_block)
       return unless customization_block
+
       customization_module.module_exec(self, &customization_block)
     end
 
@@ -31,7 +32,7 @@ module Naught
       @null_equivalents ||= [nil]
     end
 
-    def generate_class # rubocop:disable AbcSize
+    def generate_class
       respond_to_any_message unless interface_defined?
       generation_mod    = Module.new
       customization_mod = customization_module # get a local binding
@@ -71,7 +72,7 @@ module Naught
     end
 
     def respond_to_any_message
-      defer(:prepend => true) do |subject|
+      defer(prepend: true) do |subject|
         subject.module_eval do
           def respond_to?(*)
             true
@@ -95,39 +96,25 @@ module Naught
       send(@stub_strategy, subject, name)
     end
 
-    def method_missing(method_name, *args, &block)
+    def method_missing(method_name, *, &)
       command_name = command_name_for_method(method_name)
       if Commands.const_defined?(command_name)
         command_class = Commands.const_get(command_name)
-        command_class.new(self, *args, &block).call
+        command_class.new(self, *, &).call
       else
         super
       end
     end
 
-    if RUBY_VERSION >= '1.9'
-      def respond_to_missing?(method_name, include_private = false)
-        respond_to_definition(method_name, include_private, :respond_to_missing?)
-      end
-    else
-      def respond_to?(method_name, include_private = false)
-        respond_to_definition(method_name, include_private, :respond_to?)
-      end
-    end
-
-  private
-
-    def respond_to_definition(method_name, include_private, respond_to_method_name)
+    def respond_to_missing?(method_name, include_private = false)
       command_name = command_name_for_method(method_name)
       Commands.const_defined?(command_name) ||
-        super_duper(respond_to_method_name, method_name, include_private)
+        super
     rescue NameError
-      super_duper(respond_to_method_name, method_name, include_private)
+      super
     end
 
-    def super_duper(method_name, *args)
-      self.class.superclass.send(method_name, *args)
-    end
+    private
 
     def define_basic_methods
       define_basic_instance_methods
@@ -151,10 +138,10 @@ module Naught
     end
 
     def define_basic_class_methods
-      defer(:class => true) do |subject|
+      defer(class: true) do |subject|
         subject.module_eval do
           class << self
-            alias_method :get, :new
+            alias get new
           end
           klass = self
           define_method(:class) { klass }

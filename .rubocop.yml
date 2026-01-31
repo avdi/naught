@@ -1,68 +1,130 @@
+plugins:
+  - rubocop-rspec
+
 AllCops:
-  DisplayCopNames: true
+  TargetRubyVersion: 3.2
+  NewCops: enable
+  SuggestExtensions: false
+  Exclude:
+    - 'vendor/**/*'
+
+Style/FrozenStringLiteralComment:
+  Enabled: false
+
+Style/MutableConstant:
+  Enabled: false
+
+Bundler/OrderedGems:
+  Enabled: false
+
+Gemspec/DevelopmentDependencies:
+  Enabled: false
 
 Lint/NestedMethodDefinition:
   Enabled: false
 
-Metrics/BlockNesting:
-  Max: 2
+Lint/DuplicateBranch:
+  Enabled: false
 
-Metrics/LineLength:
-  AllowURI: true
-  Max: 93 # TODO: Lower to 80
+Lint/MissingSuper:
+  Enabled: false
+
+Metrics/AbcSize:
+  Max: 25
+
+Metrics/BlockLength:
+  Exclude:
+    - 'spec/**/*'
+
+Metrics/ClassLength:
+  Max: 150
 
 Metrics/MethodLength:
   CountComments: false
-  Max: 21 # TODO: Lower to 15
+  Max: 21
 
-Metrics/ParameterLists:
-  Max: 4
-  CountKeywordArgs: true
+Layout/LineLength:
+  AllowedPatterns: ['^\s*#']
+  Max: 100
 
-Style/AccessModifierIndentation:
-  EnforcedStyle: outdent
+Layout/EmptyLinesAfterModuleInclusion:
+  Enabled: false
+
+Layout/EmptyLineBetweenDefs:
+  AllowAdjacentOneLineDefs: true
+
+Style/AccessModifierDeclarations:
+  Enabled: false
 
 Style/ClassVars:
   Enabled: false
 
-Style/CollectionMethods:
-  Enabled: true
-  PreferredMethods:
-    map:      'collect'
-    map!:     'collect!'
-    reduce:   'inject'
-    find:     'detect'
-    find_all: 'select'
-
 Style/Documentation:
   Enabled: false
-
-Style/DotPosition:
-  EnforcedStyle: trailing
 
 Style/DoubleNegation:
   Enabled: false
 
-Style/EachWithObject:
-  Enabled: false
-
-Style/Encoding:
-  Enabled: false
-
-Style/HashSyntax:
-  EnforcedStyle: hash_rockets
+Style/EmptyMethod:
+  EnforcedStyle: expanded
 
 Style/Lambda:
   Enabled: false
 
-Style/MethodName:
+Style/RaiseArgs:
   Enabled: false
 
-Style/RaiseArgs:
-  EnforcedStyle: compact
+Style/RedundantFetchBlock:
+  Enabled: false
 
-Style/SpaceInsideHashLiteralBraces:
-  EnforcedStyle: no_space
+Naming/MethodName:
+  Enabled: false
 
-Style/TrailingComma:
-  EnforcedStyleForMultiline: 'comma'
+Style/TrailingCommaInArrayLiteral:
+  EnforcedStyleForMultiline: comma
+
+Style/TrailingCommaInHashLiteral:
+  EnforcedStyleForMultiline: comma
+
+RSpec/MultipleExpectations:
+  Enabled: false
+
+RSpec/ExampleLength:
+  Enabled: false
+
+RSpec/NestedGroups:
+  Max: 4
+
+RSpec/DescribeClass:
+  Enabled: false
+
+RSpec/MultipleMemoizedHelpers:
+  Enabled: false
+
+RSpec/LeadingSubject:
+  Enabled: false
+
+RSpec/EmptyLineAfterFinalLet:
+  Enabled: false
+
+RSpec/EmptyLineAfterSubject:
+  Enabled: false
+
+RSpec/NoExpectationExample:
+  Enabled: false
+
+RSpec/MultipleDescribes:
+  Enabled: false
+
+RSpec/LeakyConstantDeclaration:
+  Enabled: false
+
+RSpec/MessageSpies:
+  Enabled: false
+
+RSpec/StubbedMock:
+  Enabled: false
+
+Lint/ConstantDefinitionInBlock:
+  Exclude:
+    - 'spec/**/*'

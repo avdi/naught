@@ -1,16 +1,8 @@
 [![Gem Version](https://badge.fury.io/rb/naught.svg)][gem]
-[![Build Status](https://travis-ci.org/avdi/naught.svg?branch=master)][travis]
-[![Dependency Status](https://gemnasium.com/avdi/naught.svg)][gemnasium]
-[![Code Climate](https://codeclimate.com/github/avdi/naught/badges/gpa.svg)][codeclimate]
-[![Coverage Status](https://coveralls.io/repos/avdi/naught/badge.svg?branch=master&service=github)][coveralls]
-[![Inline docs](http://inch-ci.org/github/avdi/naught.svg?branch=master)][docs]
+[![Build Status](https://github.com/avdi/naught/actions/workflows/ci.yml/badge.svg)][ci]
 
 [gem]: https://rubygems.org/gems/naught
-[travis]: https://travis-ci.org/avdi/naught
-[gemnasium]: https://gemnasium.com/avdi/naught
-[codeclimate]: https://codeclimate.com/github/avdi/naught
-[coveralls]: https://coveralls.io/github/avdi/naught?branch=master
-[docs]: http://inch-ci.org/github/avdi/naught
+[ci]: https://github.com/avdi/naught/actions/workflows/ci.yml
 
 A quick intro to Naught
 -------------------------
