@@ -5,15 +5,13 @@ module Naught
     module Commands
       class Traceable < Naught::NullClassBuilder::Command
         def call
-          defer do |subject|
-            subject.module_eval do
-              attr_reader :__file__, :__line__
+          builder.defer_prepend_module do
+            attr_reader :__file__, :__line__
 
-              def initialize(options = {})
-                backtrace = options.fetch(:caller) { Kernel.caller(3) }
-                @__file__, line = backtrace[0].split(":")
-                @__line__ = line.to_i
-              end
+            define_method(:initialize) do |options = {}|
+              backtrace = options.fetch(:caller) { Kernel.caller(3) }
+              @__file__, line = backtrace[0].split(":")
+              @__line__ = line.to_i
             end
           end
         end

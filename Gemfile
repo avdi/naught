@@ -2,16 +2,18 @@ source "https://rubygems.org"
 
 gemspec
 
-group :development do
-  gem "pry"
-end
-
 group :test do
   gem "logger"
-  gem "rspec", "~> 3.0"
-  gem "rubocop-performance", require: false
-  gem "rubocop-rspec", require: false
-  gem "simplecov", require: false
-  gem "standard", require: false
-  gem "standard-performance", require: false
+  gem "minitest", ">= 6"
+  gem "minitest-mock"
+  gem "rdoc"
+  gem "redcarpet"
+  gem "rubocop-minitest"
+  gem "rubocop-performance"
+  gem "simplecov"
+  gem "standard"
+  gem "standard-performance"
+  gem "steep"
+  gem "yard"
+  gem "yardstick"
 end

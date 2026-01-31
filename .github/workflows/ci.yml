@@ -16,7 +16,7 @@ jobs:
           - '3.2'
           - '3.3'
           - '3.4'
-          - '4.0'
+          - 'jruby-10.0'
     steps:
       - uses: actions/checkout@v4
       - name: Set up Ruby ${{ matrix.ruby-version }}
@@ -25,7 +25,7 @@ jobs:
           ruby-version: ${{ matrix.ruby-version }}
           bundler-cache: true
       - name: Run tests
-        run: bundle exec rake spec
+        run: bundle exec rake test
       - name: Run RuboCop
         run: bundle exec rake rubocop
         if: matrix.ruby-version == '3.4'

@@ -1,7 +1,11 @@
 require "bundler/gem_tasks"
-require "rspec/core/rake_task"
+require "rake/testtask"
 
-RSpec::Core::RakeTask.new(:spec)
+Rake::TestTask.new(:test) do |t|
+  t.libs << "test"
+  t.libs << "lib"
+  t.test_files = FileList["test/**/*_test.rb"]
+end
 
 begin
   require "rubocop/rake_task"
@@ -29,4 +33,4 @@ task lint: %i[rubocop standard]
 desc "Fix all auto-correctable lint issues"
 task "lint:fix": %i[rubocop:autocorrect_all standard:fix]
 
-task default: %i[spec lint]
+task default: %i[test lint]

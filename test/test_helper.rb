@@ -1,0 +1,18 @@
+GEM_ROOT = File.expand_path("..", __dir__)
+$LOAD_PATH.unshift File.join(GEM_ROOT, "lib")
+
+require "simplecov"
+
+SimpleCov.start do
+  add_filter "/test/"
+  if RUBY_ENGINE != "jruby"
+    enable_coverage :branch
+    minimum_coverage line: 100, branch: 100
+  else
+    minimum_coverage line: 99.69
+  end
+end
+
+require "minitest/autorun"
+require "naught"
+Dir[File.join(GEM_ROOT, "test", "support", "**/*.rb")].each { |f| require f }

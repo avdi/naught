@@ -3,17 +3,13 @@ inherit_gem:
   standard-performance: config/base.yml
 
 plugins:
+  - rubocop-minitest
   - rubocop-performance
-  - rubocop-rspec
 
 AllCops:
   TargetRubyVersion: 3.2
   NewCops: enable
   SuggestExtensions: false
-
-Lint/ConstantDefinitionInBlock:
-  Exclude:
-    - "spec/**/*"
 
 # Standard Ruby compatibility
 Style/StringLiterals:
@@ -22,5 +18,6 @@ Style/StringLiterals:
 Style/StringLiteralsInInterpolation:
   EnforcedStyle: double_quotes
 
-RSpec/SpecFilePathFormat:
+# Naught generates classes dynamically, so class identity checks need assert_equal
+Minitest/AssertInstanceOf:
   Enabled: false

@@ -37,6 +37,7 @@ module Naught
       generation_mod = Module.new
       customization_mod = customization_module # get a local binding
       builder = self
+      modules_to_prepend = prepend_modules
 
       apply_operations(operations, generation_mod)
 
@@ -55,6 +56,8 @@ module Naught
         include NullObjectTag
         include generation_mod
         include customization_mod
+
+        modules_to_prepend.each { |mod| prepend mod }
       end
 
       apply_operations(class_operations, null_class)
@@ -91,6 +94,11 @@ module Naught
       else
         list << deferred_operation
       end
+    end
+
+    def defer_prepend_module(&block)
+      mod = Module.new(&block)
+      prepend_modules << mod
     end
 
     def stub_method(subject, name)
@@ -156,6 +164,10 @@ module Naught
 
     def operations
       @operations ||= []
+    end
+
+    def prepend_modules
+      @prepend_modules ||= []
     end
 
     def stub_method_returning_nil(subject, name)

@@ -10,38 +10,37 @@ module Naught
         end
 
         def call
-          defer do |subject|
-            define_method_missing(subject)
-            define_predicate_methods(subject)
-          end
-        end
+          return_value = @predicate_return_value
 
-        private
-
-        def define_method_missing(subject)
-          subject.module_exec(@predicate_return_value) do |return_value|
-            next unless subject.method_defined?(:method_missing)
-
-            original_method_missing = instance_method(:method_missing)
+          # Override method_missing and respond_to? via prepend to avoid redefinition warnings
+          builder.defer_prepend_module do
             define_method(:method_missing) do |method_name, *args, &block|
               if method_name.to_s.end_with?("?")
                 return_value
               else
-                original_method_missing.bind_call(self, method_name, *args, &block)
+                super(method_name, *args, &block)
               end
+            end
+
+            define_method(:respond_to?) do |method_name, include_private = false|
+              method_name.to_s.end_with?("?") || super(method_name, include_private)
             end
           end
-        end
 
-        def define_predicate_methods(subject)
-          subject.module_exec(@predicate_return_value) do |return_value|
-            instance_methods.each do |method_name|
-              next unless method_name.to_s.end_with?("?")
+          # Collect predicate methods and create a prepend module for them
+          defer do |subject|
+            predicate_methods = subject.instance_methods.select do |method_name|
+              method_name.to_s.end_with?("?") && method_name != :respond_to?
+            end
 
-              define_method(method_name) do |*|
-                return_value
+            next if predicate_methods.empty?
+
+            predicate_mod = Module.new do
+              predicate_methods.each do |method_name|
+                define_method(method_name) { |*| return_value }
               end
             end
+            subject.prepend(predicate_mod)
           end
         end
       end
