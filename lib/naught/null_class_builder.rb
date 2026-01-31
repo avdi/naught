@@ -144,8 +144,16 @@ module Naught
     #
     # @return [void]
     # @api public
+    # @see https://github.com/avdi/naught/issues/72
     def black_hole
       @stub_strategy = :stub_method_returning_self
+      # Define marshal_dump/marshal_load via prepend to avoid infinite recursion
+      # when Marshal.dump is called on a black hole null object.
+      # These must be prepended to take precedence over method_missing.
+      defer_prepend_module do
+        define_method(:marshal_dump) { nil }
+        define_method(:marshal_load) { |*| nil }
+      end
     end
 
     # Make null objects respond to any message and stub method_missing
