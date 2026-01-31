@@ -74,6 +74,11 @@ module Naught
           klass.ancestors.include?(Object) ? Object : Naught::BasicObject
         end
 
+        # Methods that should never be mimicked as they interfere with
+        # other Naught features like predicates_return
+        # @see https://github.com/avdi/naught/issues/55
+        METHODS_TO_SKIP = %i[method_missing respond_to? respond_to_missing?].freeze
+
         # Compute methods to stub from the mimicked class
         # @return [Array<Symbol>]
         # @api private
@@ -81,7 +86,7 @@ module Naught
           methods_to_mimic =
             class_to_mimic.instance_methods(include_super) |
             singleton_class.instance_methods(false)
-          methods_to_mimic - Object.instance_methods
+          methods_to_mimic - Object.instance_methods - METHODS_TO_SKIP
         end
       end
     end

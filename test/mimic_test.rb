@@ -191,3 +191,128 @@ class MimicWithBlackHoleReverseOrderTest < Minitest::Test
     assert_raises(NoMethodError) { @null.foobar }
   end
 end
+
+# Test for GitHub issue #55: Composing black_hole, predicates_return and impersonate
+# https://github.com/avdi/naught/issues/55
+module MimicMethodMissingTestFixtures
+  # A class that defines method_missing, similar to ActiveRecord models
+  class DynamicClass
+    def regular_method
+      "regular"
+    end
+
+    def active?
+      true
+    end
+
+    def method_missing(method_name, *args, &block)
+      if method_name.to_s.start_with?("dynamic_")
+        "dynamic: #{method_name}"
+      else
+        super
+      end
+    end
+
+    def respond_to_missing?(method_name, include_private = false)
+      method_name.to_s.start_with?("dynamic_") || super
+    end
+  end
+end
+
+class MimicDoesNotStubMethodMissingTest < Minitest::Test
+  def setup
+    @mimic_class = Naught.build do |b|
+      b.mimic MimicMethodMissingTestFixtures::DynamicClass
+    end
+    @null = @mimic_class.new
+  end
+
+  def test_stubs_regular_methods
+    assert_nil @null.regular_method
+  end
+
+  def test_stubs_predicate_methods
+    assert_nil @null.active?
+  end
+
+  def test_does_not_respond_to_dynamic_methods
+    # The null class should not mimic the dynamic method behavior
+    refute_respond_to @null, :dynamic_foo
+  end
+
+  def test_raises_for_undefined_methods
+    assert_raises(NoMethodError) { @null.undefined_method }
+  end
+end
+
+class MimicWithPredicatesReturnAndMethodMissingTest < Minitest::Test
+  def setup
+    @mimic_class = Naught.build do |b|
+      b.mimic MimicMethodMissingTestFixtures::DynamicClass
+      b.predicates_return false
+    end
+    @null = @mimic_class.new
+  end
+
+  def test_predicates_return_false_for_mimicked_predicates
+    refute_predicate @null, :active?
+  end
+
+  def test_predicates_return_false_for_any_predicate
+    refute_predicate @null, :something?
+  end
+
+  def test_regular_methods_return_nil
+    assert_nil @null.regular_method
+  end
+end
+
+class MimicWithBlackHoleAndPredicatesReturnTest < Minitest::Test
+  def setup
+    @mimic_class = Naught.build do |b|
+      b.mimic MimicMethodMissingTestFixtures::DynamicClass
+      b.black_hole
+      b.predicates_return false
+    end
+    @null = @mimic_class.new
+  end
+
+  def test_predicates_return_false
+    refute_predicate @null, :active?
+  end
+
+  def test_regular_mimicked_methods_return_self
+    assert_same @null, @null.regular_method
+  end
+
+  def test_undefined_methods_raise_error
+    assert_raises(NoMethodError) { @null.foobar }
+  end
+end
+
+class ImpersonateWithBlackHoleAndPredicatesReturnTest < Minitest::Test
+  def setup
+    @impersonate_class = Naught.build do |b|
+      b.impersonate MimicMethodMissingTestFixtures::DynamicClass
+      b.black_hole
+      b.predicates_return false
+    end
+    @null = @impersonate_class.new
+  end
+
+  def test_predicates_return_false
+    refute_predicate @null, :active?
+  end
+
+  def test_regular_mimicked_methods_return_self
+    assert_same @null, @null.regular_method
+  end
+
+  def test_is_a_dynamic_class
+    assert_kind_of MimicMethodMissingTestFixtures::DynamicClass, @null
+  end
+
+  def test_undefined_methods_raise_error
+    assert_raises(NoMethodError) { @null.foobar }
+  end
+end
