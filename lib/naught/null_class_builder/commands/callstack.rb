@@ -1,5 +1,6 @@
 require "naught/null_class_builder/command"
 require "naught/call_location"
+require "naught/chain_proxy"
 
 module Naught
   class NullClassBuilder
@@ -23,136 +24,55 @@ module Naught
       #   null.__call_trace__  #=> [[<foo>, <bar>], [<baz(1, 2)>]]
       #
       # @api private
-      class Callstack < Naught::NullClassBuilder::Command
+      class Callstack < Command
         # Install the callstack tracking mechanism
-        #
         # @return [void]
         # @api private
         def call
-          # steep:ignore:start
-          builder.defer_prepend_module do
-            # Each null object tracks its own call traces
-            # @__call_trace__ is an array of traces
-            # Each trace is an array of CallLocation objects
+          install_call_trace_accessor
+          install_method_missing_tracking
+          install_chain_proxy_class
+        end
+
+        private
+
+        # Install the __call_trace__ accessor on null objects
+        # @return [void]
+        # @api private
+        def install_call_trace_accessor
+          defer_prepend_module do
             attr_reader :__call_trace__
 
             define_method(:initialize) do |*args, **kwargs|
               super(*args, **kwargs)
-              @__call_trace__ = []
+              @__call_trace__ = [] #: Array[Array[Naught::CallLocation]]
             end
           end
-          # steep:ignore:end
+        end
 
-          # steep:ignore:start
-          builder.defer_prepend_module do
+        # Install method_missing override that records calls
+        # @return [void]
+        # @api private
+        def install_method_missing_tracking
+          defer_prepend_module do
             define_method(:respond_to?) do |method_name, include_private = false|
-              # These are real methods we define
-              return true if method_name == :__call_trace__
-
-              super(method_name, include_private)
+              method_name == :__call_trace__ || super(method_name, include_private)
             end
 
             define_method(:method_missing) do |method_name, *args, &block|
-              # Parse the caller to get location info
-              caller_info = Kernel.caller(1, 1).first
-              path, lineno, method_part = caller_info.split(":", 3)
-              lineno = lineno.to_i
-
-              # Extract the calling method name from the caller info
-              base_label = nil
-              if method_part
-                match = method_part.match(/['`]([^'`]+)['`]/)
-                if match
-                  # Extract just the method name, not the full signature
-                  sig = match[1]
-                  # Handle formats like "block in method" or "Class#method"
-                  base_label = sig.split(/[#.]/).last.split(" in ").last
-                end
-              end
-
-              location = Naught::CallLocation.new(
-                label: method_name,
-                args: args,
-                path: path,
-                lineno: lineno,
-                base_label: base_label
-              )
-
-              # Lazily initialize call trace in case other prepended modules
-              # didn't call super in their initialize (e.g., traceable)
-              @__call_trace__ ||= []
-
-              # Start a new trace and add this location
+              location = Naught::CallLocation.from_caller(method_name, args, Kernel.caller(1, 1).first)
+              @__call_trace__ ||= [] #: Array[Array[Naught::CallLocation]]
               @__call_trace__ << [location]
-
-              # Return a chain proxy that will add to the current trace
-              self.class::ChainProxy.new(self, @__call_trace__.last)
+              Naught::ChainProxy.new(self, @__call_trace__.last)
             end
           end
-          # steep:ignore:end
+        end
 
-          # Define the ChainProxy class for tracking chained calls
-          # steep:ignore:start
-          defer(class: true) do |null_class|
-            # Create the ChainProxy as a constant on the null class
-            chain_proxy_class = Class.new(Naught::BasicObject) do
-              def initialize(root, current_trace)
-                @root = root
-                @current_trace = current_trace
-              end
-
-              def method_missing(method_name, *args, &block)
-                # Parse the caller to get location info
-                caller_info = ::Kernel.caller(1, 1).first
-                path, lineno, method_part = caller_info.split(":", 3)
-                lineno = lineno.to_i
-
-                # Extract the calling method name
-                base_label = nil
-                if method_part
-                  match = method_part.match(/['`]([^'`]+)['`]/)
-                  if match
-                    sig = match[1]
-                    base_label = sig.split(/[#.]/).last.split(" in ").last
-                  end
-                end
-
-                location = ::Naught::CallLocation.new(
-                  label: method_name,
-                  args: args,
-                  path: path,
-                  lineno: lineno,
-                  base_label: base_label
-                )
-
-                @current_trace << location
-
-                # Return self to allow further chaining
-                self
-              end
-
-              def respond_to?(method_name, include_private = false)
-                true
-              end
-
-              # :nocov:
-              def respond_to_missing?(method_name, include_private = false)
-                true
-              end
-              # :nocov:
-
-              def inspect
-                "<null:chain>"
-              end
-
-              def class
-                @root.class
-              end
-            end
-
-            null_class.const_set(:ChainProxy, chain_proxy_class)
-          end
-          # steep:ignore:end
+        # Install the ChainProxy class constant for backwards compatibility
+        # @return [void]
+        # @api private
+        def install_chain_proxy_class
+          defer_class { |null_class| null_class.const_set(:ChainProxy, Naught::ChainProxy) }
         end
       end
     end

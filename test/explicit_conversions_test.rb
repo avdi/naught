@@ -1,9 +1,8 @@
 require "test_helper"
 
-class ExplicitConversionsTest < Minitest::Test
+class ExplicitConversionsTest < NaughtTestCase
   def setup
-    @null_class = Naught.build(&:define_explicit_conversions)
-    @null = @null_class.new
+    @null_class, @null = build_null(&:define_explicit_conversions)
   end
 
   def test_converts_to_empty_string
@@ -19,10 +18,10 @@ class ExplicitConversionsTest < Minitest::Test
   end
 
   def test_converts_to_zero_float
-    assert_in_delta(0.0, @null.to_f)
+    assert_in_delta 0.0, @null.to_f
   end
 
   def test_converts_to_empty_hash
-    assert_empty(@null.to_h)
+    assert_empty @null.to_h
   end
 end

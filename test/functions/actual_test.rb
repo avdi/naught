@@ -1,19 +1,17 @@
 require "test_helper"
 
-class ActualTest < Minitest::Test
+class ActualTest < NaughtTestCase
   include ConvertableNull::Conversions
 
-  def test_given_a_null_object_returns_nil
-    null = ConvertableNull.get
-
-    assert_nil Actual(null)
+  def test_given_null_object_returns_nil
+    assert_nil Actual(ConvertableNull.get)
   end
 
-  def test_given_false_returns_false_unchanged
+  def test_given_false_returns_false
     refute Actual(false)
   end
 
-  def test_given_a_string_returns_the_string_unchanged
+  def test_given_string_returns_string
     str = "hello"
 
     assert_same str, Actual(str)
@@ -23,11 +21,11 @@ class ActualTest < Minitest::Test
     assert_nil Actual(nil)
   end
 
-  def test_returns_nil_when_block_yields_null_object
+  def test_block_yielding_null_object_returns_nil
     assert_nil Actual { ConvertableNull.new }
   end
 
-  def test_returns_block_result_when_block_yields_non_null
+  def test_block_yielding_value_returns_value
     assert_equal "foo", Actual { "foo" }
   end
 end

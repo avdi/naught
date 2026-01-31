@@ -24,8 +24,10 @@ module Naught
       # @return [void]
       # @api private
       def call
-        raise NotImplementedError, "Method #call should be overriden in child classes"
+        raise NotImplementedError, "Method #call should be overridden in child classes"
       end
+
+      private
 
       # Delegate a deferred operation to the builder
       #
@@ -34,9 +36,22 @@ module Naught
       # @yieldreturn [void]
       # @return [void]
       # @api private
-      def defer(options = {}, &)
-        @builder.defer(options, &)
-      end
+      def defer(options = {}, &) = builder.defer(options, &)
+
+      # Delegate a deferred class operation to the builder
+      #
+      # @yieldparam subject [Class]
+      # @yieldreturn [void]
+      # @return [void]
+      # @api private
+      def defer_class(&) = builder.defer(class: true, &)
+
+      # Delegate a prepend module operation to the builder
+      #
+      # @yieldreturn [void]
+      # @return [void]
+      # @api private
+      def defer_prepend_module(&) = builder.defer_prepend_module(&)
     end
   end
 end

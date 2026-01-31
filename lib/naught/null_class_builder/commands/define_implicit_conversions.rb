@@ -6,31 +6,22 @@ module Naught
       # Adds implicit conversion methods to the null class
       #
       # @api private
-      class DefineImplicitConversions < ::Naught::NullClassBuilder::Command
+      class DefineImplicitConversions < Command
+        EMPTY_ARRAY = [] #: Array[untyped]
+        EMPTY_HASH = {} #: Hash[untyped, untyped]
+        RETURN_VALUES = {
+          to_ary: EMPTY_ARRAY.freeze,
+          to_hash: EMPTY_HASH.freeze,
+          to_int: 0,
+          to_str: "".freeze
+        }.freeze
+        private_constant :EMPTY_ARRAY, :EMPTY_HASH, :RETURN_VALUES
+
         # Install implicit conversion methods
-        #
         # @return [void]
         # @api private
         def call
-          defer do |subject|
-            subject.module_eval do
-              def to_ary
-                []
-              end
-
-              def to_hash
-                {}
-              end
-
-              def to_int
-                0
-              end
-
-              def to_str
-                ""
-              end
-            end
-          end
+          defer { |subject| RETURN_VALUES.each { |name, value| subject.define_method(name) { value } } }
         end
       end
     end

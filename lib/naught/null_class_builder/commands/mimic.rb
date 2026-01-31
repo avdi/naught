@@ -7,49 +7,39 @@ module Naught
       # Build a null class that mimics an existing class or instance
       #
       # @api private
-      class Mimic < Naught::NullClassBuilder::Command
-        # Singleton class placeholder used when no instance is provided
-        NULL_SINGLETON_CLASS = (class << Object.new; self; end)
+      class Mimic < Command
+        # Methods that should never be mimicked as they interfere with
+        # other Naught features like predicates_return
+        # @see https://github.com/avdi/naught/issues/55
+        METHODS_TO_SKIP = (%i[method_missing respond_to? respond_to_missing?] + Object.instance_methods).freeze
+        private_constant :METHODS_TO_SKIP
 
-        # Class being mimicked
-        # @return [Class]
-        # @api private
+        # Singleton class placeholder used when no instance is provided
+        NULL_SINGLETON_CLASS = Object.new.singleton_class.freeze
+        private_constant :NULL_SINGLETON_CLASS
+
+        # The class being mimicked by the null object
+        # @return [Class] class being mimicked
         attr_reader :class_to_mimic
 
-        # Whether to include superclass methods
-        # @return [Boolean]
-        # @api private
+        # Whether to include superclass methods when mimicking
+        # @return [Boolean] whether to include superclass methods
         attr_reader :include_super
 
-        # Singleton class being mimicked
-        # @return [Class]
-        # @api private
+        # The singleton class being mimicked (for instance-based mimicking)
+        # @return [Class] singleton class being mimicked
         attr_reader :singleton_class
 
         # Create a mimic command for a class or instance
+        #
         # @param builder [NullClassBuilder]
         # @param class_to_mimic_or_options [Class, Hash]
         # @param options [Hash]
-        # @return [void]
         # @api private
         def initialize(builder, class_to_mimic_or_options, options = {})
           super(builder)
-
-          if class_to_mimic_or_options.is_a?(Hash)
-            options = class_to_mimic_or_options.merge(options)
-            instance = options.fetch(:example)
-            @singleton_class = (class << instance; self; end)
-            @class_to_mimic = instance.class
-          else
-            @singleton_class = NULL_SINGLETON_CLASS
-            @class_to_mimic = class_to_mimic_or_options
-          end
-          @include_super = options.fetch(:include_super) { true }
-
-          builder.base_class = root_class_of(@class_to_mimic)
-          class_to_mimic = @class_to_mimic
-          builder.inspect_proc = -> { "<null:#{class_to_mimic}>" }
-          builder.interface_defined = true
+          parse_arguments(class_to_mimic_or_options, options)
+          configure_builder
         end
 
         # Install stubbed methods from the target class or instance
@@ -57,36 +47,51 @@ module Naught
         # @return [void]
         # @api private
         def call
-          defer do |subject|
-            methods_to_stub.each do |method_name|
-              builder.stub_method(subject, method_name)
-            end
-          end
+          defer { |subject| methods_to_stub.each { |name| builder.stub_method(subject, name) } }
         end
 
         private
 
-        # Determine the appropriate base class
-        # @param klass [Class]
-        # @return [Class]
-        # @api private
-        def root_class_of(klass)
-          klass.ancestors.include?(Object) ? Object : Naught::BasicObject
+        # Parse the arguments to determine what to mimic
+        #
+        # @param class_to_mimic_or_options [Class, Hash] class or options hash
+        # @param options [Hash] additional options
+        # @return [void]
+        def parse_arguments(class_to_mimic_or_options, options)
+          if class_to_mimic_or_options.is_a?(Hash)
+            options = class_to_mimic_or_options.merge(options)
+            instance = options.fetch(:example)
+            @singleton_class = instance.singleton_class
+            @class_to_mimic = instance.class
+          else
+            @singleton_class = NULL_SINGLETON_CLASS
+            @class_to_mimic = class_to_mimic_or_options
+          end
+          @include_super = options.fetch(:include_super, true)
         end
 
-        # Methods that should never be mimicked as they interfere with
-        # other Naught features like predicates_return
-        # @see https://github.com/avdi/naught/issues/55
-        METHODS_TO_SKIP = %i[method_missing respond_to? respond_to_missing?].freeze
+        # Configure the builder with the mimicked class's properties
+        #
+        # @return [void]
+        def configure_builder
+          builder.base_class = root_class_of(class_to_mimic)
+          klass = class_to_mimic
+          builder.inspect_proc = -> { "<null:#{klass}>" }
+          builder.interface_defined = true
+        end
 
-        # Compute methods to stub from the mimicked class
-        # @return [Array<Symbol>]
-        # @api private
+        # Determine the root class to inherit from
+        #
+        # @param klass [Class] the class to analyze
+        # @return [Class] Object or Naught::BasicObject
+        def root_class_of(klass) = klass.ancestors.include?(Object) ? Object : Naught::BasicObject
+
+        # Compute the list of methods to stub on the null object
+        #
+        # @return [Array<Symbol>] methods to stub
         def methods_to_stub
-          methods_to_mimic =
-            class_to_mimic.instance_methods(include_super) |
-            singleton_class.instance_methods(false)
-          methods_to_mimic - Object.instance_methods - METHODS_TO_SKIP
+          all_methods = class_to_mimic.instance_methods(include_super) | singleton_class.instance_methods(false)
+          all_methods - METHODS_TO_SKIP
         end
       end
     end

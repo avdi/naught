@@ -1,39 +1,28 @@
 require "test_helper"
 require "logger"
 
-module MimicTestFixtures
-  class User
-    attr_reader :login
+# Shared assertions for mimic + black_hole combinations
+module MimicBlackHoleAssertions
+  def test_returns_self_from_info_method
+    assert_returns_self @null, :info
   end
 
-  module Authorizable
-    def authorized_for?(_)
-    end
+  def test_returns_self_from_error_method
+    assert_returns_self @null, :error
   end
 
-  class LibraryPatron < User
-    include Authorizable
-
-    attr_reader :name
-
-    def member?
-    end
-
-    def notify_of_overdue_books(_)
-    end
+  def test_returns_self_from_shift_method
+    assert_same @null, @null << "test"
   end
 
-  class BasicWidget < BasicObject
-    def widget_method
-    end
+  def test_does_not_respond_to_undefined_methods
+    assert_raises(NoMethodError) { @null.foobar }
   end
 end
 
-class MimicTest < Minitest::Test
+class MimicTest < NaughtTestCase
   def setup
-    @mimic_class = Naught.build do |b|
-      b.mimic MimicTestFixtures::LibraryPatron
-    end
+    @mimic_class = build_null_class { |b| b.mimic NaughtTestFixtures::LibraryPatron }
     @null = @mimic_class.new
   end
 
@@ -70,7 +59,7 @@ class MimicTest < Minitest::Test
   end
 
   def test_has_an_informative_inspect_string
-    assert_equal "<null:MimicTestFixtures::LibraryPatron>", @null.inspect
+    assert_equal "<null:NaughtTestFixtures::LibraryPatron>", @null.inspect
   end
 
   def test_does_not_mimic_object_id_from_object
@@ -90,11 +79,9 @@ class MimicTest < Minitest::Test
   end
 end
 
-class MimicWithoutSuperTest < Minitest::Test
+class MimicWithoutSuperTest < NaughtTestCase
   def setup
-    @mimic_class = Naught.build do |b|
-      b.mimic MimicTestFixtures::LibraryPatron, include_super: false
-    end
+    @mimic_class = build_null_class { |b| b.mimic NaughtTestFixtures::LibraryPatron, include_super: false }
     @null = @mimic_class.new
   end
 
@@ -107,14 +94,12 @@ class MimicWithoutSuperTest < Minitest::Test
   end
 end
 
-class MimicWithExampleTest < Minitest::Test
+class MimicWithExampleTest < NaughtTestCase
   def setup
-    milton = MimicTestFixtures::LibraryPatron.new
+    milton = NaughtTestFixtures::LibraryPatron.new
     def milton.stapler
     end
-    @mimic_class = Naught.build do |b|
-      b.mimic example: milton
-    end
+    @mimic_class = build_null_class { |b| b.mimic example: milton }
     @null = @mimic_class.new
   end
 
@@ -127,11 +112,9 @@ class MimicWithExampleTest < Minitest::Test
   end
 end
 
-class MimicBasicObjectSubclassTest < Minitest::Test
+class MimicBasicObjectSubclassTest < NaughtTestCase
   def setup
-    @mimic_class = Naught.build do |b|
-      b.mimic MimicTestFixtures::BasicWidget
-    end
+    @mimic_class = build_null_class { |b| b.mimic NaughtTestFixtures::BasicWidget }
     @null = @mimic_class.new
   end
 
@@ -140,90 +123,33 @@ class MimicBasicObjectSubclassTest < Minitest::Test
   end
 end
 
-class MimicWithBlackHoleTest < Minitest::Test
+class MimicWithBlackHoleTest < NaughtTestCase
+  include MimicBlackHoleAssertions
+
   def setup
-    @mimic_class = Naught.build do |b|
+    _, @null = build_null { |b|
       b.mimic Logger
       b.black_hole
-    end
-    @null = @mimic_class.new
-  end
-
-  def test_returns_self_from_info_method
-    assert_same @null, @null.info
-  end
-
-  def test_returns_self_from_error_method
-    assert_same @null, @null.error
-  end
-
-  def test_returns_self_from_shift_method
-    assert_same @null, @null << "test"
-  end
-
-  def test_does_not_respond_to_methods_not_defined_on_the_target_class
-    assert_raises(NoMethodError) { @null.foobar }
+    }
   end
 end
 
-class MimicWithBlackHoleReverseOrderTest < Minitest::Test
+class MimicWithBlackHoleReverseOrderTest < NaughtTestCase
+  include MimicBlackHoleAssertions
+
   def setup
-    @mimic_class = Naught.build do |b|
+    _, @null = build_null { |b|
       b.black_hole
       b.mimic Logger
-    end
-    @null = @mimic_class.new
-  end
-
-  def test_returns_self_from_info_method
-    assert_same @null, @null.info
-  end
-
-  def test_returns_self_from_error_method
-    assert_same @null, @null.error
-  end
-
-  def test_returns_self_from_shift_method
-    assert_same @null, @null << "test"
-  end
-
-  def test_does_not_respond_to_methods_not_defined_on_the_target_class
-    assert_raises(NoMethodError) { @null.foobar }
+    }
   end
 end
 
 # Test for GitHub issue #55: Composing black_hole, predicates_return and impersonate
 # https://github.com/avdi/naught/issues/55
-module MimicMethodMissingTestFixtures
-  # A class that defines method_missing, similar to ActiveRecord models
-  class DynamicClass
-    def regular_method
-      "regular"
-    end
-
-    def active?
-      true
-    end
-
-    def method_missing(method_name, *args, &block)
-      if method_name.to_s.start_with?("dynamic_")
-        "dynamic: #{method_name}"
-      else
-        super
-      end
-    end
-
-    def respond_to_missing?(method_name, include_private = false)
-      method_name.to_s.start_with?("dynamic_") || super
-    end
-  end
-end
-
-class MimicDoesNotStubMethodMissingTest < Minitest::Test
+class MimicDoesNotStubMethodMissingTest < NaughtTestCase
   def setup
-    @mimic_class = Naught.build do |b|
-      b.mimic MimicMethodMissingTestFixtures::DynamicClass
-    end
+    @mimic_class = build_null_class { |b| b.mimic NaughtTestFixtures::DynamicClass }
     @null = @mimic_class.new
   end
 
@@ -245,12 +171,12 @@ class MimicDoesNotStubMethodMissingTest < Minitest::Test
   end
 end
 
-class MimicWithPredicatesReturnAndMethodMissingTest < Minitest::Test
+class MimicWithPredicatesReturnAndMethodMissingTest < NaughtTestCase
   def setup
-    @mimic_class = Naught.build do |b|
-      b.mimic MimicMethodMissingTestFixtures::DynamicClass
+    @mimic_class = build_null_class { |b|
+      b.mimic NaughtTestFixtures::DynamicClass
       b.predicates_return false
-    end
+    }
     @null = @mimic_class.new
   end
 
@@ -267,13 +193,13 @@ class MimicWithPredicatesReturnAndMethodMissingTest < Minitest::Test
   end
 end
 
-class MimicWithBlackHoleAndPredicatesReturnTest < Minitest::Test
+class MimicWithBlackHoleAndPredicatesReturnTest < NaughtTestCase
   def setup
-    @mimic_class = Naught.build do |b|
-      b.mimic MimicMethodMissingTestFixtures::DynamicClass
+    @mimic_class = build_null_class { |b|
+      b.mimic NaughtTestFixtures::DynamicClass
       b.black_hole
       b.predicates_return false
-    end
+    }
     @null = @mimic_class.new
   end
 
@@ -290,13 +216,13 @@ class MimicWithBlackHoleAndPredicatesReturnTest < Minitest::Test
   end
 end
 
-class ImpersonateWithBlackHoleAndPredicatesReturnTest < Minitest::Test
+class ImpersonateWithBlackHoleAndPredicatesReturnTest < NaughtTestCase
   def setup
-    @impersonate_class = Naught.build do |b|
-      b.impersonate MimicMethodMissingTestFixtures::DynamicClass
+    @impersonate_class = build_null_class { |b|
+      b.impersonate NaughtTestFixtures::DynamicClass
       b.black_hole
       b.predicates_return false
-    end
+    }
     @null = @impersonate_class.new
   end
 
@@ -309,7 +235,7 @@ class ImpersonateWithBlackHoleAndPredicatesReturnTest < Minitest::Test
   end
 
   def test_is_a_dynamic_class
-    assert_kind_of MimicMethodMissingTestFixtures::DynamicClass, @null
+    assert_kind_of NaughtTestFixtures::DynamicClass, @null
   end
 
   def test_undefined_methods_raise_error

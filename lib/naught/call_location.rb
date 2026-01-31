@@ -6,62 +6,73 @@ module Naught
   #
   # @api public
   class CallLocation
+    # Create a CallLocation from a caller string
+    #
+    # @param method_name [Symbol, String] the method that was called
+    # @param args [Array<Object>] arguments passed to the method
+    # @param caller_string [String, nil] a single entry from Kernel.caller
+    # @return [CallLocation]
+    # @api private
+    def self.from_caller(method_name, args, caller_string)
+      data = CallerInfo.parse(caller_string || "")
+      new(
+        label: method_name,
+        args: args,
+        path: data[:path] || "",
+        lineno: data[:lineno],
+        base_label: data[:base_label]
+      )
+    end
+
     # The name of the method that was called
     #
-    # @example Get the method name
-    #   location.label  #=> "foo"
-    #
-    # @return [String]
-    # @api public
+    # @return [String] the name of the method that was called
+    # @example
+    #   location.label #=> "foo"
     attr_reader :label
 
     # Arguments passed to the method call
     #
-    # @example Get the arguments
-    #   location.args  #=> [1, "hello"]
-    #
-    # @return [Array<Object>]
-    # @api public
+    # @return [Array<Object>] arguments passed to the method call
+    # @example
+    #   location.args #=> [1, 2, 3]
     attr_reader :args
 
     # The absolute path to the file where the call originated
     #
-    # @example Get the file path
-    #   location.path  #=> "/path/to/file.rb"
-    #
-    # @return [String]
-    # @api public
+    # @return [String] the absolute path to the file where the call originated
+    # @example
+    #   location.path #=> "/path/to/file.rb"
     attr_reader :path
 
-    # @return [String] alias for {#path}
+    # @!method absolute_path
+    #   Returns the absolute path (alias for {#path})
+    #   @return [String] the absolute path to the file
+    #   @example
+    #     location.absolute_path #=> "/path/to/file.rb"
     alias_method :absolute_path, :path
 
     # The line number where the call originated
     #
-    # @example Get the line number
-    #   location.lineno  #=> 42
-    #
-    # @return [Integer]
-    # @api public
+    # @return [Integer] the line number where the call originated
+    # @example
+    #   location.lineno #=> 42
     attr_reader :lineno
 
     # The name of the method that made the call
     #
-    # @example Get the caller method name
-    #   location.base_label  #=> "some_method"
-    #
-    # @return [String, nil]
-    # @api public
+    # @return [String, nil] the name of the method that made the call
+    # @example
+    #   location.base_label #=> "some_method"
     attr_reader :base_label
 
-    # Create a new CallLocation
+    # Initialize a new CallLocation
     #
-    # @param label [Symbol, String] the method name that was called
+    # @param label [Symbol, String] the method that was called
     # @param args [Array<Object>] arguments passed to the method
-    # @param path [String] file path where the call originated
+    # @param path [String] path to the file where the call originated
     # @param lineno [Integer] line number where the call originated
-    # @param base_label [String, nil] the calling method name
-    # @return [void]
+    # @param base_label [String, nil] name of the method that made the call
     # @api private
     def initialize(label:, args:, path:, lineno:, base_label: nil)
       @label = label.to_s
@@ -71,62 +82,50 @@ module Naught
       @base_label = base_label
     end
 
-    # String representation of this call location
+    # Returns a human-readable string representation of the call
     #
-    # @example Get string representation
-    #   location.to_s  #=> "/path/to/file.rb:42:in `some_method' -> foo(1, 'hello')"
-    #
-    # @return [String]
-    # @api public
+    # @return [String] string representation
+    # @example
+    #   location.to_s #=> "/path/to/file.rb:42:in `method' -> foo(1, 2)"
     def to_s
       pretty_args = args.map(&:inspect).join(", ")
-      caller_part = base_label ? "in `#{base_label}'" : ""
-      location_part = "#{path}:#{lineno}"
-      location_part += ":#{caller_part}" unless caller_part.empty?
-      "#{location_part} -> #{label}(#{pretty_args})"
+      location = base_label ? "#{path}:#{lineno}:in `#{base_label}'" : "#{path}:#{lineno}"
+      "#{location} -> #{label}(#{pretty_args})"
     end
 
-    # Inspect representation of this call location
+    # Returns a detailed inspect representation
     #
-    # @example Get inspect representation
-    #   location.inspect  #=> "#<Naught::CallLocation /path:42 -> foo()>"
-    #
-    # @return [String]
-    # @api public
-    def inspect
-      "#<#{self.class} #{self}>"
-    end
+    # @return [String] inspect representation
+    # @example
+    #   location.inspect #=> "#<Naught::CallLocation /path/to/file.rb:42 -> foo(1)>"
+    def inspect = "#<#{self.class} #{self}>"
 
-    # Compare two CallLocation objects for equality
+    # Compare this CallLocation with another for equality
     #
-    # @example Compare two locations
-    #   location1 == location2  #=> true
-    #
-    # @param other [CallLocation]
-    # @return [Boolean]
-    # @api public
+    # @param other [CallLocation] the object to compare with
+    # @return [Boolean] true if all attributes match
+    # @example
+    #   location1 == location2 #=> true
     def ==(other)
-      return false unless other.is_a?(CallLocation)
-
-      label == other.label &&
+      other.is_a?(CallLocation) &&
+        label == other.label &&
         args == other.args &&
         path == other.path &&
         lineno == other.lineno &&
         base_label == other.base_label
     end
-
-    # @return [Boolean] alias for {#==}
+    # @!method eql?
+    #   Compare for equality (alias for {#==})
+    #   @return [Boolean] true if all attributes match
+    #   @example
+    #     location1.eql?(location2) #=> true
     alias_method :eql?, :==
 
-    # Hash code for this call location
+    # Compute a hash value for this CallLocation
     #
-    # @example Get hash code
-    #   location.hash  #=> 12345
-    #
-    # @return [Integer]
-    # @api public
-    def hash
-      [label, args, path, lineno, base_label].hash
-    end
+    # @return [Integer] hash value based on all attributes
+    # @example
+    #   location.hash #=> 123456789
+    def hash = [label, args, path, lineno, base_label].hash
   end
 end

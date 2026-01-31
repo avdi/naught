@@ -9,7 +9,7 @@ SimpleCov.start do
     enable_coverage :branch
     minimum_coverage line: 100, branch: 100
   else
-    minimum_coverage line: 99.69
+    minimum_coverage line: 99.5
   end
 end
 

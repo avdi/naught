@@ -1,6 +1,10 @@
 require "bundler/gem_tasks"
-require "rake/testtask"
+# Override release task to skip gem push (handled by GitHub Actions with attestations)
+Rake::Task["release"].clear
+desc "Build gem and create tag (gem push handled by CI)"
+task release: %w[build release:guard_clean release:source_control_push]
 
+require "rake/testtask"
 Rake::TestTask.new(:test) do |t|
   t.libs << "test"
   t.libs << "lib"

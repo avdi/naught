@@ -1,20 +1,19 @@
 require "test_helper"
 
-module PredicateTestFixtures
-  class Coffee
-    attr_reader :origin
+# Shared assertions for predicate + black_hole combinations
+module PredicateBlackHoleAssertions
+  def test_predicates_return_false
+    refute_predicate @null, :too_much_coffee?
+  end
 
-    def black?
-    end
+  def test_other_methods_return_self
+    assert_returns_self @null, :foobar
   end
 end
 
-class PredicateTest < Minitest::Test
+class PredicateTest < NaughtTestCase
   def setup
-    @null_class = Naught.build do |config|
-      config.predicates_return false
-    end
-    @null = @null_class.new
+    _, @null = build_null { |b| b.predicates_return false }
   end
 
   def test_responds_to_predicate_style_methods_with_false
@@ -30,56 +29,42 @@ class PredicateTest < Minitest::Test
   end
 end
 
-class PredicateBlackHoleTest < Minitest::Test
+class PredicateBlackHoleTest < NaughtTestCase
+  include PredicateBlackHoleAssertions
+
   def setup
-    @null_class = Naught.build do |config|
-      config.black_hole
-      config.predicates_return false
-    end
-    @null = @null_class.new
-  end
-
-  def test_responds_to_predicate_style_methods_with_false
-    refute_predicate @null, :too_much_coffee?
-  end
-
-  def test_responds_to_other_methods_with_self
-    assert_same @null, @null.foobar
+    _, @null = build_null { |b|
+      b.black_hole
+      b.predicates_return false
+    }
   end
 end
 
-class PredicateBlackHoleReverseOrderTest < Minitest::Test
+class PredicateBlackHoleReverseOrderTest < NaughtTestCase
+  include PredicateBlackHoleAssertions
+
   def setup
-    @null_class = Naught.build do |config|
-      config.predicates_return false
-      config.black_hole
-    end
-    @null = @null_class.new
-  end
-
-  def test_responds_to_predicate_style_methods_with_false
-    refute_predicate @null, :too_much_coffee?
-  end
-
-  def test_responds_to_other_methods_with_self
-    assert_same @null, @null.foobar
+    _, @null = build_null { |b|
+      b.predicates_return false
+      b.black_hole
+    }
   end
 end
 
-class PredicateMimicTest < Minitest::Test
+class PredicateMimicTest < NaughtTestCase
   def setup
-    @null_class = Naught.build do |config|
-      config.mimic PredicateTestFixtures::Coffee
-      config.predicates_return false
-    end
+    @null_class = build_null_class { |b|
+      b.mimic NaughtTestFixtures::Coffee
+      b.predicates_return false
+    }
     @null = @null_class.new
   end
 
-  def test_responds_to_predicate_style_methods_with_false
+  def test_mimicked_predicate_returns_false
     refute_predicate @null, :black?
   end
 
-  def test_responds_to_other_methods_with_nil
+  def test_other_mimicked_methods_return_nil
     assert_nil @null.origin
   end
 
@@ -87,26 +72,21 @@ class PredicateMimicTest < Minitest::Test
     refute_respond_to @null, :leaf_variety
   end
 
-  def test_raises_no_method_error_for_undefined_methods
+  def test_raises_for_undefined_methods
     assert_raises(NoMethodError) { @null.leaf_variety }
   end
 end
 
 # Test for GitHub issue #60: predicates_return(false) breaks NullObject coercion
 # https://github.com/avdi/naught/issues/60
-CoercibleNull = Naught.build do |config|
-  config.predicates_return false
-end
-CoercibleNull.class_eval do
-  define_method(:coerce) { |other| [other, 1] }
-end
-
-class PredicateCoercionTest < Minitest::Test
+class PredicateCoercionTest < NaughtTestCase
   def setup
-    @null = CoercibleNull.new
+    @null_class = Naught.build { |b| b.predicates_return false }
+    @null_class.define_method(:coerce) { |other| [other, 1] }
+    @null = @null_class.new
   end
 
-  def test_coerce_method_works_with_predicates_return
+  def test_coerce_works_with_predicates_return
     assert_equal [5, 1], @null.coerce(5)
   end
 

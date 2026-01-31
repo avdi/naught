@@ -1,3 +1,4 @@
+require "singleton"
 require "naught/null_class_builder/command"
 
 module Naught
@@ -6,27 +7,16 @@ module Naught
       # Turns the null class into a Singleton
       #
       # @api private
-      class Singleton < Naught::NullClassBuilder::Command
+      class Singleton < Command
         # Install Singleton behavior on the null class
-        #
         # @return [void]
         # @api private
         def call
-          defer(class: true) do |subject|
-            require "singleton"
-            subject.module_eval do
-              include ::Singleton
-
-              def self.get(*)
-                instance
-              end
-
-              %w[dup clone].each do |method_name|
-                define_method method_name do
-                  self
-                end
-              end
-            end
+          defer_class do |klass|
+            klass.include(::Singleton)
+            klass.singleton_class.undef_method(:get)
+            klass.define_singleton_method(:get) { |*| instance }
+            %i[dup clone].each { |name| klass.define_method(name) { self } }
           end
         end
       end

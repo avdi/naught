@@ -1,5 +1,6 @@
 require "naught/basic_object"
 require "naught/conversions"
+require "naught/stub_strategy"
 
 module Naught
   # Builds customized null object classes via a small DSL
@@ -7,169 +8,113 @@ module Naught
   # @api public
   class NullClassBuilder
     # Namespace for builder command classes
-    #
     # @api private
-    module Commands
-    end
+    module Commands; end
 
-    # Base class for generated null objects
+    # The base class for generated null objects
     #
-    # @example Get the base class
-    #   builder.base_class  #=> Naught::BasicObject
-    #
-    # @return [Class]
-    # @api semipublic
+    # @return [Class] base class for generated null objects
+    # @example
+    #   builder.base_class #=> Naught::BasicObject
     attr_accessor :base_class
 
-    # Inspect implementation for generated null objects
+    # The inspect implementation for generated null objects
     #
-    # @example Get the inspect proc
-    #   builder.inspect_proc.call  #=> "<null>"
-    #
-    # @return [Proc]
-    # @api semipublic
+    # @return [Proc] inspect implementation for generated null objects
+    # @example
+    #   builder.inspect_proc.call #=> "<null>"
     attr_accessor :inspect_proc
 
     # Whether a method-missing interface has been defined
     #
-    # @example Check if interface is defined
-    #   builder.interface_defined?  #=> false
-    #
-    # @return [Boolean]
-    # @api semipublic
+    # @return [Boolean] whether a method-missing interface has been defined
+    # @example
+    #   builder.interface_defined #=> false
     attr_accessor :interface_defined
+
+    # @!method interface_defined?
+    #   Check if a method-missing interface has been defined
+    #   @return [Boolean] true if interface is defined
+    #   @example
+    #     builder.interface_defined? #=> false
     alias_method :interface_defined?, :interface_defined
 
     # Create a new builder with default configuration
-    #
-    # @return [void]
     # @api private
     def initialize
       @interface_defined = false
       @base_class = Naught::BasicObject
       @inspect_proc = -> { "<null>" }
-      @stub_strategy = :stub_method_returning_nil
+      @stub_strategy = StubStrategy::ReturnNil
       define_basic_methods
     end
 
     # Apply a customization block to this builder
     #
-    # @example Customize the builder
-    #   builder.customize { |b| b.black_hole }
-    #
-    # @param customization_block [Proc]
     # @yieldparam builder [NullClassBuilder] builder instance
-    # @yieldreturn [void]
     # @return [void]
-    # @api semipublic
-    def customize(&customization_block)
-      return unless customization_block
-
-      customization_module.module_exec(self, &customization_block)
+    # @example
+    #   builder.customize { |b| b.black_hole }
+    def customize(&)
+      customization_module.module_exec(self, &) if block_given?
     end
 
-    # Module that holds customization methods
+    # Returns the module that holds customization methods
     #
-    # @example Access the customization module
-    #   builder.customization_module  #=> Module
-    #
-    # @return [Module]
-    # @api semipublic
-    def customization_module
-      @customization_module ||= Module.new
-    end
+    # @return [Module] module that holds customization methods
+    # @example
+    #   builder.customization_module #=> #<Module:0x...>
+    def customization_module = @customization_module ||= Module.new
 
-    # Values treated as null-equivalent
+    # Returns the list of values treated as null-equivalent
     #
-    # @example Get the null equivalents
-    #   builder.null_equivalents  #=> [nil]
-    #
-    # @return [Array<Object>]
-    # @api public
-    def null_equivalents
-      @null_equivalents ||= [nil]
-    end
+    # @return [Array<Object>] values treated as null-equivalent
+    # @example
+    #   builder.null_equivalents #=> [nil]
+    def null_equivalents = @null_equivalents ||= [nil]
 
     # Generate the null object class based on queued operations
     #
-    # @example Generate a null class
-    #   klass = builder.generate_class
-    #   klass.new  #=> <null>
-    #
     # @return [Class] generated null class
-    # @api semipublic
+    # @example
+    #   NullClass = builder.generate_class
     def generate_class
       respond_to_any_message unless interface_defined?
-      generation_mod = Module.new
-      customization_mod = customization_module # get a local binding
-      builder = self
-      modules_to_prepend = prepend_modules
 
+      generation_mod = Module.new
       apply_operations(operations, generation_mod)
 
-      null_class = Class.new(@base_class) do
-        const_set :GeneratedMethods, generation_mod
-        const_set :Customizations, customization_mod
-        const_set :NULL_EQUIVS, builder.null_equivalents
-        include Conversions
-
-        remove_const :NULL_EQUIVS
-        Conversions.instance_methods.each do |instance_method|
-          undef_method(instance_method)
-        end
-        const_set :Conversions, Conversions
-
-        include NullObjectTag
-        include generation_mod
-        include customization_mod
-
-        modules_to_prepend.each { |mod| prepend mod }
-      end
-
+      null_class = build_null_class(generation_mod)
       apply_operations(class_operations, null_class)
 
       null_class
     end
 
-    ############################################################################
-    # Builder API
-    #
-    # See also the contents of lib/naught/null_class_builder/commands
-    ############################################################################
+    # Builder API - see also lib/naught/null_class_builder/commands
 
     # Configure method stubs to return self (black hole behavior)
     #
-    # @example Enable black hole behavior
-    #   Naught.build { |b| b.black_hole }
-    #
-    # @return [void]
-    # @api public
     # @see https://github.com/avdi/naught/issues/72
+    # @return [void]
+    # @example
+    #   builder.black_hole
     def black_hole
-      @stub_strategy = :stub_method_returning_self
-      # Define marshal_dump/marshal_load via prepend to avoid infinite recursion
-      # when Marshal.dump is called on a black hole null object.
-      # These must be prepended to take precedence over method_missing.
+      @stub_strategy = StubStrategy::ReturnSelf
+      # Prepend marshal methods to avoid infinite recursion with method_missing
       defer_prepend_module do
         define_method(:marshal_dump) { nil }
         define_method(:marshal_load) { |*| nil }
       end
     end
 
-    # Make null objects respond to any message and stub method_missing
-    #
-    # @example Make null respond to anything
-    #   Naught.build { |b| b.respond_to_any_message }
+    # Make null objects respond to any message
     #
     # @return [void]
-    # @api public
+    # @example
+    #   builder.respond_to_any_message
     def respond_to_any_message
       defer(prepend: true) do |subject|
-        subject.module_eval do
-          def respond_to?(*)
-            true
-          end
-        end
+        subject.define_method(:respond_to?) { |*, **| true }
         stub_method(subject, :method_missing)
       end
       @interface_defined = true
@@ -177,86 +122,86 @@ module Naught
 
     # Queue a deferred operation to be applied during class generation
     #
-    # @example Defer a method definition
-    #   builder.defer { |mod| mod.define_method(:foo) { :bar } }
-    #
-    # @param options [Hash] operation options
-    # @param deferred_operation [Proc]
+    # @param options [Hash] :class for class-level, :prepend to add at front
     # @yieldparam subject [Module, Class] target of the operation
-    # @yieldreturn [void]
     # @return [void]
-    # @api semipublic
-    def defer(options = {}, &deferred_operation)
-      list = options[:class] ? class_operations : operations
-      if options[:prepend]
-        list.unshift(deferred_operation)
-      else
-        list << deferred_operation
-      end
+    # @example
+    #   builder.defer { |subject| subject.define_method(:foo) { "bar" } }
+    def defer(options = {}, &operation)
+      target = options[:class] ? class_operations : operations
+      options[:prepend] ? target.unshift(operation) : target.push(operation)
     end
 
     # Prepend a module generated from the given block
     #
-    # @example Prepend a custom module
-    #   builder.defer_prepend_module { define_method(:foo) { :bar } }
-    #
-    # @param block [Proc]
-    # @yield [void]
-    # @yieldreturn [void]
     # @return [void]
-    # @api semipublic
-    def defer_prepend_module(&block)
-      mod = Module.new(&block)
-      prepend_modules << mod
+    # @example
+    #   builder.defer_prepend_module { define_method(:foo) { "bar" } }
+    def defer_prepend_module(&)
+      prepend_modules << Module.new(&)
     end
 
     # Stub a method using the current stub strategy
     #
-    # @example Stub a method
-    #   builder.stub_method(mod, :foo)
-    #
-    # @param subject [Module, Class]
-    # @param name [Symbol]
+    # @param subject [Module, Class] target to define method on
+    # @param name [Symbol] method name to stub
     # @return [void]
-    # @api semipublic
+    # @example
+    #   builder.stub_method(some_module, :foo)
     def stub_method(subject, name)
-      send(@stub_strategy, subject, name)
+      @stub_strategy.apply(subject, name)
     end
 
     # Dispatch builder DSL calls to command classes
-    #
-    # @param method_name [Symbol]
-    # @param args [Array<Object>]
-    # @param block [Proc, nil]
-    # @return [Object]
+    # @return [void]
     # @api private
-    def method_missing(method_name, *args, &block)
-      command_name = command_name_for_method(method_name)
-      if Commands.const_defined?(command_name)
-        command_class = Commands.const_get(command_name)
-        command_class.new(self, *args, &block).call
-      else
-        super
-      end
+    def method_missing(method_name, *args, &)
+      command_class = lookup_command(method_name)
+      command_class ? command_class.new(self, *args, &).call : super
     end
 
-    # Report supported DSL methods
+    # Check if builder responds to a DSL command
     #
-    # @param method_name [Symbol]
-    # @param include_private [Boolean]
-    # @return [Boolean]
+    # @param method_name [Symbol] method name to check
+    # @param include_private [Boolean] whether to include private methods
+    # @return [Boolean] true if method_name maps to a known command
     # @api private
     def respond_to_missing?(method_name, include_private = false)
-      command_name = command_name_for_method(method_name)
-      Commands.const_defined?(command_name) ||
-        super
+      !lookup_command(method_name).nil? || super
     rescue NameError
       super
     end
 
     private
 
-    # Define standard instance and class methods
+    # Build the null object class with all configured modules
+    #
+    # @param generation_mod [Module] module containing generated methods
+    # @return [Class] the null object class
+    # @api private
+    def build_null_class(generation_mod)
+      customization_mod = customization_module
+      null_equivs = null_equivalents
+      modules_to_prepend = prepend_modules
+
+      Class.new(@base_class) do
+        const_set :GeneratedMethods, generation_mod
+        const_set :Customizations, customization_mod
+
+        conversions_mod = Module.new { include Conversions }
+        Conversions.configure(conversions_mod, null_class: self, null_equivs: null_equivs)
+        const_set :Conversions, conversions_mod
+
+        include NullObjectTag
+        include generation_mod
+        include customization_mod
+
+        modules_to_prepend.each { |mod| prepend mod }
+      end
+    end
+
+    # Define the basic methods required by all null objects
+    #
     # @return [void]
     # @api private
     def define_basic_methods
@@ -264,94 +209,75 @@ module Naught
       define_basic_class_methods
     end
 
-    # Apply deferred operations to a module or class
-    # @param operations [Array<Proc>] operations to apply
-    # @param module_or_class [Module, Class] target
+    # Apply deferred operations to the target module or class
+    #
+    # @param ops [Array<Proc>] operations to apply
+    # @param target [Module, Class] target for the operations
     # @return [void]
     # @api private
-    def apply_operations(operations, module_or_class)
-      operations.each do |operation|
-        operation.call(module_or_class)
-      end
+    def apply_operations(ops, target)
+      ops.each { |op| op.call(target) }
     end
 
-    # Define inspect and initialize on the generated class
+    # Define the basic instance methods for null objects
+    #
     # @return [void]
     # @api private
     def define_basic_instance_methods
+      builder = self
       defer do |subject|
-        subject.module_exec(@inspect_proc) do |inspect_proc|
-          define_method(:inspect, &inspect_proc)
-          def initialize(*)
-          end
-        end
+        subject.define_method(:inspect, &builder.inspect_proc)
+        subject.define_method(:initialize) { |*, **, &| }
       end
     end
 
-    # Define class-level helpers like .get
+    # Define the basic class methods for null objects
+    #
     # @return [void]
     # @api private
     def define_basic_class_methods
-      defer(class: true) do |subject|
-        subject.module_eval do
-          class << self
-            alias get new
-          end
-          klass = self
-          define_method(:class) { klass }
+      defer(class: true) do |klass|
+        klass.define_singleton_method(:get) do |*args, **kwargs, &block|
+          kw = kwargs #: Hash[Symbol, untyped]
+          new(*args, **kw, &block)
         end
+        klass.define_method(:class) { klass }
       end
     end
 
-    # Deferred operations applied to the class itself
-    # @return [Array<Proc>]
+    # Returns the list of class-level operations
+    #
+    # @return [Array<Proc>] class-level operations
     # @api private
-    def class_operations
-      @class_operations ||= []
+    def class_operations = @class_operations ||= []
+
+    # Returns the list of instance-level operations
+    #
+    # @return [Array<Proc>] instance-level operations
+    # @api private
+    def operations = @operations ||= []
+
+    # Returns the list of modules to prepend
+    #
+    # @return [Array<Module>] modules to prepend to the null class
+    # @api private
+    def prepend_modules = @prepend_modules ||= []
+
+    # Look up a command class by method name
+    #
+    # @param method_name [Symbol] method name to look up
+    # @return [Class, nil] command class if found, nil otherwise
+    # @api private
+    def lookup_command(method_name)
+      command_name = camelize(method_name)
+      Commands.const_get(command_name) if Commands.const_defined?(command_name)
     end
 
-    # Deferred operations applied to the generation module
-    # @return [Array<Proc>]
+    # Convert a snake_case method name to CamelCase
+    #
+    # @param name [Symbol, String] the name to convert
+    # @return [String] the CamelCase version
     # @api private
-    def operations
-      @operations ||= []
-    end
-
-    # Modules to prepend to the generated class
-    # @return [Array<Module>]
-    # @api private
-    def prepend_modules
-      @prepend_modules ||= []
-    end
-
-    # Create a stub returning nil
-    # @param subject [Module, Class]
-    # @param name [Symbol]
-    # @return [void]
-    # @api private
-    def stub_method_returning_nil(subject, name)
-      subject.module_eval do
-        define_method(name) { |*| nil }
-      end
-    end
-
-    # Create a stub returning self
-    # @param subject [Module, Class]
-    # @param name [Symbol]
-    # @return [void]
-    # @api private
-    def stub_method_returning_self(subject, name)
-      subject.module_eval do
-        define_method(name) { |*| self }
-      end
-    end
-
-    # Convert a method name to a command class name
-    # @param method_name [Symbol]
-    # @return [String]
-    # @api private
-    def command_name_for_method(method_name)
-      method_name.to_s.gsub(/(?:^|_)([a-z])/) { Regexp.last_match[1].upcase }
-    end
+    def camelize(name) = name.to_s.gsub(/(?:^|_)([a-z])/) { ::Regexp.last_match(1).upcase }
   end
 end

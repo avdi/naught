@@ -1,112 +1,129 @@
 module Naught
   # Helper conversion API available on generated null classes
   #
+  # This module is designed to be configured per null class via
+  # {Conversions.configure}. Each generated null class gets its
+  # own configured version of these conversion functions.
+  #
   # @api public
   module Conversions
-    # Capture the generated null class when the module is included
-    #
-    # @param null_class [Class] generated null class
-    # @return [void]
-    # @api private
-    def self.included(null_class)
-      unless class_variable_defined?(:@@included) && @@included
-        @@null_class = null_class
-        @@null_equivs = null_class::NULL_EQUIVS
-        @@included = true
+    # Sentinel value for no argument passed
+    NOTHING_PASSED = Object.new.freeze
+    private_constant :NOTHING_PASSED
+
+    class << self
+      # Configure a Conversions module for a specific null class
+      #
+      # @param mod [Module] module to configure
+      # @param null_class [Class] the generated null class
+      # @param null_equivs [Array] values treated as null-equivalent
+      # @return [void]
+      # @api private
+      def configure(mod, null_class:, null_equivs:)
+        mod.define_method(:__null_class__) { null_class }
+        mod.define_method(:__null_equivs__) { null_equivs }
+        mod.send(:private, :__null_class__, :__null_equivs__)
       end
-      super
     end
 
     # Return a null object for +object+ if it is null-equivalent
     #
-    # @example Convert nil to a null object
-    #   Null(nil)  #=> <null>
-    #
-    # @example Raise on non-null value
-    #   Null(42)  #=> ArgumentError
+    # @example
+    #   include MyNullObject::Conversions
+    #   Null()       #=> <null>
+    #   Null(nil)    #=> <null>
     #
     # @param object [Object] candidate object
     # @return [Object] a null object
     # @raise [ArgumentError] if +object+ is not null-equivalent
-    # @api public
-    def Null(object = :nothing_passed)
-      case object
-      when NullObjectTag
-        object
-      when :nothing_passed, *@@null_equivs
-        @@null_class.get(caller: caller(1))
-      else
-        raise ArgumentError, "#{object.inspect} is not null!"
-      end
+    def Null(object = NOTHING_PASSED)
+      return object if null_object?(object)
+      return make_null(1) if null_equivalent?(object, include_nothing: true)
+
+      raise ArgumentError, "Null() requires a null-equivalent value, " \
+                           "got #{object.class}: #{object.inspect}"
     end
 
     # Return a null object for null-equivalent values, otherwise the value
     #
-    # @example Convert nil to null
-    #   Maybe(nil)  #=> <null>
-    #
-    # @example Pass through non-null values
-    #   Maybe(42)  #=> 42
+    # @example
+    #   Maybe(nil)        #=> <null>
+    #   Maybe("hello")    #=> "hello"
     #
     # @param object [Object] candidate object
     # @yieldreturn [Object] optional lazy value
     # @return [Object] null object or original value
-    # @api public
     def Maybe(object = nil)
       object = yield if block_given?
-      case object
-      when NullObjectTag
-        object
-      when *@@null_equivs
-        @@null_class.get(caller: caller(1))
-      else
-        object
-      end
+      return object if null_object?(object)
+      return make_null(1) if null_equivalent?(object)
+
+      object
     end
 
     # Return the value if not null-equivalent, otherwise raise
     #
-    # @example Return non-null value
-    #   Just(42)  #=> 42
-    #
-    # @example Raise on nil
-    #   Just(nil)  #=> ArgumentError
+    # @example
+    #   Just("hello")  #=> "hello"
+    #   Just(nil)      # raises ArgumentError
     #
     # @param object [Object] candidate object
     # @yieldreturn [Object] optional lazy value
     # @return [Object] original value
     # @raise [ArgumentError] if value is null-equivalent
-    # @api public
     def Just(object = nil)
       object = yield if block_given?
-      case object
-      when NullObjectTag, *@@null_equivs
-        raise ArgumentError, "Null value: #{object.inspect}"
-      else
-        object
+      if null_object?(object) || null_equivalent?(object)
+        raise ArgumentError, "Just() requires a non-null value, got: #{object.inspect}"
       end
+
+      object
     end
 
     # Return +nil+ for null objects, otherwise return the value
     #
-    # @example Convert null object to nil
-    #   Actual(NullObject.new)  #=> nil
-    #
-    # @example Pass through regular values
-    #   Actual(42)  #=> 42
+    # @example
+    #   Actual(null)     #=> nil
+    #   Actual("hello")  #=> "hello"
     #
     # @param object [Object] candidate object
     # @yieldreturn [Object] optional lazy value
     # @return [Object, nil] actual value or nil
-    # @api public
     def Actual(object = nil)
       object = yield if block_given?
-      case object
-      when NullObjectTag
-        nil
-      else
-        object
-      end
+      null_object?(object) ? nil : object
+    end
+
+    private
+
+    # Check if an object is a null object
+    #
+    # @param object [Object] the object to check
+    # @return [Boolean] true if the object is a null object
+    # @api private
+    def null_object?(object)
+      NullObjectTag === object
+    end
+
+    # Check if an object is null-equivalent (nil or custom null equivalents)
+    #
+    # @param object [Object] the object to check
+    # @param include_nothing [Boolean] whether to treat NOTHING_PASSED as null-equivalent
+    # @return [Boolean] true if the object is null-equivalent
+    # @api private
+    def null_equivalent?(object, include_nothing: false)
+      return true if include_nothing && object == NOTHING_PASSED
+
+      __null_equivs__.any? { |equiv| equiv === object }
+    end
+
+    # Create a new null object instance
+    #
+    # @param caller_offset [Integer] additional stack frames to skip
+    # @return [Object] a new null object
+    # @api private
+    def make_null(caller_offset)
+      __null_class__.get(caller: caller(caller_offset + 1))
     end
   end
 end

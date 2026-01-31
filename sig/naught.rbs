@@ -3,8 +3,36 @@
 module Naught
   VERSION: String
 
+  # Lightweight proxy for tracking chained method calls
+  class ChainProxy < BasicObject
+    def initialize: (untyped root, Array[CallLocation] current_trace) -> void
+    def method_missing: (Symbol method_name, *untyped args) ?{ () -> untyped } -> ChainProxy
+    def respond_to?: (*untyped, **untyped) -> true
+    def inspect: () -> String
+    def class: () -> Class
+  end
+
+  # Utility for parsing Ruby caller/backtrace information
+  module CallerInfo
+    # module_function methods are both instance and singleton methods
+    def self?.parse: (String caller_string) -> { path: String?, lineno: Integer, base_label: String? }
+    def self?.extract_base_label: (String? method_part) -> String?
+    def self?.extract_signature: (String? method_part) -> String?
+    def self?.split_signature: (String signature) -> Array[String?]
+    def self?.format_caller_for_pebble: (Array[String] stack) -> String?
+    def self?.count_block_levels: (Array[String] stack, String target_method) -> Integer
+
+    private
+
+    def self?.parse_signature: (String signature) -> Array[String?]
+    def self?.adjusted_block_info: (String? block_info, Array[String] stack, String method_name) -> String?
+    def self?.simple_block?: (String? block_info) -> bool
+  end
+
   # Represents a single method call in a null object's call trace
   class CallLocation
+    def self.from_caller: (Symbol | String method_name, Array[untyped] args, String? caller_string) -> CallLocation
+
     attr_reader label: String
     attr_reader args: Array[untyped]
     attr_reader path: String
@@ -39,7 +67,8 @@ module Naught
 
   # Helper conversion API available on generated null classes
   module Conversions
-    def self.included: (Class null_class) -> void
+    # Configure a Conversions module for a specific null class
+    def self.configure: (Module mod, null_class: Class, null_equivs: Array[untyped]) -> void
 
     # Return a null object for object if it is null-equivalent
     def Null: (?untyped object) -> untyped
@@ -55,6 +84,27 @@ module Naught
     # Return nil for null objects, otherwise return the value
     def Actual: (?untyped object) -> untyped
               | [T] () { () -> T } -> T?
+
+    private
+
+    def __null_class__: () -> Class
+    def __null_equivs__: () -> Array[untyped]
+    def null_object?: (untyped object) -> bool
+    def null_equivalent?: (untyped object, ?include_nothing: bool) -> bool
+    def make_null: (Integer caller_offset) -> untyped
+  end
+
+  # Strategies for stubbing methods on null objects
+  module StubStrategy
+    # Stub that returns nil from any method
+    module ReturnNil
+      def self.apply: (Module subject, Symbol name) -> void
+    end
+
+    # Stub that returns self from any method (black hole)
+    module ReturnSelf
+      def self.apply: (Module subject, Symbol name) -> void
+    end
   end
 
   # Builds customized null object classes via a small DSL
@@ -63,7 +113,7 @@ module Naught
     module Commands
     end
 
-    type stub_strategy = :stub_method_returning_nil | :stub_method_returning_self
+    type stub_strategy = singleton(StubStrategy::ReturnNil) | singleton(StubStrategy::ReturnSelf)
     type deferred_operation = ^(untyped) -> void
 
     attr_accessor base_class: Class
@@ -94,16 +144,19 @@ module Naught
     def respond_to_any_message: () -> void
 
     # Queue a deferred operation to be applied during class generation
-    def defer: (?Hash[Symbol, bool] options) { (untyped) -> void } -> void
+    # Block is evaluated in module context via module_eval
+    def defer: (?Hash[Symbol, bool] options) { (untyped) -> untyped } -> void
 
     # Prepend a module generated from the given block
-    def defer_prepend_module: () { () -> void } -> void
+    # Block is evaluated in module context via Module.new
+    def defer_prepend_module: () { () -> untyped } -> void
 
     # Stub a method using the current stub strategy
     def stub_method: (untyped subject, Symbol name) -> void
 
     private
 
+    def build_null_class: (Module generation_mod) -> Class
     def define_basic_methods: () -> void
     def apply_operations: (Array[deferred_operation] operations, untyped module_or_class) -> void
     def define_basic_instance_methods: () -> void
@@ -111,17 +164,21 @@ module Naught
     def class_operations: () -> Array[deferred_operation]
     def operations: () -> Array[deferred_operation]
     def prepend_modules: () -> Array[Module]
-    def stub_method_returning_nil: (untyped subject, Symbol name) -> void
-    def stub_method_returning_self: (untyped subject, Symbol name) -> void
-    def command_name_for_method: (Symbol method_name) -> String
+    def lookup_command: (Symbol method_name) -> singleton(Command)?
+    def camelize: (Symbol | String name) -> String
 
     # Base class for builder command implementations
     class Command
       attr_reader builder: NullClassBuilder
 
-      def initialize: (NullClassBuilder builder) -> void
+      def initialize: (NullClassBuilder builder, *untyped, **untyped) ?{ () -> untyped } -> void
       def call: () -> void
-      def defer: (?Hash[Symbol, bool] options) { (untyped) -> void } -> void
+
+      private
+
+      def defer: (?Hash[Symbol, bool] options) { (untyped) -> untyped } -> void
+      def defer_class: () { (untyped) -> untyped } -> void
+      def defer_prepend_module: () { () -> untyped } -> void
     end
   end
 end
@@ -131,31 +188,40 @@ module Naught
   class NullClassBuilder
     module Commands
       class DefineExplicitConversions < Naught::NullClassBuilder::Command
+        def initialize: (NullClassBuilder builder, *untyped, **untyped) ?{ () -> untyped } -> void
         def call: () -> void
       end
 
       class DefineImplicitConversions < Naught::NullClassBuilder::Command
+        EMPTY_ARRAY: Array[untyped]
+        EMPTY_HASH: Hash[untyped, untyped]
+        RETURN_VALUES: Hash[Symbol, untyped]
+
+        def initialize: (NullClassBuilder builder, *untyped, **untyped) ?{ () -> untyped } -> void
         def call: () -> void
       end
 
       class Mimic < Naught::NullClassBuilder::Command
+        METHODS_TO_SKIP: Array[Symbol]
         NULL_SINGLETON_CLASS: Class
 
         attr_reader class_to_mimic: Class
         attr_reader include_super: bool
         attr_reader singleton_class: Class
 
-        def initialize: (NullClassBuilder builder, Class | Hash[Symbol, untyped] class_to_mimic_or_options, ?Hash[Symbol, untyped] options) -> void
+        def initialize: (NullClassBuilder builder, Class | Hash[Symbol, untyped] class_to_mimic_or_options, ?Hash[Symbol, untyped] options) ?{ () -> untyped } -> void
         def call: () -> void
 
         private
 
+        def parse_arguments: (Class | Hash[Symbol, untyped] class_to_mimic_or_options, Hash[Symbol, untyped] options) -> void
+        def configure_builder: () -> void
         def root_class_of: (Class klass) -> Class
         def methods_to_stub: () -> Array[Symbol]
       end
 
       class Impersonate < Naught::NullClassBuilder::Commands::Mimic
-        def initialize: (NullClassBuilder builder, Class class_to_impersonate, ?Hash[Symbol, untyped] options) -> void
+        def initialize: (NullClassBuilder builder, Class class_to_impersonate, ?Hash[Symbol, untyped] options) ?{ () -> untyped } -> void
       end
 
       class Pebble < Naught::NullClassBuilder::Command
@@ -165,31 +231,51 @@ module Naught
 
         @output: _Output
 
-        def initialize: (NullClassBuilder builder, ?_Output output) -> void
+        def initialize: (NullClassBuilder builder, ?_Output output) ?{ () -> untyped } -> void
         def call: () -> void
       end
 
       class PredicatesReturn < Naught::NullClassBuilder::Command
-        @predicate_return_value: untyped
+        @return_value: untyped
 
-        def initialize: (NullClassBuilder builder, untyped return_value) -> void
+        def initialize: (NullClassBuilder builder, untyped return_value) ?{ () -> untyped } -> void
         def call: () -> void
+
+        private
+
+        def install_method_missing_override: () -> void
+        def install_predicate_method_overrides: () -> void
       end
 
       class Singleton < Naught::NullClassBuilder::Command
+        def initialize: (NullClassBuilder builder, *untyped, **untyped) ?{ () -> untyped } -> void
         def call: () -> void
       end
 
       class Traceable < Naught::NullClassBuilder::Command
+        def initialize: (NullClassBuilder builder, *untyped, **untyped) ?{ () -> untyped } -> void
         def call: () -> void
       end
 
       class NullSafeProxy < Naught::NullClassBuilder::Command
+        def initialize: (NullClassBuilder builder, *untyped, **untyped) ?{ () -> untyped } -> void
         def call: () -> void
+
+        private
+
+        def build_proxy_class: (Class null_class, Array[untyped] null_equivs) -> Class
+        def install_null_safe_conversion: (Class null_class, Class proxy_class, Array[untyped] null_equivs) -> void
       end
 
       class Callstack < Naught::NullClassBuilder::Command
+        def initialize: (NullClassBuilder builder, *untyped, **untyped) ?{ () -> untyped } -> void
         def call: () -> void
+
+        private
+
+        def install_call_trace_accessor: () -> void
+        def install_method_missing_tracking: () -> void
+        def install_chain_proxy_class: () -> void
       end
     end
   end

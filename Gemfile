@@ -15,6 +15,7 @@ group :test do
 end
 
 group :docs do
+  gem "irb"
   gem "redcarpet", platforms: :mri
   gem "yard"
   gem "yardstick"

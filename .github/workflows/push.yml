@@ -1,26 +1,37 @@
-name: Push to RubyGems
+name: Push gem to RubyGems
 
 on:
   push:
     tags:
-      - 'v*'
+      - "v*"
 
 permissions:
   contents: read
-  id-token: write
 
 jobs:
   push:
+    if: github.repository == 'avdi/naught'
     runs-on: ubuntu-latest
-    environment: rubygems
+    environment:
+      name: rubygems.org
+      url: https://rubygems.org/gems/naught
+    permissions:
+      contents: write
+      id-token: write
     steps:
-      - uses: actions/checkout@v6
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
         with:
-          ruby-version: '3.4'
+          ruby-version: ruby
           bundler-cache: true
+      - uses: rubygems/configure-rubygems-credentials@v1.0.0
+      - name: Update RubyGems
+        run: gem update --system
       - name: Build gem
-        run: gem build naught.gemspec
-      - name: Push to RubyGems
-        uses: rubygems/release-gem@v1
+        run: bundle exec rake build
+      - name: Sign gem with Sigstore
+        run: gem exec sigstore-cli sign pkg/*.gem --bundle pkg/naught.gem.sigstore.json
+      - name: Push gem
+        run: gem push pkg/*.gem --attestation pkg/naught.gem.sigstore.json
+      - name: Wait for release
+        run: gem exec rubygems-await pkg/*.gem

@@ -1,30 +1,17 @@
 require "test_helper"
 
-module NaughtTestFixtures
-  class Point
-    attr_reader :x, :y
-  end
-end
-
-TestNull = Naught.build unless defined?(TestNull)
-
-class ImpersonationTest < Minitest::Test
+class ImpersonationTest < NaughtTestCase
   def setup
-    @impersonation_class = Naught.build do |b|
-      b.impersonate NaughtTestFixtures::Point
-    end
-    @null = @impersonation_class.new
+    @null_class = Naught.build { |b| b.impersonate NaughtTestFixtures::Point }
+    @null = @null_class.new
   end
 
   def test_matches_the_impersonated_type
     assert_kind_of NaughtTestFixtures::Point, @null
   end
 
-  def test_responds_to_x_method_from_the_impersonated_type
+  def test_responds_to_methods_from_impersonated_type
     assert_nil @null.x
-  end
-
-  def test_responds_to_y_method_from_the_impersonated_type
     assert_nil @null.y
   end
 
@@ -33,65 +20,58 @@ class ImpersonationTest < Minitest::Test
   end
 end
 
-class TraceableTest < Minitest::Test
+class TraceableTest < NaughtTestCase
   def setup
-    @trace_null_class = Naught.build(&:traceable)
-    @trace_null, @instantiation_line = @trace_null_class.new, __LINE__
+    @null_class = Naught.build(&:traceable)
+    @null = @null_class.new
+    @line = __LINE__ - 1
   end
 
-  def test_remembers_the_file_it_was_instantiated_from
-    assert_equal __FILE__, @trace_null.__file__
+  def test_remembers_file
+    assert_equal __FILE__, @null.__file__
   end
 
-  def test_remembers_the_line_it_was_instantiated_from
-    assert_equal @instantiation_line, @trace_null.__line__
+  def test_remembers_line
+    assert_equal @line, @null.__line__
   end
 
-  def test_can_accept_custom_backtrace_info
-    obj, line = make_null, __LINE__
+  def test_accepts_custom_backtrace
+    obj = @null_class.get(caller: caller(0))
 
-    assert_equal line, obj.__line__
-  end
-
-  private
-
-  def make_null
-    @trace_null_class.get(caller: caller(1))
+    assert_equal __LINE__ - 2, obj.__line__
   end
 end
 
-class CustomizedNullObjectTest < Minitest::Test
+class CustomizedNullObjectTest < NaughtTestCase
   def setup
-    @custom_null_class = Naught.build do |b|
+    @null_class = Naught.build do |b|
       b.define_explicit_conversions
-      define_method(:to_path) do
-        File::NULL
-      end
-
-      define_method(:to_s) do
-        "NOTHING TO SEE HERE"
-      end
+      define_method(:to_path) { File::NULL }
+      define_method(:to_s) { "NOTHING TO SEE HERE" }
     end
-    @custom_null = @custom_null_class.new
+    @null = @null_class.new
   end
 
-  def test_responds_to_custom_defined_methods
-    assert_equal File::NULL, @custom_null.to_path
+  def test_responds_to_custom_methods
+    assert_equal File::NULL, @null.to_path
   end
 
-  def test_allows_generated_methods_to_be_overridden
-    assert_equal "NOTHING TO SEE HERE", @custom_null.to_s
+  def test_can_override_generated_methods
+    assert_equal "NOTHING TO SEE HERE", @null.to_s
   end
 end
 
-class NamedNullObjectClassTest < Minitest::Test
+class NamedNullObjectClassTest < NaughtTestCase
+  # Tests that assigning a null class to a constant gives it a proper name
+  NamedNull = Naught.build
+
   def test_has_named_ancestor_modules
     expected = [
-      "TestNull",
-      "TestNull::Customizations",
-      "TestNull::GeneratedMethods"
+      "NamedNullObjectClassTest::NamedNull",
+      "NamedNullObjectClassTest::NamedNull::Customizations",
+      "NamedNullObjectClassTest::NamedNull::GeneratedMethods"
     ]
 
-    assert_equal expected, TestNull.ancestors[0..2].collect(&:name)
+    assert_equal expected, NamedNull.ancestors[0..2].map(&:name)
   end
 end

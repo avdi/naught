@@ -3,13 +3,16 @@ module Naught
     module Commands
       # Build a null class that impersonates a given class
       #
+      # Unlike Mimic, Impersonate makes the null class inherit from the target,
+      # so `is_a?` checks will pass.
+      #
       # @api private
-      class Impersonate < Naught::NullClassBuilder::Commands::Mimic
+      class Impersonate < Mimic
         # Create an impersonate command for a class
+        #
         # @param builder [NullClassBuilder]
         # @param class_to_impersonate [Class]
         # @param options [Hash]
-        # @return [void]
         # @api private
         def initialize(builder, class_to_impersonate, options = {})
           super

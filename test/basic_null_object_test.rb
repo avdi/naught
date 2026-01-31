@@ -1,40 +1,25 @@
 require "test_helper"
 
-class BasicNullObjectTest < Minitest::Test
+class BasicNullObjectTest < NaughtTestCase
   def setup
-    @null_class = Naught.build
-    @null = @null_class.new
+    @null_class, @null = build_null
   end
 
-  def test_responds_to_arbitrary_messages_and_returns_nil
-    assert_nil @null.info
+  def test_returns_nil_from_any_method
+    assert_returns_nil @null, :info
+    assert_returns_nil @null, :foobaz
+    assert_returns_nil @null, :to_s
   end
 
-  def test_responds_to_arbitrary_unknown_messages_and_returns_nil
-    assert_nil @null.foobaz
-  end
-
-  def test_responds_to_to_s_and_returns_nil
-    assert_nil @null.to_s
-  end
-
-  def test_accepts_any_arguments_for_any_messages
+  def test_accepts_any_arguments
     @null.foobaz(1, 2, 3)
   end
 
-  def test_reports_that_it_responds_to_info
-    assert_respond_to @null, :info
+  def test_responds_to_any_method
+    assert_responds_to_anything @null
   end
 
-  def test_reports_that_it_responds_to_foobaz
-    assert_respond_to @null, :foobaz
-  end
-
-  def test_reports_that_it_responds_to_to_s
-    assert_respond_to @null, :to_s
-  end
-
-  def test_can_be_inspected
+  def test_inspects_as_null
     assert_equal "<null>", @null.inspect
   end
 

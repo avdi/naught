@@ -1,201 +1,124 @@
 require "test_helper"
 
-class CallLocationTest < Minitest::Test
-  def test_stores_method_name_as_label
-    location = Naught::CallLocation.new(
-      label: :foo,
-      args: [],
-      path: "/path/to/file.rb",
-      lineno: 42
-    )
+module CallstackTestHelper
+  def build_callstack_null
+    build_null(&:callstack)
+  end
+end
 
-    assert_equal "foo", location.label
+class CallLocationAttributesTest < NaughtTestCase
+  include CallLocationHelper
+
+  def test_stores_method_name_as_label
+    assert_equal "foo", make_location.label
+  end
+
+  def test_converts_symbol_label_to_string
+    assert_equal "foo", make_location(label: :foo).label
   end
 
   def test_stores_arguments
-    location = Naught::CallLocation.new(
-      label: :foo,
-      args: [1, "hello", :sym],
-      path: "/path/to/file.rb",
-      lineno: 42
-    )
-
-    assert_equal [1, "hello", :sym], location.args
+    assert_equal [1, "hello", :sym], make_location(args: [1, "hello", :sym]).args
   end
 
   def test_freezes_arguments
     args = [1, 2, 3]
-    location = Naught::CallLocation.new(
-      label: :foo,
-      args: args,
-      path: "/path/to/file.rb",
-      lineno: 42
-    )
+    location = make_location(args: args)
 
     assert_predicate location.args, :frozen?
-
-    # Original array should not be modified
     args << 4
 
     assert_equal [1, 2, 3], location.args
   end
 
   def test_stores_path
-    location = Naught::CallLocation.new(
-      label: :foo,
-      args: [],
-      path: "/path/to/file.rb",
-      lineno: 42
-    )
+    assert_equal "/path/to/file.rb", make_location.path
+  end
 
-    assert_equal "/path/to/file.rb", location.path
-    assert_equal "/path/to/file.rb", location.absolute_path
+  def test_absolute_path_is_alias_for_path
+    location = make_location
+
+    assert_equal location.path, location.absolute_path
   end
 
   def test_stores_lineno
-    location = Naught::CallLocation.new(
-      label: :foo,
-      args: [],
-      path: "/path/to/file.rb",
-      lineno: 42
-    )
-
-    assert_equal 42, location.lineno
+    assert_equal 42, make_location.lineno
   end
 
   def test_stores_base_label
-    location = Naught::CallLocation.new(
-      label: :foo,
-      args: [],
-      path: "/path/to/file.rb",
-      lineno: 42,
-      base_label: "some_method"
-    )
-
-    assert_equal "some_method", location.base_label
+    assert_equal "method", make_location.base_label
   end
+end
+
+class CallLocationFormattingTest < NaughtTestCase
+  include CallLocationHelper
 
   def test_to_s_with_base_label
-    location = Naught::CallLocation.new(
-      label: :foo,
-      args: [1, "bar"],
-      path: "/path/to/file.rb",
-      lineno: 42,
-      base_label: "some_method"
-    )
+    location = make_location(args: [1, "bar"], base_label: "some_method")
 
     assert_equal "/path/to/file.rb:42:in `some_method' -> foo(1, \"bar\")", location.to_s
   end
 
   def test_to_s_without_base_label
-    location = Naught::CallLocation.new(
-      label: :foo,
-      args: [],
-      path: "/path/to/file.rb",
-      lineno: 42
-    )
+    location = make_location(args: [], base_label: nil)
 
     assert_equal "/path/to/file.rb:42 -> foo()", location.to_s
   end
 
-  def test_inspect
-    location = Naught::CallLocation.new(
-      label: :foo,
-      args: [],
-      path: "/path/to/file.rb",
-      lineno: 42
-    )
-
-    assert_match(/^#<Naught::CallLocation /, location.inspect)
-  end
-
-  def test_equality
-    location1 = Naught::CallLocation.new(
-      label: :foo,
-      args: [1],
-      path: "/path/to/file.rb",
-      lineno: 42,
-      base_label: "method"
-    )
-
-    location2 = Naught::CallLocation.new(
-      label: :foo,
-      args: [1],
-      path: "/path/to/file.rb",
-      lineno: 42,
-      base_label: "method"
-    )
-
-    assert_equal location1, location2
-    assert location1.eql?(location2)
-    assert_equal location1.hash, location2.hash
-  end
-
-  def test_inequality_with_different_label
-    location1 = make_location
-    location2 = make_location(label: :bar)
-
-    refute_equal location1, location2
-  end
-
-  def test_inequality_with_different_args
-    location1 = make_location
-    location2 = make_location(args: [2])
-
-    refute_equal location1, location2
-  end
-
-  def test_inequality_with_different_path
-    location1 = make_location
-    location2 = make_location(path: "/other.rb")
-
-    refute_equal location1, location2
-  end
-
-  def test_inequality_with_different_lineno
-    location1 = make_location
-    location2 = make_location(lineno: 99)
-
-    refute_equal location1, location2
-  end
-
-  def test_inequality_with_different_base_label
-    location1 = make_location
-    location2 = make_location(base_label: "other")
-
-    refute_equal location1, location2
-  end
-
-  def test_not_equal_to_non_call_location
-    location = Naught::CallLocation.new(
-      label: :foo,
-      args: [],
-      path: "/path/to/file.rb",
-      lineno: 42
-    )
-
-    refute_equal location, "not a call location"
-    refute_equal location, nil
-  end
-
-  private
-
-  def make_location(overrides = {})
-    defaults = {
-      label: :foo,
-      args: [1],
-      path: "/path/to/file.rb",
-      lineno: 42,
-      base_label: "method"
-    }
-    Naught::CallLocation.new(**defaults.merge(overrides))
+  def test_inspect_includes_class_name
+    assert_match(/^#<Naught::CallLocation /, make_location.inspect)
   end
 end
 
-class CallstackBasicTest < Minitest::Test
+class CallLocationEqualityTest < NaughtTestCase
+  include CallLocationHelper
+
+  def test_equal_locations_are_equal
+    assert_equal make_location, make_location
+  end
+
+  def test_eql_returns_true_for_equal_locations
+    assert make_location.eql?(make_location)
+  end
+
+  def test_equal_locations_have_same_hash
+    assert_equal make_location.hash, make_location.hash
+  end
+
+  def test_different_label_means_not_equal
+    refute_equal make_location, make_location(label: :bar)
+  end
+
+  def test_different_args_means_not_equal
+    refute_equal make_location, make_location(args: [2])
+  end
+
+  def test_different_path_means_not_equal
+    refute_equal make_location, make_location(path: "/other.rb")
+  end
+
+  def test_different_lineno_means_not_equal
+    refute_equal make_location, make_location(lineno: 99)
+  end
+
+  def test_different_base_label_means_not_equal
+    refute_equal make_location, make_location(base_label: "other")
+  end
+
+  def test_not_equal_to_non_call_location
+    refute_equal make_location, "not a call location"
+  end
+
+  def test_not_equal_to_nil
+    refute_equal make_location, nil
+  end
+end
+
+class CallstackBasicTest < NaughtTestCase
+  include CallstackTestHelper
+
   def setup
-    @null_class = Naught.build(&:callstack)
-    @null = @null_class.new
+    @null_class, @null = build_callstack_null
   end
 
   def test_provides_call_trace_accessor
@@ -237,10 +160,11 @@ class CallstackBasicTest < Minitest::Test
   end
 end
 
-class CallstackChainingTest < Minitest::Test
+class CallstackChainingTest < NaughtTestCase
+  include CallstackTestHelper
+
   def setup
-    @null_class = Naught.build(&:callstack)
-    @null = @null_class.new
+    @null_class, @null = build_callstack_null
   end
 
   def test_chained_calls_appear_in_same_trace
@@ -282,9 +206,11 @@ class CallstackChainingTest < Minitest::Test
   end
 end
 
-class CallstackMultipleInstancesTest < Minitest::Test
+class CallstackMultipleInstancesTest < NaughtTestCase
+  include CallstackTestHelper
+
   def setup
-    @null_class = Naught.build(&:callstack)
+    @null_class, = build_callstack_null
   end
 
   def test_first_instance_has_its_own_trace
@@ -310,10 +236,11 @@ class CallstackMultipleInstancesTest < Minitest::Test
   end
 end
 
-class CallstackCallerInfoTest < Minitest::Test
+class CallstackCallerInfoTest < NaughtTestCase
+  include CallstackTestHelper
+
   def setup
-    @null_class = Naught.build(&:callstack)
-    @null = @null_class.new
+    @null_class, @null = build_callstack_null
   end
 
   def test_records_base_label_from_caller
@@ -330,10 +257,11 @@ class CallstackCallerInfoTest < Minitest::Test
   end
 end
 
-class CallstackChainProxyTest < Minitest::Test
+class CallstackChainProxyTest < NaughtTestCase
+  include CallstackTestHelper
+
   def setup
-    @null_class = Naught.build(&:callstack)
-    @null = @null_class.new
+    @null_class, @null = build_callstack_null
   end
 
   def test_chain_proxy_responds_to_any_method
@@ -357,10 +285,11 @@ class CallstackChainProxyTest < Minitest::Test
   end
 end
 
-class CallstackUnusualCallerTest < Minitest::Test
+class CallstackUnusualCallerTest < NaughtTestCase
+  include CallstackTestHelper
+
   def setup
-    @null_class = Naught.build(&:callstack)
-    @null = @null_class.new
+    @null_class, @null = build_callstack_null
   end
 
   def test_handles_caller_without_method_signature
@@ -419,10 +348,11 @@ class CallstackUnusualCallerTest < Minitest::Test
   end
 end
 
-class CallstackRespondToTest < Minitest::Test
+class CallstackRespondToTest < NaughtTestCase
+  include CallstackTestHelper
+
   def setup
-    @null_class = Naught.build(&:callstack)
-    @null = @null_class.new
+    @null_class, @null = build_callstack_null
   end
 
   def test_respond_to_call_trace
@@ -436,61 +366,49 @@ class CallstackRespondToTest < Minitest::Test
   end
 end
 
-class CallstackIntegrationTest < Minitest::Test
-  def test_traceable_records_file_when_combined_with_callstack
-    null_class = Naught.build do |b|
+class CallstackWithTraceableTest < NaughtTestCase
+  def setup
+    @null_class = build_null_class { |b|
       b.callstack
       b.traceable
-    end
-
-    null = null_class.new
-    null.foo.bar
-
-    assert_equal __FILE__, null.__file__
+    }
+    @null = @null_class.new
+    @line = __LINE__ - 1
   end
 
-  def test_traceable_records_line_when_combined_with_callstack
-    null_class = Naught.build do |b|
-      b.callstack
-      b.traceable
-    end
+  def test_records_file
+    @null.foo.bar
 
-    null = null_class.new
-    line = __LINE__ - 1
-    null.foo.bar
-
-    assert_equal line, null.__line__
+    assert_equal __FILE__, @null.__file__
   end
 
-  def test_callstack_works_when_combined_with_traceable
-    null_class = Naught.build do |b|
-      b.callstack
-      b.traceable
-    end
-
-    null = null_class.new
-    null.foo.bar
-
-    assert_equal 1, null.__call_trace__.size
-    assert_equal %w[foo bar], null.__call_trace__[0].map(&:label)
+  def test_records_line
+    assert_equal @line, @null.__line__
   end
 
-  def test_works_with_predicates_return
-    null_class = Naught.build do |b|
+  def test_callstack_still_works
+    @null.foo.bar
+
+    assert_equal 1, @null.__call_trace__.size
+    assert_equal %w[foo bar], @null.__call_trace__[0].map(&:label)
+  end
+end
+
+class CallstackWithPredicatesReturnTest < NaughtTestCase
+  def setup
+    @null_class, @null = build_null { |b|
       b.callstack
       b.predicates_return false
-    end
+    }
+  end
 
-    null = null_class.new
-
-    # predicates_return makes predicate methods return false
+  def test_predicate_calls_are_not_recorded
     # predicates_return's method_missing intercepts these and returns
     # without calling super, so predicate calls are NOT recorded
-    refute_predicate null, :valid?
-    null.foo.bar
+    refute_predicate @null, :valid?
+    @null.foo.bar
 
-    # Only foo.bar is recorded, not valid? (which was handled by predicates_return)
-    assert_equal 1, null.__call_trace__.size
-    assert_equal %w[foo bar], null.__call_trace__[0].map(&:label)
+    assert_equal 1, @null.__call_trace__.size
+    assert_equal %w[foo bar], @null.__call_trace__[0].map(&:label)
   end
 end

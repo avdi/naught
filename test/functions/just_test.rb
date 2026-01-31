@@ -1,6 +1,6 @@
 require "test_helper"
 
-class JustTest < Minitest::Test
+class JustTest < NaughtTestCase
   include ConvertableNull::Conversions
 
   def test_passes_false_through
@@ -17,7 +17,7 @@ class JustTest < Minitest::Test
     assert_raises(ArgumentError) { Just(nil) }
   end
 
-  def test_rejects_empty_string
+  def test_rejects_null_equivalent
     assert_raises(ArgumentError) { Just("") }
   end
 
@@ -25,11 +25,11 @@ class JustTest < Minitest::Test
     assert_raises(ArgumentError) { Just(ConvertableNull.get) }
   end
 
-  def test_raises_argument_error_when_block_yields_nil
+  def test_block_yielding_nil_raises_argument_error
     assert_raises(ArgumentError) { Just { nil } }
   end
 
-  def test_returns_block_result_when_block_yields_non_nullish_value
+  def test_block_yielding_value_returns_value
     assert_equal "foo", Just { "foo" }
   end
 end

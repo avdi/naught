@@ -1,9 +1,8 @@
 require "test_helper"
 
-class ImplicitConversionsTest < Minitest::Test
+class ImplicitConversionsTest < NaughtTestCase
   def setup
-    @null_class = Naught.build(&:define_implicit_conversions)
-    @null = @null_class.new
+    @null_class, @null = build_null(&:define_implicit_conversions)
   end
 
   def test_implicitly_splats_first_element_as_nil
@@ -27,7 +26,7 @@ class ImplicitConversionsTest < Minitest::Test
   end
 
   def test_implicitly_converts_to_an_empty_hash
-    assert_empty(@null.to_hash)
+    assert_empty @null.to_hash
   end
 
   def test_implicitly_converts_to_zero

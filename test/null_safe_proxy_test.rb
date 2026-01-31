@@ -1,6 +1,6 @@
 require "test_helper"
 
-class NullSafeProxyTest < Minitest::Test
+class NullSafeProxyTest < NaughtTestCase
   def setup
     @null_class = Naught.build do |b|
       b.null_safe_proxy
@@ -28,7 +28,7 @@ class NullSafeProxyTest < Minitest::Test
   def test_null_safe_converts_nil_to_null
     result = null_safe(nil)
 
-    assert_operator Naught::NullObjectTag, :===, result
+    assert_null_object result
     assert_equal @null_class, result.class
   end
 
@@ -40,7 +40,7 @@ class NullSafeProxyTest < Minitest::Test
     proxy = null_safe(obj)
     result = proxy.foo
 
-    assert_operator Naught::NullObjectTag, :===, result
+    assert_null_object result
   end
 
   def test_proxy_wraps_non_nil_return_values
@@ -83,7 +83,7 @@ class NullSafeProxyTest < Minitest::Test
     proxy = null_safe(obj)
     result = proxy.foo.bar
 
-    assert_operator Naught::NullObjectTag, :===, result
+    assert_null_object result
   end
 
   def test_can_chain_after_nil_with_black_hole
@@ -101,7 +101,7 @@ class NullSafeProxyTest < Minitest::Test
 
     result = null_safe_method.bind_call(self, obj).foo.bar.baz
 
-    assert_operator Naught::NullObjectTag, :===, result
+    assert_null_object result
   end
 
   def test_proxy_responds_to_target_methods
@@ -152,7 +152,7 @@ class NullSafeProxyTest < Minitest::Test
     proxy = null_safe_method.bind_call(self, obj)
     result = proxy.falsey
 
-    assert_operator Naught::NullObjectTag, :===, result
+    assert_null_object result
   end
 
   def test_null_safe_with_false_default_not_null
