@@ -11,7 +11,7 @@
 [typecheck]: https://github.com/avdi/naught/actions/workflows/typecheck.yml
 
 A quick intro to Naught
--------------------------
+-----------------------
 
 #### What's all this now then?
 
@@ -431,9 +431,9 @@ Contributing
 -   Fork, branch, submit PR, blah blah blah. Don't forget tests.
 
 Who's responsible
--------------------
+-----------------
 
-Naught is by [Avdi Grimm](http://devblog.avdi.org/).
+Naught is by [Avdi Grimm](http://devblog.avdi.org/) and maintained by Erik Berlin.
 
 Prior Art
 ---------
@@ -446,10 +446,13 @@ This isn't the first Ruby Null Object library. Others to check out include:
 The Book
 --------
 
-If you've read this far, you might be interested in the short ebook, [*Much Ado About Naught*](https://shiprise.dpdcart.com/cart/add?product_id=64334&method_id=66165), I (Avdi) wrote as I developed this library. It's a fun exploration of Ruby metaprogramming techniques as applied to writing a Ruby gem. You can [read the introduction here](http://devblog.avdi.org/introduction-to-much-ado-about-naught/).
+If you've read this far, you might be interested in the short ebook, *Much Ado
+About Naught*, I (Avdi) wrote as I developed this library. It's a fun
+exploration of Ruby metaprogramming techniques as applied to writing a Ruby
+gem. You can [read the introduction here](http://devblog.avdi.org/introduction-to-much-ado-about-naught/).
 
 Further reading
------------------
+---------------
 
 -   [Null Object: Something for
     Nothing](http://www.two-sdg.demon.co.uk/curbralan/papers/europlop/NullObject.pdf)
@@ -466,6 +469,6 @@ Further reading
     by Avdi Grimm
 
 Libraries Using Naught
------------------------
+----------------------
 
 See [reverse dependencies on RubyGems](https://rubygems.org/gems/naught/reverse_dependencies).
