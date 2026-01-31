@@ -342,6 +342,60 @@ singleton or not.
 NullObject.get                  # => <null>
 ```
 
+#### What if I want to track every method call made on the null object?
+
+Use the `callstack` configuration to record all method calls, including
+arguments and source location. This is helpful for debugging when you need
+to understand exactly how a null object is being used.
+
+```ruby
+require "naught"
+
+NullObject = Naught.build do |config|
+  config.callstack
+end
+
+null = NullObject.new
+null.foo(1, 2).bar
+null.baz
+
+null.__call_trace__
+# => [
+#      [#<Naught::CallLocation foo(1, 2) at example.rb:8>,
+#       #<Naught::CallLocation bar() at example.rb:8>],
+#      [#<Naught::CallLocation baz() at example.rb:9>]
+#    ]
+```
+
+Each trace represents a chain of method calls. The `CallLocation` objects
+provide access to the method name (`label`), arguments (`args`), file path
+(`path`), and line number (`lineno`).
+
+#### What about safely chaining methods that might return nil?
+
+The `null_safe_proxy` configuration adds a `NullSafe()` conversion function
+that wraps values in a proxy. If any method in a chain returns nil, it gets
+replaced with a null object, allowing the chain to continue safely.
+
+```ruby
+require "naught"
+
+NullObject = Naught.build do |config|
+  config.null_safe_proxy
+end
+
+include NullObject::Conversions
+
+user = nil
+NullSafe(user).name.upcase      # => <null>
+
+user = OpenStruct.new(name: nil)
+NullSafe(user).name.upcase      # => <null>
+
+user = OpenStruct.new(name: "Bob")
+NullSafe(user).name.upcase      # => "BOB"
+```
+
 #### And if I want to know legacy code better?
 
 Naught can make a null object behave as a pebble object.

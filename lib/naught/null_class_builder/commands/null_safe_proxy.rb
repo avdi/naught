@@ -10,12 +10,20 @@ module Naught
       # wraps return values, replacing nil with the null object.
       #
       # @example Enable null-safe proxy
-      #   NullObject = Naught.build do |b|
-      #     b.null_safe_proxy
+      #   NullObject = Naught.build do |config|
+      #     config.null_safe_proxy
       #   end
+      #
       #   include NullObject::Conversions
       #
-      #   NullSafe(obj).foo.bar.baz  #=> <null> if any call returns nil
+      #   user = nil
+      #   NullSafe(user).name.upcase      # => <null>
+      #
+      #   user = OpenStruct.new(name: nil)
+      #   NullSafe(user).name.upcase      # => <null>
+      #
+      #   user = OpenStruct.new(name: "Bob")
+      #   NullSafe(user).name.upcase      # => "BOB"
       #
       # @api private
       class NullSafeProxy < Command

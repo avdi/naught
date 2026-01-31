@@ -17,11 +17,20 @@ module Naught
       # (two traces with one call each).
       #
       # @example Basic usage
-      #   NullObject = Naught.build { |b| b.callstack }
+      #   NullObject = Naught.build do |config|
+      #     config.callstack
+      #   end
+      #
       #   null = NullObject.new
-      #   null.foo.bar
-      #   null.baz(1, 2)
-      #   null.__call_trace__  #=> [[<foo>, <bar>], [<baz(1, 2)>]]
+      #   null.foo(1, 2).bar
+      #   null.baz
+      #
+      #   null.__call_trace__
+      #   # => [
+      #   #      [#<Naught::CallLocation foo(1, 2) at example.rb:8>,
+      #   #       #<Naught::CallLocation bar() at example.rb:8>],
+      #   #      [#<Naught::CallLocation baz() at example.rb:9>]
+      #   #    ]
       #
       # @api private
       class Callstack < Command
