@@ -3,6 +3,24 @@
 module Naught
   VERSION: String
 
+  # Represents a single method call in a null object's call trace
+  class CallLocation
+    attr_reader label: String
+    attr_reader args: Array[untyped]
+    attr_reader path: String
+    attr_reader lineno: Integer
+    attr_reader base_label: String?
+
+    def absolute_path: () -> String
+
+    def initialize: (label: Symbol | String, args: Array[untyped], path: String, lineno: Integer, ?base_label: String?) -> void
+    def to_s: () -> String
+    def inspect: () -> String
+    def ==: (untyped other) -> bool
+    def eql?: (untyped other) -> bool
+    def hash: () -> Integer
+  end
+
   # Build a null object class using the builder DSL
   def self.build: () { (NullClassBuilder) -> void } -> Class
                 | () -> Class
@@ -167,6 +185,10 @@ module Naught
       end
 
       class NullSafeProxy < Naught::NullClassBuilder::Command
+        def call: () -> void
+      end
+
+      class Callstack < Naught::NullClassBuilder::Command
         def call: () -> void
       end
     end

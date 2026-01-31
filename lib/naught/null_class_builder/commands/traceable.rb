@@ -19,6 +19,7 @@ module Naught
               backtrace = options.fetch(:caller) { Kernel.caller(3) }
               @__file__, line = backtrace[0].split(":")
               @__line__ = line.to_i
+              super(options)
             end
           end
         end
