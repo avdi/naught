@@ -3,12 +3,24 @@ require "naught/null_class_builder/command"
 module Naught
   class NullClassBuilder
     module Commands
+      # Logs missing method calls and their call sites
+      #
+      # @api private
       class Pebble < ::Naught::NullClassBuilder::Command
+        # Create a pebble command with optional output stream
+        # @param builder [NullClassBuilder]
+        # @param output [#puts] output stream for log lines
+        # @return [void]
+        # @api private
         def initialize(builder, output = $stdout)
           @builder = builder
           @output = output
         end
 
+        # Install the logging method_missing hook
+        #
+        # @return [void]
+        # @api private
         def call
           output = @output
           builder.defer_prepend_module do

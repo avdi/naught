@@ -21,7 +21,7 @@ Here's a method that's not very sure of itself.
 
 ```ruby
 class Geordi
-  def make_it_so(logger=nil)
+  def make_it_so(logger = nil)
     logger && logger.info("Reversing the flux phase capacitance!")
     logger && logger.info("Bounding a tachyon particle beam off of Data's cat!")
     logger && logger.warn("Warning, bogon levels are rising!")
@@ -42,7 +42,7 @@ class NullLogger
 end
 
 class Geordi
-  def make_it_so(logger=NullLogger.new)
+  def make_it_so(logger = NullLogger.new)
     logger.info "Reversing the flux phase capacitance!"
     logger.info "Bounding a tachyon particle beam off of Data's cat!"
     logger.warn "Warning, bogon levels are rising!"
@@ -75,7 +75,7 @@ Well, what would you like to do?
 Sure thing!
 
 ```ruby
-require 'naught'
+require "naught"
 
 NullObject = Naught.build
 
@@ -96,7 +96,7 @@ What else can I make for you?
 OK.
 
 ```ruby
-require 'naught'
+require "naught"
 
 BlackHole = Naught.build do |config|
   config.black_hole
@@ -119,7 +119,7 @@ Pattern](http://en.wikipedia.org/wiki/Builder_pattern) to make this work..
 We can do that.
 
 ```ruby
-require 'naught'
+require "naught"
 
 NullObject = Naught.build do |config|
   config.define_explicit_conversions
@@ -141,7 +141,7 @@ null.to_r                          # => (0/1)
 Gotcha covered.
 
 ```ruby
-require 'naught'
+require "naught"
 
 NullObject = Naught.build do |config|
   config.define_implicit_conversions
@@ -167,7 +167,7 @@ z                               # => nil
 That's what `mimic` is for.
 
 ```ruby
-require 'naught'
+require "naught"
 
 NullIO = Naught.build do |config|
   config.mimic IO
@@ -187,7 +187,7 @@ generated null class will be derived from the impersonated class. This
 is handy when refitting legacy code that contains type checks.
 
 ```ruby
-require 'naught'
+require "naught"
 
 NullIO = Naught.build do |config|
   config.impersonate IO
@@ -230,7 +230,7 @@ null_log.info                  # => nil
 Sure, if you'd like.
 
 ```ruby
-require 'naught'
+require "naught"
 
 NullObject = Naught.build do |config|
   config.predicates_return false
@@ -247,7 +247,7 @@ null.nil?                       # => false
 Not a problem, just define them in the `.build` block.
 
 ```ruby
-require 'naught'
+require "naught"
 
 NullObject = Naught.build do |config|
   config.define_explicit_conversions
@@ -278,7 +278,7 @@ Well, we can make the null class a singleton, since null objects
 generally have no state.
 
 ```ruby
-require 'naught'
+require "naught"
 
 NullObject = Naught.build do |config|
   config.singleton
@@ -298,7 +298,7 @@ handy for playing "where'd that null come from?!" Try doing *that* with
 `nil`!
 
 ```ruby
-require 'naught'
+require "naught"
 
 NullObject = Naught.build do |config|
   config.traceable
@@ -315,7 +315,7 @@ or tracing (for development). Here's an example of using the `$DEBUG`
 global variable (set with the `-d` option to ruby) to choose which one.
 
 ```ruby
-require 'naught'
+require "naught"
 
 NullObject = Naught.build do |config|
   if $DEBUG
@@ -341,7 +341,7 @@ NullObject.get                  # => <null>
 Naught can make a null object behave as a pebble object.
 
 ```ruby
-require 'naught'
+require "naught"
 
 NullObject = Naught.build do |config|
   if $DEBUG
@@ -375,7 +375,7 @@ classes also come with a full suite of conversion functions which can be
 included into your classes.
 
 ```ruby
-require 'naught'
+require "naught"
 
 NullObject = Naught.build
 
@@ -385,7 +385,7 @@ include NullObject::Conversions
 Maybe(42)                       # => 42
 Maybe(nil)                      # => <null>
 Maybe(NullObject.get)           # => <null>
-Maybe{ 42 }                     # => 42
+Maybe { 42 }                    # => 42
 
 # Insist on a non-null (or nil) value
 Just(42)                        # => 42
@@ -462,5 +462,4 @@ Further reading
 Libraries Using Naught
 -----------------------
 
--   [ActiveNull](https://github.com/Originate/active_null) Null Model support for ActiveRecord.
--   [Twitter](https://github.com/sferik/twitter) A Ruby interface to the Twitter API.
+See [reverse dependencies on RubyGems](https://rubygems.org/gems/naught/reverse_dependencies).

@@ -3,12 +3,24 @@ require "naught/null_class_builder/command"
 module Naught
   class NullClassBuilder
     module Commands
+      # Overrides predicate methods to return a fixed value
+      #
+      # @api private
       class PredicatesReturn < Naught::NullClassBuilder::Command
+        # Create a predicates_return command with the given value
+        # @param builder [NullClassBuilder]
+        # @param return_value [Object] value to return for predicate methods
+        # @return [void]
+        # @api private
         def initialize(builder, return_value)
           super(builder)
           @predicate_return_value = return_value
         end
 
+        # Apply predicate overrides
+        #
+        # @return [void]
+        # @api private
         def call
           return_value = @predicate_return_value
 

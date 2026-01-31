@@ -27,10 +27,34 @@ rescue LoadError
   end
 end
 
+begin
+  require "yaml"
+  require "yard/rake/yardoc_task"
+  require "yardstick/rake/verify"
+
+  desc "Generate YARD documentation"
+  YARD::Rake::YardocTask.new(:yard) do |t|
+    t.files = ["lib/**/*.rb"]
+    t.options = ["--no-private"]
+  end
+
+  desc "Verify YARD documentation coverage"
+  options = YAML.load_file(".yardstick.yml", permitted_classes: [Symbol])
+  Yardstick::Rake::Verify.new(:yardstick, options)
+  task yardstick: :yard
+rescue LoadError
+  task :yard do
+    warn "YARD is disabled"
+  end
+  task :yardstick do
+    warn "Yardstick is disabled"
+  end
+end
+
 desc "Run all linters (RuboCop and Standard)"
 task lint: %i[rubocop standard]
 
 desc "Fix all auto-correctable lint issues"
 task "lint:fix": %i[rubocop:autocorrect_all standard:fix]
 
-task default: %i[test lint]
+task default: %i[test lint yardstick]

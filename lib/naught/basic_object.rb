@@ -1,5 +1,7 @@
 module Naught
-  # BasicObject is always available in Ruby 1.9+
+  # BasicObject subclass used as a minimal base for null objects
+  #
+  # @api private
   class BasicObject < ::BasicObject
   end
 end

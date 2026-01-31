@@ -3,7 +3,14 @@ require "naught/null_class_builder/command"
 module Naught
   class NullClassBuilder
     module Commands
+      # Turns the null class into a Singleton
+      #
+      # @api private
       class Singleton < Naught::NullClassBuilder::Command
+        # Install Singleton behavior on the null class
+        #
+        # @return [void]
+        # @api private
         def call
           defer(class: true) do |subject|
             require "singleton"
