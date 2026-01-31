@@ -1,4 +1,4 @@
-require 'naught/null_class_builder/command'
+require "naught/null_class_builder/command"
 
 module Naught
   class NullClassBuilder
@@ -6,7 +6,7 @@ module Naught
       class Pebble < ::Naught::NullClassBuilder::Command
         # Ruby 3.4+: "path:line:in 'Class#method'" or "path:line:in 'block in Class#method'"
         # Ruby <3.4: "path:line:in `method'" or "path:line:in `block in method'"
-        CALLER_RE = /'(?:(.+) in )?(?:\w+#)?(\w+)'$|`(?:(.+) in )?(\w+)'$/
+        CALLER_RE = /'(?:(.+) in )?(?:[\w:]+#)?(\w+)'$|`(?:(.+) in )?(\w+)'$/
 
         def initialize(builder, output = $stdout)
           @builder = builder
@@ -17,7 +17,7 @@ module Naught
           defer do |subject|
             subject.module_exec(@output) do |output|
               define_method(:method_missing) do |method_name, *args|
-                pretty_args = args.map(&:inspect).join(', ').tr('"', "'")
+                pretty_args = args.map(&:inspect).join(", ").tr('"', "'")
                 output.puts "#{method_name}(#{pretty_args}) from #{parse_caller}"
                 self
               end

@@ -1,4 +1,4 @@
-require 'spec_helper'
+require "spec_helper"
 
 module Naught
   class NullClassBuilder
@@ -13,30 +13,48 @@ module Naught
     end
   end
 
-  describe NullClassBuilder do
+  RSpec.describe NullClassBuilder do
     subject(:builder) { described_class.new }
-    it 'responds to commands defined in NullObjectBuilder::Commands' do
+
+    it "responds to commands defined in NullObjectBuilder::Commands" do
       expect(builder).to respond_to(:test_command)
     end
 
-    it 'translates method calls into command invocations including arguments' do
-      test_command = double
-      expect(NullClassBuilder::Commands::TestCommand).to receive(:new)
-        .with(builder, 'foo', 42)
-        .and_return(test_command)
-      expect(test_command).to receive(:call).and_return('COMMAND RESULT')
-      expect(builder.test_command('foo', 42)).to eq('COMMAND RESULT')
+    describe "command invocation" do
+      let(:test_command) { instance_double(NullClassBuilder::Commands::TestCommand) }
+
+      before do
+        allow(NullClassBuilder::Commands::TestCommand).to receive(:new)
+          .with(builder, "foo", 42)
+          .and_return(test_command)
+        allow(test_command).to receive(:call).and_return("COMMAND RESULT")
+      end
+
+      it "returns the result of the command call" do
+        expect(builder.test_command("foo", 42)).to eq("COMMAND RESULT")
+      end
+
+      it "instantiates the command with builder and arguments" do
+        builder.test_command("foo", 42)
+        expect(NullClassBuilder::Commands::TestCommand).to have_received(:new).with(builder, "foo", 42)
+      end
+
+      it "calls the command" do
+        builder.test_command("foo", 42)
+        expect(test_command).to have_received(:call)
+      end
     end
 
-    it 'handles missing non-command missing methods normally' do
+    it "does not respond to nonexistent methods" do
       expect(builder).not_to respond_to(:nonexistant_method)
+    end
+
+    it "raises NoMethodError for nonexistent methods" do
       expect { builder.nonexistent_method }.to raise_error(NoMethodError)
     end
 
-    it 'handles method names that would create invalid constant names' do
-      # Method names starting with lowercase can't be valid constant names
-      # This exercises the rescue NameError branch in respond_to_missing?
-      expect(builder).not_to respond_to(:'123invalid')
+    it "handles method names that would create invalid constant names" do
+      expect(builder).not_to respond_to(:"123invalid")
     end
   end
 end

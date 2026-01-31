@@ -1,22 +1,36 @@
-require 'spec_helper'
+require "spec_helper"
 
-describe 'Just()' do
-  include ConvertableNull::Conversions
+RSpec.describe Naught do
+  describe "Just()" do
+    include ConvertableNull::Conversions
 
-  specify 'passes non-nullish values through' do
-    expect(Just(false)).to be(false)
-    str = 'hello'
-    expect(Just(str)).to be(str)
-  end
+    specify "passes false through" do
+      expect(Just(false)).to be(false)
+    end
 
-  specify 'rejects nullish values' do
-    expect { Just(nil) }.to raise_error(ArgumentError)
-    expect { Just('') }.to raise_error(ArgumentError)
-    expect { Just(ConvertableNull.get) }.to raise_error(ArgumentError)
-  end
+    specify "passes strings through" do
+      str = "hello"
+      expect(Just(str)).to be(str)
+    end
 
-  it 'also works with blocks' do
-    expect { Just { nil }.class }.to raise_error(ArgumentError)
-    expect(Just { 'foo' }).to eq('foo')
+    specify "rejects nil" do
+      expect { Just(nil) }.to raise_error(ArgumentError)
+    end
+
+    specify "rejects empty string" do
+      expect { Just("") }.to raise_error(ArgumentError)
+    end
+
+    specify "rejects null objects" do
+      expect { Just(ConvertableNull.get) }.to raise_error(ArgumentError)
+    end
+
+    it "raises ArgumentError when block yields nil" do
+      expect { Just { nil }.class }.to raise_error(ArgumentError)
+    end
+
+    it "returns block result when block yields non-nullish value" do
+      expect(Just { "foo" }).to eq("foo")
+    end
   end
 end

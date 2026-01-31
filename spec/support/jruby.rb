@@ -1,3 +1,3 @@
 def jruby?
-  RUBY_PLATFORM == 'java'
+  RUBY_PLATFORM == "java"
 end

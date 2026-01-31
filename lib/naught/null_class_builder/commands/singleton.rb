@@ -1,4 +1,4 @@
-require 'naught/null_class_builder/command'
+require "naught/null_class_builder/command"
 
 module Naught
   class NullClassBuilder
@@ -6,7 +6,7 @@ module Naught
       class Singleton < Naught::NullClassBuilder::Command
         def call
           defer(class: true) do |subject|
-            require 'singleton'
+            require "singleton"
             subject.module_eval do
               include ::Singleton
 

@@ -1,4 +1,4 @@
-require 'naught/null_class_builder/command'
+require "naught/null_class_builder/command"
 
 module Naught
   class NullClassBuilder
@@ -20,7 +20,7 @@ module Naught
               end
 
               def to_str
-                ''
+                ""
               end
             end
           end

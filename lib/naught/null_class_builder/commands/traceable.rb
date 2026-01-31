@@ -1,4 +1,4 @@
-require 'naught/null_class_builder/command'
+require "naught/null_class_builder/command"
 
 module Naught
   class NullClassBuilder
@@ -11,7 +11,7 @@ module Naught
 
               def initialize(options = {})
                 backtrace = options.fetch(:caller) { Kernel.caller(3) }
-                @__file__, line = backtrace[0].split(':')
+                @__file__, line = backtrace[0].split(":")
                 @__line__ = line.to_i
               end
             end

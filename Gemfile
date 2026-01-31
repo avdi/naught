@@ -1,15 +1,17 @@
-source 'https://rubygems.org'
+source "https://rubygems.org"
 
 gemspec
 
 group :development do
-  gem 'pry'
+  gem "pry"
 end
 
 group :test do
-  gem 'logger'
-  gem 'rspec', '~> 3.0'
-  gem 'simplecov', require: false
-  gem 'rubocop', '~> 1.0', require: false
-  gem 'rubocop-rspec', require: false
+  gem "logger"
+  gem "rspec", "~> 3.0"
+  gem "rubocop-performance", require: false
+  gem "rubocop-rspec", require: false
+  gem "simplecov", require: false
+  gem "standard", require: false
+  gem "standard-performance", require: false
 end

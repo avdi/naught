@@ -1,5 +1,5 @@
-require 'naught/basic_object'
-require 'naught/conversions'
+require "naught/basic_object"
+require "naught/conversions"
 
 module Naught
   class NullClassBuilder
@@ -8,13 +8,13 @@ module Naught
     end
 
     attr_accessor :base_class, :inspect_proc, :interface_defined
-    alias interface_defined? interface_defined
+    alias_method :interface_defined?, :interface_defined
 
     def initialize
       @interface_defined = false
-      @base_class        = Naught::BasicObject
-      @inspect_proc      = -> { '<null>' }
-      @stub_strategy     = :stub_method_returning_nil
+      @base_class = Naught::BasicObject
+      @inspect_proc = -> { "<null>" }
+      @stub_strategy = :stub_method_returning_nil
       define_basic_methods
     end
 
@@ -34,9 +34,9 @@ module Naught
 
     def generate_class
       respond_to_any_message unless interface_defined?
-      generation_mod    = Module.new
+      generation_mod = Module.new
       customization_mod = customization_module # get a local binding
-      builder           = self
+      builder = self
 
       apply_operations(operations, generation_mod)
 
@@ -45,6 +45,7 @@ module Naught
         const_set :Customizations, customization_mod
         const_set :NULL_EQUIVS, builder.null_equivalents
         include Conversions
+
         remove_const :NULL_EQUIVS
         Conversions.instance_methods.each do |instance_method|
           undef_method(instance_method)

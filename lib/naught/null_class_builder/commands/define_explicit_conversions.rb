@@ -1,5 +1,5 @@
-require 'forwardable'
-require 'naught/null_class_builder/command'
+require "forwardable"
+require "naught/null_class_builder/command"
 
 module Naught
   class NullClassBuilder
@@ -9,6 +9,7 @@ module Naught
           defer do |subject|
             subject.module_eval do
               extend Forwardable
+
               def_delegators :nil, :to_a, :to_c, :to_f, :to_h, :to_i, :to_r, :to_s
             end
           end

@@ -1,0 +1,5 @@
+ruby_version: 3.2
+
+ignore:
+  - "spec/**/*":
+      - Lint/ConstantDefinitionInBlock

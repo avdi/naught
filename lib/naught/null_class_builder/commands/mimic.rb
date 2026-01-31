@@ -1,5 +1,5 @@
-require 'naught/basic_object'
-require 'naught/null_class_builder/command'
+require "naught/basic_object"
+require "naught/null_class_builder/command"
 
 module Naught
   class NullClassBuilder
@@ -13,18 +13,18 @@ module Naught
           super(builder)
 
           if class_to_mimic_or_options.is_a?(Hash)
-            options          = class_to_mimic_or_options.merge(options)
-            instance         = options.fetch(:example)
+            options = class_to_mimic_or_options.merge(options)
+            instance = options.fetch(:example)
             @singleton_class = (class << instance; self; end)
-            @class_to_mimic  = instance.class
+            @class_to_mimic = instance.class
           else
             @singleton_class = NULL_SINGLETON_CLASS
-            @class_to_mimic  = class_to_mimic_or_options
+            @class_to_mimic = class_to_mimic_or_options
           end
           @include_super = options.fetch(:include_super) { true }
 
-          builder.base_class   = root_class_of(@class_to_mimic)
-          class_to_mimic       = @class_to_mimic
+          builder.base_class = root_class_of(@class_to_mimic)
+          class_to_mimic = @class_to_mimic
           builder.inspect_proc = -> { "<null:#{class_to_mimic}>" }
           builder.interface_defined = true
         end

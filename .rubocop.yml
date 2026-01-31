@@ -1,130 +1,26 @@
+inherit_gem:
+  standard: config/base.yml
+  standard-performance: config/base.yml
+
 plugins:
+  - rubocop-performance
   - rubocop-rspec
 
 AllCops:
   TargetRubyVersion: 3.2
   NewCops: enable
   SuggestExtensions: false
-  Exclude:
-    - 'vendor/**/*'
-
-Style/FrozenStringLiteralComment:
-  Enabled: false
-
-Style/MutableConstant:
-  Enabled: false
-
-Bundler/OrderedGems:
-  Enabled: false
-
-Gemspec/DevelopmentDependencies:
-  Enabled: false
-
-Lint/NestedMethodDefinition:
-  Enabled: false
-
-Lint/DuplicateBranch:
-  Enabled: false
-
-Lint/MissingSuper:
-  Enabled: false
-
-Metrics/AbcSize:
-  Max: 25
-
-Metrics/BlockLength:
-  Exclude:
-    - 'spec/**/*'
-
-Metrics/ClassLength:
-  Max: 150
-
-Metrics/MethodLength:
-  CountComments: false
-  Max: 21
-
-Layout/LineLength:
-  AllowedPatterns: ['^\s*#']
-  Max: 100
-
-Layout/EmptyLinesAfterModuleInclusion:
-  Enabled: false
-
-Layout/EmptyLineBetweenDefs:
-  AllowAdjacentOneLineDefs: true
-
-Style/AccessModifierDeclarations:
-  Enabled: false
-
-Style/ClassVars:
-  Enabled: false
-
-Style/Documentation:
-  Enabled: false
-
-Style/DoubleNegation:
-  Enabled: false
-
-Style/EmptyMethod:
-  EnforcedStyle: expanded
-
-Style/Lambda:
-  Enabled: false
-
-Style/RaiseArgs:
-  Enabled: false
-
-Style/RedundantFetchBlock:
-  Enabled: false
-
-Naming/MethodName:
-  Enabled: false
-
-Style/TrailingCommaInArrayLiteral:
-  EnforcedStyleForMultiline: comma
-
-Style/TrailingCommaInHashLiteral:
-  EnforcedStyleForMultiline: comma
-
-RSpec/MultipleExpectations:
-  Enabled: false
-
-RSpec/ExampleLength:
-  Enabled: false
-
-RSpec/NestedGroups:
-  Max: 4
-
-RSpec/DescribeClass:
-  Enabled: false
-
-RSpec/MultipleMemoizedHelpers:
-  Enabled: false
-
-RSpec/LeadingSubject:
-  Enabled: false
-
-RSpec/EmptyLineAfterFinalLet:
-  Enabled: false
-
-RSpec/EmptyLineAfterSubject:
-  Enabled: false
-
-RSpec/NoExpectationExample:
-  Enabled: false
-
-RSpec/MultipleDescribes:
-  Enabled: false
-
-RSpec/LeakyConstantDeclaration:
-  Enabled: false
-
-RSpec/MessageSpies:
-  Enabled: false
-
-RSpec/StubbedMock:
-  Enabled: false
 
 Lint/ConstantDefinitionInBlock:
   Exclude:
-    - 'spec/**/*'
+    - "spec/**/*"
+
+# Standard Ruby compatibility
+Style/StringLiterals:
+  EnforcedStyle: double_quotes
+
+Style/StringLiteralsInInterpolation:
+  EnforcedStyle: double_quotes
+
+RSpec/SpecFilePathFormat:
+  Enabled: false

@@ -1,16 +1,16 @@
-GEM_ROOT = File.expand_path('..', __dir__)
-$LOAD_PATH.unshift File.join(GEM_ROOT, 'lib')
+GEM_ROOT = File.expand_path("..", __dir__)
+$LOAD_PATH.unshift File.join(GEM_ROOT, "lib")
 
-require 'simplecov'
+require "simplecov"
 
 SimpleCov.start do
-  add_filter '/spec/'
+  add_filter "/spec/"
   enable_coverage :branch
   minimum_coverage line: 100, branch: 100
 end
 
-require 'naught'
-Dir[File.join(GEM_ROOT, 'spec', 'support', '**/*.rb')].each { |f| require f }
+require "naught"
+Dir[File.join(GEM_ROOT, "spec", "support", "**/*.rb")].each { |f| require f }
 
 RSpec.configure do |config|
   config.expect_with :rspec do |expectations|

@@ -8,7 +8,7 @@ module Naught
       end
 
       def call
-        raise NotImplementedError, 'Method #call should be overriden in child classes'
+        raise NotImplementedError, "Method #call should be overriden in child classes"
       end
 
       def defer(options = {}, &)

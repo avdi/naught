@@ -1,14 +1,23 @@
-require 'spec_helper'
+require "spec_helper"
 
-describe 'black hole null object' do
-  subject(:null) { null_class.new }
-  let(:null_class) do
-    Naught.build(&:black_hole)
-  end
+RSpec.describe Naught do
+  describe "black hole null object" do
+    subject(:null) { null_class.new }
 
-  it 'returns self from arbitray method calls' do
-    expect(null.info).to be(null)
-    expect(null.foobaz).to be(null)
-    expect(null << 'bar').to be(null)
+    let(:null_class) do
+      described_class.build(&:black_hole)
+    end
+
+    it "returns self from info method call" do
+      expect(null.info).to be(null)
+    end
+
+    it "returns self from foobaz method call" do
+      expect(null.foobaz).to be(null)
+    end
+
+    it "returns self from << method call" do
+      expect(null << "bar").to be(null)
+    end
   end
 end
