@@ -1,8 +1,14 @@
 [![Gem Version](https://badge.fury.io/rb/naught.svg)][gem]
-[![Build Status](https://github.com/avdi/naught/actions/workflows/ci.yml/badge.svg)][ci]
+[![Test](https://github.com/avdi/naught/actions/workflows/test.yml/badge.svg)][test]
+[![Lint](https://github.com/avdi/naught/actions/workflows/lint.yml/badge.svg)][lint]
+[![Docs](https://github.com/avdi/naught/actions/workflows/docs.yml/badge.svg)][docs]
+[![Typecheck](https://github.com/avdi/naught/actions/workflows/typecheck.yml/badge.svg)][typecheck]
 
 [gem]: https://rubygems.org/gems/naught
-[ci]: https://github.com/avdi/naught/actions/workflows/ci.yml
+[test]: https://github.com/avdi/naught/actions/workflows/test.yml
+[lint]: https://github.com/avdi/naught/actions/workflows/lint.yml
+[docs]: https://github.com/avdi/naught/actions/workflows/docs.yml
+[typecheck]: https://github.com/avdi/naught/actions/workflows/typecheck.yml
 
 A quick intro to Naught
 -------------------------

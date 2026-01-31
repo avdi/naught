@@ -1,0 +1,26 @@
+name: Push to RubyGems
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  push:
+    runs-on: ubuntu-latest
+    environment: rubygems
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.4'
+          bundler-cache: true
+      - name: Build gem
+        run: gem build naught.gemspec
+      - name: Push to RubyGems
+        uses: rubygems/release-gem@v1

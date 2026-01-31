@@ -7,13 +7,19 @@ group :test do
   gem "minitest", ">= 6"
   gem "minitest-mock"
   gem "rdoc"
-  gem "redcarpet"
   gem "rubocop-minitest"
   gem "rubocop-performance"
   gem "simplecov"
   gem "standard"
   gem "standard-performance"
-  gem "steep"
+end
+
+group :docs do
+  gem "redcarpet", platforms: :mri
   gem "yard"
   gem "yardstick"
+end
+
+group :typecheck do
+  gem "steep", platforms: :mri
 end
