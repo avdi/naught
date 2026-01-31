@@ -228,7 +228,7 @@ module Naught
         command_class = Commands.const_get(command_name)
         command_class.new(self, *args, &block).call
       else
-        super(method_name, *args, &block)
+        super
       end
     end
 

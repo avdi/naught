@@ -1,0 +1,166 @@
+# Type signature for Naught - a toolkit for building Null Objects in Ruby
+
+module Naught
+  VERSION: String
+
+  # Build a null object class using the builder DSL
+  def self.build: () { (NullClassBuilder) -> void } -> Class
+                | () -> Class
+
+  # Marker module mixed into generated null objects
+  module NullObjectTag
+  end
+
+  # BasicObject subclass used as a minimal base for null objects
+  class BasicObject < ::BasicObject
+  end
+
+  # Helper conversion API available on generated null classes
+  module Conversions
+    def self.included: (Class null_class) -> void
+
+    # Return a null object for object if it is null-equivalent
+    def Null: (?untyped object) -> untyped
+
+    # Return a null object for null-equivalent values, otherwise the value
+    def Maybe: (?untyped object) -> untyped
+             | [T] () { () -> T } -> (T | untyped)
+
+    # Return the value if not null-equivalent, otherwise raise
+    def Just: (?untyped object) -> untyped
+            | [T] () { () -> T } -> T
+
+    # Return nil for null objects, otherwise return the value
+    def Actual: (?untyped object) -> untyped
+              | [T] () { () -> T } -> T?
+  end
+
+  # Builds customized null object classes via a small DSL
+  class NullClassBuilder
+    # Namespace for builder command classes
+    module Commands
+    end
+
+    type stub_strategy = :stub_method_returning_nil | :stub_method_returning_self
+    type deferred_operation = ^(untyped) -> void
+
+    attr_accessor base_class: Class
+    attr_accessor inspect_proc: ^() -> String
+    attr_accessor interface_defined: bool
+
+    def interface_defined?: () -> bool
+
+    def initialize: () -> void
+
+    # Apply a customization block to this builder
+    def customize: () { (NullClassBuilder) -> void } -> void
+                 | () -> void
+
+    # Module that holds customization methods
+    def customization_module: () -> Module
+
+    # Values treated as null-equivalent
+    def null_equivalents: () -> Array[untyped]
+
+    # Generate the null object class based on queued operations
+    def generate_class: () -> Class
+
+    # Configure method stubs to return self (black hole behavior)
+    def black_hole: () -> void
+
+    # Make null objects respond to any message and stub method_missing
+    def respond_to_any_message: () -> void
+
+    # Queue a deferred operation to be applied during class generation
+    def defer: (?Hash[Symbol, bool] options) { (untyped) -> void } -> void
+
+    # Prepend a module generated from the given block
+    def defer_prepend_module: () { () -> void } -> void
+
+    # Stub a method using the current stub strategy
+    def stub_method: (untyped subject, Symbol name) -> void
+
+    private
+
+    def define_basic_methods: () -> void
+    def apply_operations: (Array[deferred_operation] operations, untyped module_or_class) -> void
+    def define_basic_instance_methods: () -> void
+    def define_basic_class_methods: () -> void
+    def class_operations: () -> Array[deferred_operation]
+    def operations: () -> Array[deferred_operation]
+    def prepend_modules: () -> Array[Module]
+    def stub_method_returning_nil: (untyped subject, Symbol name) -> void
+    def stub_method_returning_self: (untyped subject, Symbol name) -> void
+    def command_name_for_method: (Symbol method_name) -> String
+
+    # Base class for builder command implementations
+    class Command
+      attr_reader builder: NullClassBuilder
+
+      def initialize: (NullClassBuilder builder) -> void
+      def call: () -> void
+      def defer: (?Hash[Symbol, bool] options) { (untyped) -> void } -> void
+    end
+  end
+end
+
+# Command classes under the Commands namespace
+module Naught
+  class NullClassBuilder
+    module Commands
+      class DefineExplicitConversions < Naught::NullClassBuilder::Command
+        def call: () -> void
+      end
+
+      class DefineImplicitConversions < Naught::NullClassBuilder::Command
+        def call: () -> void
+      end
+
+      class Mimic < Naught::NullClassBuilder::Command
+        NULL_SINGLETON_CLASS: Class
+
+        attr_reader class_to_mimic: Class
+        attr_reader include_super: bool
+        attr_reader singleton_class: Class
+
+        def initialize: (NullClassBuilder builder, Class | Hash[Symbol, untyped] class_to_mimic_or_options, ?Hash[Symbol, untyped] options) -> void
+        def call: () -> void
+
+        private
+
+        def root_class_of: (Class klass) -> Class
+        def methods_to_stub: () -> Array[Symbol]
+      end
+
+      class Impersonate < Naught::NullClassBuilder::Commands::Mimic
+        def initialize: (NullClassBuilder builder, Class class_to_impersonate, ?Hash[Symbol, untyped] options) -> void
+      end
+
+      class Pebble < Naught::NullClassBuilder::Command
+        interface _Output
+          def puts: (String) -> void
+        end
+
+        @output: _Output
+
+        def initialize: (NullClassBuilder builder, ?_Output output) -> void
+        def call: () -> void
+      end
+
+      class PredicatesReturn < Naught::NullClassBuilder::Command
+        @predicate_return_value: untyped
+
+        def initialize: (NullClassBuilder builder, untyped return_value) -> void
+        def call: () -> void
+      end
+
+      class Singleton < Naught::NullClassBuilder::Command
+        def call: () -> void
+      end
+
+      class Traceable < Naught::NullClassBuilder::Command
+        def call: () -> void
+      end
+    end
+  end
+end

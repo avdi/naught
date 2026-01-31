@@ -51,10 +51,24 @@ rescue LoadError
   end
 end
 
+begin
+  require "steep"
+
+  desc "Type check with Steep"
+  task :steep do
+    # Use --log-level=fatal to suppress internal Steep worker debug messages
+    sh "bundle exec steep check --log-level=fatal"
+  end
+rescue LoadError
+  task :steep do
+    warn "Steep is disabled"
+  end
+end
+
 desc "Run all linters (RuboCop and Standard)"
 task lint: %i[rubocop standard]
 
 desc "Fix all auto-correctable lint issues"
 task "lint:fix": %i[rubocop:autocorrect_all standard:fix]
 
-task default: %i[test lint yardstick]
+task default: %i[test lint yardstick steep]
