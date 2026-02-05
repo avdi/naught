@@ -231,6 +231,34 @@ null_log = NullLog.new
 null_log.info                  # => nil
 ```
 
+#### What about objects that define methods dynamically, like Stripe API resources?
+
+When you use `mimic example:`, Naught automatically discovers dynamically-defined methods too. This works with libraries like Stripe that use `method_missing` to define methods based on API response data.
+
+```ruby
+require "naught"
+require "stripe"
+
+invoice = Stripe::Invoice.retrieve("inv_123")
+
+NullInvoice = Naught.build do |config|
+  config.mimic example: invoice
+end
+
+null_invoice = NullInvoice.new
+null_invoice.period_end        # => nil
+null_invoice.amount_due        # => nil
+null_invoice.customer          # => nil
+```
+
+Naught discovers dynamic methods by checking if the example object responds to `keys`, `attribute_names`, or `to_h`. If you want to disable this behavior, pass `include_dynamic: false`:
+
+```ruby
+NullInvoice = Naught.build do |config|
+  config.mimic example: invoice, include_dynamic: false
+end
+```
+
 #### What about predicate methods? You know, the ones that end with question marks? Shouldn't they return `false` instead of `nil`?
 
 Sure, if you'd like.
