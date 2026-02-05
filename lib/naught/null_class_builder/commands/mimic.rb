@@ -30,6 +30,14 @@ module Naught
         # @return [Class] singleton class being mimicked
         attr_reader :singleton_class
 
+        # The example instance for dynamic method discovery
+        # @return [Object, nil] example instance or nil
+        attr_reader :example_instance
+
+        # Whether to include dynamically-defined methods
+        # @return [Boolean] whether to include dynamic methods
+        attr_reader :include_dynamic
+
         # Create a mimic command for a class or instance
         #
         # @param builder [NullClassBuilder]
@@ -60,14 +68,16 @@ module Naught
         def parse_arguments(class_to_mimic_or_options, options)
           if class_to_mimic_or_options.is_a?(Hash)
             options = class_to_mimic_or_options.merge(options)
-            instance = options.fetch(:example)
-            @singleton_class = instance.singleton_class
-            @class_to_mimic = instance.class
+            @example_instance = options.fetch(:example)
+            @singleton_class = @example_instance.singleton_class
+            @class_to_mimic = @example_instance.class
           else
+            @example_instance = nil
             @singleton_class = NULL_SINGLETON_CLASS
             @class_to_mimic = class_to_mimic_or_options
           end
           @include_super = options.fetch(:include_super, true)
+          @include_dynamic = options.fetch(:include_dynamic, !@example_instance.nil?)
         end
 
         # Configure the builder with the mimicked class's properties
@@ -91,7 +101,53 @@ module Naught
         # @return [Array<Symbol>] methods to stub
         def methods_to_stub
           all_methods = class_to_mimic.instance_methods(include_super) | singleton_class.instance_methods(false)
+          all_methods |= dynamic_methods if include_dynamic
           all_methods - METHODS_TO_SKIP
+        end
+
+        # Discover dynamically-defined methods from the example instance
+        #
+        # This handles classes like Stripe that use method_missing and
+        # respond_to_missing? to define methods based on instance data.
+        #
+        # @return [Array<Symbol>] dynamic method names
+        def dynamic_methods
+          return [] unless example_instance
+
+          candidates = discover_method_candidates
+          candidates.select { |name| example_instance.respond_to?(name) }
+        end
+
+        # Discover candidate method names from the example instance
+        #
+        # Tries multiple approaches to find method names:
+        # 1. If the instance responds to :keys (like Stripe objects), use those
+        # 2. If the instance responds to :attributes, use those
+        # 3. If the instance responds to :to_h or :to_hash, use the hash keys
+        #
+        # @return [Array<Symbol>] candidate method names
+        def discover_method_candidates
+          candidates = [] #: Array[Symbol]
+
+          # Stripe-style objects expose keys
+          candidates |= example_instance.keys.map(&:to_sym) if example_instance.respond_to?(:keys)
+
+          # ActiveRecord-style objects expose attribute_names
+          if example_instance.respond_to?(:attribute_names)
+            candidates |= example_instance.attribute_names.map(&:to_sym)
+          end
+
+          # OpenStruct-style objects can be converted to hash
+          if example_instance.respond_to?(:to_h) && !example_instance.is_a?(Object.const_get(:Hash))
+            begin
+              hash = example_instance.to_h
+              candidates |= hash.keys.map(&:to_sym) if hash.is_a?(Hash)
+            rescue
+              # Ignore errors from to_h
+            end
+          end
+
+          candidates
         end
       end
     end

@@ -73,4 +73,141 @@ module NaughtTestFixtures
     def call_method_inside_block(thing) = 2.times { thing.info }
     def call_method_inside_nested_block(thing) = 2.times { 2.times { thing.info } }
   end
+
+  # Simulates Stripe-style objects that define methods dynamically based on data
+  # These objects expose a `keys` method to discover available attributes
+  class StripeStyleObject
+    def initialize(values = {})
+      @values = values
+    end
+
+    def keys
+      @values.keys
+    end
+
+    def regular_method
+      "regular"
+    end
+
+    def method_missing(name, *)
+      if @values.key?(name)
+        @values[name]
+      else
+        super
+      end
+    end
+
+    def respond_to_missing?(name, include_private = false)
+      @values.key?(name) || super
+    end
+  end
+
+  # Simulates ActiveRecord-style objects with attribute_names
+  class ActiveRecordStyleObject
+    def initialize(attributes = {})
+      @attributes = attributes
+    end
+
+    def attribute_names
+      @attributes.keys.map(&:to_s)
+    end
+
+    def regular_method
+      "regular"
+    end
+
+    def method_missing(name, *)
+      if @attributes.key?(name)
+        @attributes[name]
+      else
+        super
+      end
+    end
+
+    def respond_to_missing?(name, include_private = false)
+      @attributes.key?(name) || super
+    end
+  end
+
+  # Simulates OpenStruct-style objects with to_h
+  class OpenStructStyleObject
+    def initialize(values = {})
+      @values = values
+    end
+
+    def to_h
+      @values.dup
+    end
+
+    def regular_method
+      "regular"
+    end
+
+    def method_missing(name, *)
+      if @values.key?(name)
+        @values[name]
+      else
+        super
+      end
+    end
+
+    def respond_to_missing?(name, include_private = false)
+      @values.key?(name) || super
+    end
+  end
+
+  # Object whose to_h raises an error
+  class BrokenToHObject
+    def initialize(values = {})
+      @values = values
+    end
+
+    def to_h
+      raise "broken!"
+    end
+
+    def regular_method
+      "regular"
+    end
+
+    def method_missing(name, *)
+      if @values.key?(name)
+        @values[name]
+      else
+        super
+      end
+    end
+
+    def respond_to_missing?(name, include_private = false)
+      @values.key?(name) || super
+    end
+  end
+
+  # Object whose to_h returns a non-Hash value
+  class NonHashToHObject
+    def initialize(values = {})
+      @values = values
+    end
+
+    def to_h
+      # Returns an Array instead of a Hash
+      @values.to_a
+    end
+
+    def regular_method
+      "regular"
+    end
+
+    def method_missing(name, *)
+      if @values.key?(name)
+        @values[name]
+      else
+        super
+      end
+    end
+
+    def respond_to_missing?(name, include_private = false)
+      @values.key?(name) || super
+    end
+  end
 end

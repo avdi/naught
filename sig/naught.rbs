@@ -208,6 +208,8 @@ module Naught
         attr_reader class_to_mimic: Class
         attr_reader include_super: bool
         attr_reader singleton_class: Class
+        attr_reader example_instance: untyped
+        attr_reader include_dynamic: bool
 
         def initialize: (NullClassBuilder builder, Class | Hash[Symbol, untyped] class_to_mimic_or_options, ?Hash[Symbol, untyped] options) ?{ () -> untyped } -> void
         def call: () -> void
@@ -218,6 +220,8 @@ module Naught
         def configure_builder: () -> void
         def root_class_of: (Class klass) -> Class
         def methods_to_stub: () -> Array[Symbol]
+        def dynamic_methods: () -> Array[Symbol]
+        def discover_method_candidates: () -> Array[Symbol]
       end
 
       class Impersonate < Naught::NullClassBuilder::Commands::Mimic
