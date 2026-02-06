@@ -21,7 +21,4 @@ Gem::Specification.new do |spec|
   spec.metadata["source_code_uri"] = "https://github.com/avdi/naught"
   spec.metadata["changelog_uri"] = "https://github.com/avdi/naught/blob/master/Changelog.md"
   spec.metadata["rubygems_mfa_required"] = "true"
-
-  spec.add_development_dependency "bundler", ">= 2.0"
-  spec.add_development_dependency "rake", ">= 12.0"
 end
