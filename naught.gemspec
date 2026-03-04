@@ -14,7 +14,7 @@ Gem::Specification.new do |spec|
 
   spec.required_ruby_version = ">= 3.2.0"
 
-  spec.files = Dir["lib/**/*", "LICENSE.txt", "README.markdown", "Changelog.md"]
+  spec.files = Dir["lib/**/*", "sig/**/*", "LICENSE.txt", "README.markdown", "Changelog.md"]
   spec.require_paths = ["lib"]
 
   spec.metadata["homepage_uri"] = spec.homepage
