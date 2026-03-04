@@ -140,6 +140,19 @@ module Naught
     # Configure method stubs to return self (black hole behavior)
     def black_hole: () -> void
 
+    # DSL methods dispatched via method_missing to command classes
+    def define_explicit_conversions: () -> void
+    def define_implicit_conversions: () -> void
+    def predicates_return: (untyped value) -> void
+    def mimic: (Class class_to_mimic, ?{ ?include_super: bool, ?include_dynamic: bool } options) -> void
+             | ({ example: untyped, ?include_super: bool, ?include_dynamic: bool } options) -> void
+    def impersonate: (Class class_to_impersonate, ?{ ?include_super: bool, ?include_dynamic: bool } options) -> void
+    def pebble: (?Naught::NullClassBuilder::Commands::Pebble::_Output output) -> void
+    def singleton: () -> void
+    def traceable: () -> void
+    def callstack: () -> void
+    def null_safe_proxy: () -> void
+
     # Make null objects respond to any message and stub method_missing
     def respond_to_any_message: () -> void
 
