@@ -14,5 +14,6 @@ SimpleCov.start do
 end
 
 require "minitest/autorun"
+require "minitest/strict"
 require "naught"
 Dir[File.join(GEM_ROOT, "test", "support", "**/*.rb")].each { |f| require f }

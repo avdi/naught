@@ -31,7 +31,7 @@ class BlackholeMarshalTest < NaughtTestCase
   def test_marshaled_object_retains_black_hole_behavior
     loaded = Marshal.load(Marshal.dump(@null))
 
-    assert_same loaded, loaded.foo
+    assert_returns_self loaded, :foo
     assert_same loaded, loaded.bar.baz
   end
 end

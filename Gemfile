@@ -6,6 +6,7 @@ group :test do
   gem "logger"
   gem "minitest", ">= 6"
   gem "minitest-mock"
+  gem "minitest-strict"
   gem "rake"
   gem "rdoc"
   gem "rubocop-minitest"

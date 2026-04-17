@@ -32,7 +32,7 @@ class PebbleBasicTest < NaughtTestCase
   end
 
   def test_returns_self
-    assert_same @null, @null.info
+    assert_returns_self @null, :info
   end
 end
 
