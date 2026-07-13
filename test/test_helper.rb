@@ -4,7 +4,7 @@ $LOAD_PATH.unshift File.join(GEM_ROOT, "lib")
 require "simplecov"
 
 SimpleCov.start do
-  add_filter "/test/"
+  skip "/test/"
   if RUBY_ENGINE != "jruby"
     enable_coverage :branch
     minimum_coverage line: 100, branch: 100

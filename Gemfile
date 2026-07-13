@@ -11,7 +11,7 @@ group :test do
   gem "rdoc"
   gem "rubocop-minitest"
   gem "rubocop-performance"
-  gem "simplecov"
+  gem "simplecov", ">= 1"
   gem "standard"
   gem "standard-performance"
 end
