@@ -9,6 +9,7 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    continue-on-error: ${{ endsWith(matrix.ruby-version, '-head') }}
     env:
       BUNDLE_WITHOUT: docs:typecheck
     strategy:
@@ -20,6 +21,9 @@ jobs:
           - '3.4'
           - '4.0'
           - 'jruby-10.0'
+          - 'jruby-10.1'
+          - 'ruby-head'
+          - 'jruby-head'
     steps:
       - uses: actions/checkout@v6
       - name: Set up Ruby ${{ matrix.ruby-version }}
