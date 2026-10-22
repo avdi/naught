@@ -22,7 +22,9 @@ jobs:
       - uses: actions/checkout@v6
       - uses: ruby/setup-ruby@v1
         with:
-          ruby-version: ruby
+          # Sigstore signing fails on Ruby 4.0, whose json 3 rejects options
+          # that protobug 0.1.0 passes to JSON.parse. Use 3.4 until it's fixed.
+          ruby-version: '3.4'
           bundler-cache: true
       - uses: rubygems/configure-rubygems-credentials@v2.1.0
       - name: Update RubyGems
