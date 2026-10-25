@@ -6,7 +6,13 @@ plugins:
   - rubocop-minitest
   - rubocop-performance
 
+inherit_mode:
+  merge:
+    - Include
+
 AllCops:
+  Include:
+    - .duel.rb
   TargetRubyVersion: 3.2
   NewCops: enable
   SuggestExtensions: false
