@@ -3,6 +3,7 @@
 [![Lint](https://github.com/avdi/naught/actions/workflows/lint.yml/badge.svg)][lint]
 [![Docs](https://github.com/avdi/naught/actions/workflows/docs.yml/badge.svg)][docs]
 [![Typecheck](https://github.com/avdi/naught/actions/workflows/typecheck.yml/badge.svg)][typecheck]
+[![Duel](https://raw.githubusercontent.com/sferik/duel-ruby/main/assets/badge.svg)](https://github.com/sferik/duel-ruby)
 
 [gem]: https://rubygems.org/gems/naught
 [test]: https://github.com/avdi/naught/actions/workflows/test.yml

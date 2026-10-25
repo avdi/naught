@@ -76,3 +76,10 @@ desc "Fix all auto-correctable lint issues"
 task "lint:fix": %i[rubocop:autocorrect_all standard:fix]
 
 task default: %i[test lint yardstick steep]
+
+begin
+  require "duel/rake_task"
+  Duel::RakeTask.new
+rescue LoadError
+  # Duel requires Ruby 3.4 or later
+end
